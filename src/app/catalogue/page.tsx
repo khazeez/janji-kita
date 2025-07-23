@@ -2,7 +2,7 @@ export default function SignUp() {
   return (
     <>
     
-    <h1>SIGN IN</h1>
+    <h1>CATALOGUE</h1>
     </>
   );
 }

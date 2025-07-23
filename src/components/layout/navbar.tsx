@@ -1,34 +1,124 @@
+'use client';
+
+import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
+import Link from 'next/link';
+import clsx from 'clsx';
+
 export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const navigation = [
+    { name: 'Catalogue', href: '/catalogue' },
+    { name: 'About', href: '/about' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'Product', href: '/product' },
+  ];
+
+  const toggleSidebar = () => setIsOpen(!isOpen);
+  const closeSidebar = () => setIsOpen(false);
+
   return (
-    <div className='fixed top-0 left-0 w-full z-50 bg-transparent text-white shadow-md'>
-      <div className='max-w-7xl mx-auto px-6 py-4 flex items-center justify-between'>
-        {/* Logo */}
-        <div className='font-bold text-2xl'>JanjiKita</div>
+    <>
+      {/* Navbar */}
+      <header className="fixed top-0 left-0 w-full z-50 text-white shadow-md backdrop-blur-md bg-transparent">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-        {/* Menu Tengah */}
-        <div className='space-x-10 hidden md:flex'>
-          <a href='#catalogue' className='hover:text-gray-300'>
-            Catalogue
-          </a>
-          <a href='#about' className='hover:text-gray-300'>
-            About
-          </a>
-          <a href='#blog' className='hover:text-gray-300'>
-            Blog
-          </a>
-          <a href='#blog' className='hover:text-gray-300'>
-            Product
-          </a>
-        </div>
+          <Link href="/" className={clsx(
+            'font-bold text-2xl',
+            isOpen ? 'text-black' : 'text-white'
+          )}>
+            AHAHA
+          </Link>
 
-        {/* Sign in / Sign up */}
-        <div className='space-x-4'>
-          <button className='px-4 py-2 hover:underline'>Sign in</button>
-          <button className='px-4 py-2 bg-white text-black rounded-md hover:bg-gray-200'>
-            Sign up
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-10">
+            {navigation.map((item) => (
+              <Link key={item.name} href={item.href} className="hover:text-gray-300">
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Auth Buttons (Desktop) */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link href="/sign-in" className="hover:underline">
+              Sign in
+            </Link>
+            <Link
+              href="/sign-up"
+              className="px-4 py-2 bg-white text-black rounded-md hover:bg-gray-200"
+            >
+              Sign up
+            </Link>
+          </div>
+
+          {/* Hamburger Button (Mobile) */}
+          <button
+            className="md:hidden focus:outline-none text-white"
+            onClick={toggleSidebar}
+            aria-label="Toggle Menu"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
+      </header>
+
+      {/* Sidebar Overlay + Content (Mobile) */}
+      <div
+        className={clsx(
+          'fixed inset-0 z-40 md:hidden transition-all duration-300 ease-in-out',
+          isOpen ? 'visible opacity-100' : 'invisible opacity-0 pointer-events-none'
+        )}
+      >
+        {/* Overlay Background */}
+        <div
+          className="absolute inset-0 bg-black/60"
+          onClick={closeSidebar}
+        />
+
+        {/* Sidebar */}
+        <div
+          className={clsx(
+            'absolute top-0 left-0 h-full w-1/2 bg-white text-black p-6 transition-transform duration-300 ease-in-out',
+            isOpen ? 'translate-x-0' : '-translate-x-full'
+          )}
+        >
+          <button
+            className="mb-6 text-black"
+            onClick={closeSidebar}
+            aria-label="Close Menu"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          <nav className="flex flex-col space-y-4">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={closeSidebar}
+                className="hover:text-gray-600"
+              >
+                {item.name}
+              </Link>
+            ))}
+
+            <hr className="my-2 border-gray-300" />
+
+            <Link href="/sign-in" onClick={closeSidebar} className="hover:underline">
+              Sign in
+            </Link>
+            <Link
+              href="/sign-up"
+              onClick={closeSidebar}
+              className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800"
+            >
+              Sign up
+            </Link>
+          </nav>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

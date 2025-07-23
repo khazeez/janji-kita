@@ -18,10 +18,10 @@ export default function Introduction() {
             Konten ini berada di depan device dan di tengah layar.
           </p>
           <div className='flex items-center justify-center gap-10 mt-10'>
-            <div className='p-5 bg-pink-500 rounded-full font-bold'>
-              Lihat Catalogue
+            <div className='p-5 bg-pink-500 rounded-xl font-bold'>
+              Explore tema
             </div>
-            <div className='p-5 bg-pink-500 rounded-full font-bold'>Contct Seles</div>
+            <div className='p-5 bg-pink-500 rounded-xl font-bold'>Contct Seles</div>
           </div>
         </div>
       </div>
