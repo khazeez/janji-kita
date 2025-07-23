@@ -9,13 +9,24 @@ import Services from "@/components/layout/product";
 export default function Home() {
   return (
     <>
-      <LightRays />
+      <LightRays
+        raysOrigin='top-center'
+        raysColor='##aaaaff'
+        raysSpeed={1.5}
+        lightSpread={0.8}
+        rayLength={1.1}
+        followMouse={true}
+        mouseInfluence={0.1}
+        noiseAmount={0.1}
+        distortion={0.05}
+        className='custom-rays'
+      />
       {/* <Orb/> */}
       {/* <Galaxy /> */}
 
       <Navbar />
       <Introduction />
-      <Services/>
+      <Services />
     </>
   );
 }

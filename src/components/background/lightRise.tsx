@@ -441,7 +441,7 @@ void main() {
   return (
     <div
       ref={containerRef}
-      className={`w-full h-[800px] pointer-events-none z-[3] overflow-hidden relative ${className}`.trim()
+      className={`w-full h-[900px] pointer-events-none z-[3] overflow-hidden relative ${className}`.trim()
     }
     />
   );

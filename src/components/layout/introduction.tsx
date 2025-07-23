@@ -2,7 +2,7 @@ import Device from '../ui/device';
 
 export default function Introduction() {
   return (
-    <div className=''>
+    <div className='w-ful'>
       {/* Device sebagai background */}
       <div className='absolute inset-0 z-0 pt-30'>
         <Device />
