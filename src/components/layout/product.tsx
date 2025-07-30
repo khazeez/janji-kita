@@ -27,6 +27,9 @@ const firstRow = reviews.slice(0, reviews.length / 2);
 const secondRow = reviews.slice(reviews.length / 2);
 const thirdRow = reviews.slice(0, reviews.length / 2);
 const fourthRow = reviews.slice(reviews.length / 2);
+const fiveRow = reviews.slice(0, reviews.length / 2);
+const sixRow = reviews.slice(reviews.length / 2);
+const sevenRow = reviews.slice(0, reviews.length / 2);
 
 const ReviewCard = ({
   img,
@@ -96,17 +99,17 @@ export default function Product() {
             ))}
           </Marquee>
           <Marquee pauseOnHover className="[--duration:20s]" vertical>
-            {fourthRow.map((review) => (
+            {fiveRow.map((review) => (
               <ReviewCard key={review.username} {...review} />
             ))}
           </Marquee>
           <Marquee pauseOnHover className="[--duration:20s]" vertical>
-            {fourthRow.map((review) => (
+            {sixRow.map((review) => (
               <ReviewCard key={review.username} {...review} />
             ))}
           </Marquee>
           <Marquee pauseOnHover className="[--duration:20s]" vertical>
-            {fourthRow.map((review) => (
+            {sevenRow.map((review) => (
               <ReviewCard key={review.username} {...review} />
             ))}
           </Marquee>
