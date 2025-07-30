@@ -8,6 +8,9 @@ import Galaxy from "@/components/background/galaxy";
 import Services from "@/components/layout/service";
 import Product from "@/components/layout/product";
 // import { Globe } from "@/components/ui/globe";
+import Quote from "@/components/layout/quote";
+import FAQ from "@/components/layout/faq";
+import Footer from "@/components/layout/footer";
 
 export default function Home() {
   return (
@@ -32,6 +35,9 @@ export default function Home() {
       <Introduction />
       <Services />
       <Product />
+<Quote/>
+<FAQ/>
+<Footer/>
     </>
   );
 }
