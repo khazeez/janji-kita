@@ -17,7 +17,7 @@ export default function Device() {
 
         <div className='rounded-[2rem] overflow-hidden w-[272px] h-[572px] bg-white dark:bg-gray-800'>
           <img
-            src='../../public/wedding.jpg'
+            src='/wedding3.jpg'
             className='dark:hidden w-[272px] h-[572px]'
             alt='Mockup Light'
           />

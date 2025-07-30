@@ -1,20 +1,24 @@
+
 import Image from "next/image";
 import Introduction from "@/components/layout/introduction";
 import LightRays from "@/components/background/lightRise";
 import Orb from "@/components/background/orb";
 import Navbar from "@/components/layout/navbar";
 import Galaxy from "@/components/background/galaxy";
-import Services from "@/components/layout/product";
+import Services from "@/components/layout/service";
+import Product from "@/components/layout/product";
+// import { Globe } from "@/components/ui/globe";
 
 export default function Home() {
   return (
     <>
+      {/* <Globe /> */}
       <LightRays
         raysOrigin='top-center'
         raysColor='##aaaaff'
         raysSpeed={1.5}
         lightSpread={0.8}
-        rayLength={2}
+        rayLength={1.2}
         followMouse={true}
         mouseInfluence={0.1}
         noiseAmount={0.1}
@@ -27,6 +31,7 @@ export default function Home() {
       <Navbar />
       <Introduction />
       <Services />
+      <Product />
     </>
   );
 }

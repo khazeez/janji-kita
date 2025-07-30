@@ -42,7 +42,7 @@ export default function Navbar() {
 
           {/* Auth Buttons (Desktop) */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/sign-in" className="hover:underline">
+            <Link href="/sign-in" className="hover:underline rounded-md px-4 border border-pink-400 py-2">
               Sign in
             </Link>
             <Link
