@@ -28,7 +28,7 @@ export default function Navbar() {
             'font-bold text-2xl',
             isOpen ? 'text-black' : 'text-white'
           )}>
-            AHAHA
+            Janji<span className='text-pink-500'>Kita</span>
           </Link>
 
           {/* Desktop Navigation */}

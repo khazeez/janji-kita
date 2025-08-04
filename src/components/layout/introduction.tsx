@@ -15,13 +15,13 @@ export default function Introduction() {
             Mulailah perjalanananmu di sini
           </h1>
           <p className='mt-4 text-2xl'>
-            Konten ini berada di depan device dan di tengah layar.
+           Berbagi moment kebahagiaan dengan keluarga, sanak saudara dan sahabat
           </p>
           <div className='flex items-center justify-center gap-10 mt-10'>
-            <div className='p-5 bg-pink-500 rounded-xl font-bold'>
+            <div className='p-5 bg-pink-500 rounded-xl font-bold text-xl '>
               Explore tema
             </div>
-            <div className='p-5 bg-pink-500 rounded-xl font-bold'>Contct Seles</div>
+            <div className='p-5 text-pink-100 border border-pink-400 shadow-md backdrop-blur-md bg-transparent rounded-xl font-bold'>Contct Seles</div>
           </div>
         </div>
       </div>

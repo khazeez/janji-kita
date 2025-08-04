@@ -53,7 +53,7 @@ const ReviewCard = ({
       )}
     >
       <div className="flex flex-row items-center gap-2">
-        <img className="rounded-full" width="32" height="32" alt="" src={img} />
+        <img className="rounded-full" width="100" height="100" alt="" src={img} />
         <div className="flex flex-col">
           <figcaption className="text-sm font-medium dark:text-white">
             {name}
@@ -61,7 +61,7 @@ const ReviewCard = ({
           <p className="text-xs font-medium dark:text-white/40">{username}</p>
         </div>
       </div>
-      <blockquote className="mt-2 text-sm">{body}</blockquote>
+      <blockquote className="mt-2 text-sm text-white">{body}</blockquote>
     </figure>
   );
 };
@@ -70,7 +70,7 @@ export default function Product() {
   return (
     <>
     <h1 className="text-center text-white text-5xl pb-10 pt-20">Dengan 100+ thema yang kami sediakan</h1>
-      <div className="relative flex h-200 w-full flex-row items-center justify-center gap-4 overflow-hidden [perspective:800px]">
+      <div className="relative flex h-200 w-full flex-row items-center justify-center gap-4 overflow-hidden [perspective:2000px]">
         <div
           className="flex flex-row items-center gap-4"
           style={{
@@ -113,6 +113,16 @@ export default function Product() {
               <ReviewCard key={review.username} {...review} />
             ))}
           </Marquee>
+          <Marquee pauseOnHover className="[--duration:20s]" vertical>
+            {sevenRow.map((review) => (
+              <ReviewCard key={review.username} {...review} />
+            ))}
+          </Marquee>
+          <Marquee pauseOnHover className="[--duration:20s]" vertical>
+            {sevenRow.map((review) => (
+              <ReviewCard key={review.username} {...review} />
+            ))}
+          </Marquee>
         </div>
 
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-background"></div>
@@ -124,11 +134,11 @@ export default function Product() {
         <div className="flex flex-col gap-10">
           <div className="">
             <h1 className="text-4xl">Thema Adat</h1>
-            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Maiores maxime beatae alias, quas cum omnis .</p>
+            <p>Dengan pilihan 10+ adat populer yang bisa anda pilih</p>
           </div>
           <div className="">
             <h1 className="text-4xl">Thema Agama</h1>
-            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Maiores maxime beatae alias, quas cum omnis .</p>
+            <p>Indonesia dengan 6 agama resminya membentuk akulturasi budaya yang menawan</p>
           </div>
         </div>
         <div className="flex flex-col gap-10">
