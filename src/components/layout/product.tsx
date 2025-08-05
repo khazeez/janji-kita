@@ -85,7 +85,7 @@ const ThemeSection = ({
   return (
     <div className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-6 md:p-8 hover:bg-white/10 transition-all duration-300">      
       <div className="mb-4">
-        <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r ${colorClasses[accentColor]} bg-clip-text text-transparent animate-pulse group-hover:animate-none transition-all duration-300`}>
+        <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r bg-clip-text text-transparent animate-pulse group-hover:animate-none transition-all duration-300`}>
           {title}
         </h2>
       </div>
@@ -250,7 +250,7 @@ export default function Product() {
     </div>
 
     {/* Kanan Atas */}
-    <div className="">
+    <div className="max-w-xs">
       <h3 className="text-xl md:text-4xl font-bold text-purple-400">Thema Agama</h3>
       <p className="text-white/60 mt-2">
         Perpaduan budaya dan agama yang menawan.
@@ -258,7 +258,7 @@ export default function Product() {
     </div>
 
     {/* Kiri Bawah */}
-    <div className="">
+    <div className="max-w-xs">
       <h3 className="text-xl md:text-4xl font-bold text-blue-400">Thema Gen Z</h3>
       <p className="text-white/60 mt-2">
         Desain modern yang cocok untuk generasi muda.
@@ -266,7 +266,7 @@ export default function Product() {
     </div>
 
     {/* Kanan Bawah */}
-    <div className="">
+    <div className="max-w-xs">
       <h3 className="text-xl md:text-4xl font-bold text-emerald-400">Thema Luxury</h3>
       <p className="text-white/60 mt-2">
         Nuansa mewah dan elegan yang tak terlupakan.
