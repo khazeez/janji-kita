@@ -250,7 +250,7 @@ export default function Product() {
     </div>
 
     {/* Kanan Atas */}
-    <div className="max-w-xs">
+    <div className="">
       <h3 className="text-xl md:text-4xl font-bold text-purple-400">Thema Agama</h3>
       <p className="text-white/60 mt-2">
         Perpaduan budaya dan agama yang menawan.
@@ -258,7 +258,7 @@ export default function Product() {
     </div>
 
     {/* Kiri Bawah */}
-    <div className="max-w-xs">
+    <div className="">
       <h3 className="text-xl md:text-4xl font-bold text-blue-400">Thema Gen Z</h3>
       <p className="text-white/60 mt-2">
         Desain modern yang cocok untuk generasi muda.
@@ -266,7 +266,7 @@ export default function Product() {
     </div>
 
     {/* Kanan Bawah */}
-    <div className="max-w-xs">
+    <div className="">
       <h3 className="text-xl md:text-4xl font-bold text-emerald-400">Thema Luxury</h3>
       <p className="text-white/60 mt-2">
         Nuansa mewah dan elegan yang tak terlupakan.
