@@ -65,53 +65,48 @@ const Footer = () => {
     <footer className='relative shadow-md backdrop-blur-md bg-transparent border-t border-slate-800/50'>
       {/* Background Effects */}
       <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-        <div className='absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-600/5 to-purple-600/5 rounded-full blur-3xl'></div>
+        <div className='absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-pink-600/5 to-purple-600/5 rounded-full blur-3xl'></div>
         <div className='absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-600/5 to-pink-600/5 rounded-full blur-3xl'></div>
       </div>
 
       <div className='relative z-10'>
-        {/* Main Footer Content */}
         <div className='max-w-7xl mx-auto px-6 py-16'>
           <div className='grid grid-cols-1 lg:grid-cols-12 gap-12'>
             {/* Brand Section */}
             <div className='lg:col-span-4'>
               <div className='space-y-6'>
-                {/* Logo/Brand */}
                 <div className='flex items-center space-x-3'>
-                  <div className='w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center'>
+                  <div className='w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl flex items-center justify-center'>
                     <div className='w-6 h-6 bg-white rounded-lg flex items-center justify-center'>
-                      <div className='w-3 h-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full'></div>
+                      <div className='w-3 h-3 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full'></div>
                     </div>
                   </div>
                   <h3 className='text-2xl font-light text-white tracking-wide'>
-                    NEXUS
+                    JanjiKita
                   </h3>
                 </div>
 
-                {/* Description */}
                 <p className='text-slate-400 font-light leading-relaxed max-w-sm'>
-                  Empowering businesses with cutting-edge technology solutions.
-                  We transform ideas into reality through innovative design and
-                  development.
+                  JanjiKita adalah platform undangan digital modern yang
+                  memudahkan kamu membagikan momen spesial dengan cara yang
+                  indah, interaktif, dan praktis.
                 </p>
 
-                {/* Contact Info */}
                 <div className='space-y-3'>
                   <div className='flex items-center space-x-3 text-slate-400 hover:text-slate-300 transition-colors duration-200'>
                     <Mail className='w-4 h-4' />
-                    <span className='font-light'>hello@nexus.com</span>
+                    <span className='font-light'>halo@janjikita.id</span>
                   </div>
                   <div className='flex items-center space-x-3 text-slate-400 hover:text-slate-300 transition-colors duration-200'>
                     <Phone className='w-4 h-4' />
-                    <span className='font-light'>+62 21 1234 5678</span>
+                    <span className='font-light'>+62 812 3456 7890</span>
                   </div>
                   <div className='flex items-center space-x-3 text-slate-400 hover:text-slate-300 transition-colors duration-200'>
                     <MapPin className='w-4 h-4' />
-                    <span className='font-light'>Jakarta, Indonesia</span>
+                    <span className='font-light'>Bandung, Indonesia</span>
                   </div>
                 </div>
 
-                {/* Social Links */}
                 <div className='flex space-x-4 pt-4'>
                   {socialLinks.map((social) => (
                     <a
@@ -130,85 +125,26 @@ const Footer = () => {
             {/* Links Sections */}
             <div className='lg:col-span-8'>
               <div className='grid grid-cols-2 md:grid-cols-4 gap-8'>
-                {/* Product Links */}
-                <div className='space-y-4'>
-                  <h4 className='text-white font-medium tracking-wide'>
-                    Product
-                  </h4>
-                  <ul className='space-y-3'>
-                    {footerLinks.product.map((link) => (
-                      <li key={link.name}>
-                        <a
-                          href={link.href}
-                          className='text-slate-400 hover:text-white font-light transition-colors duration-200 flex items-center group'
-                        >
-                          {link.name}
-                          <ArrowUpRight className='w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200' />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Company Links */}
-                <div className='space-y-4'>
-                  <h4 className='text-white font-medium tracking-wide'>
-                    Company
-                  </h4>
-                  <ul className='space-y-3'>
-                    {footerLinks.company.map((link) => (
-                      <li key={link.name}>
-                        <a
-                          href={link.href}
-                          className='text-slate-400 hover:text-white font-light transition-colors duration-200 flex items-center group'
-                        >
-                          {link.name}
-                          <ArrowUpRight className='w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200' />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Resources Links */}
-                <div className='space-y-4'>
-                  <h4 className='text-white font-medium tracking-wide'>
-                    Resources
-                  </h4>
-                  <ul className='space-y-3'>
-                    {footerLinks.resources.map((link) => (
-                      <li key={link.name}>
-                        <a
-                          href={link.href}
-                          className='text-slate-400 hover:text-white font-light transition-colors duration-200 flex items-center group'
-                        >
-                          {link.name}
-                          <ArrowUpRight className='w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200' />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Legal Links */}
-                <div className='space-y-4'>
-                  <h4 className='text-white font-medium tracking-wide'>
-                    Legal
-                  </h4>
-                  <ul className='space-y-3'>
-                    {footerLinks.legal.map((link) => (
-                      <li key={link.name}>
-                        <a
-                          href={link.href}
-                          className='text-slate-400 hover:text-white font-light transition-colors duration-200 flex items-center group'
-                        >
-                          {link.name}
-                          <ArrowUpRight className='w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200' />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {Object.entries(footerLinks).map(([section, links]) => (
+                  <div key={section} className='space-y-4'>
+                    <h4 className='text-white font-medium tracking-wide'>
+                      {section.charAt(0).toUpperCase() + section.slice(1)}
+                    </h4>
+                    <ul className='space-y-3'>
+                      {links.map((link) => (
+                        <li key={link.name}>
+                          <a
+                            href={link.href}
+                            className='text-slate-400 hover:text-white font-light transition-colors duration-200 flex items-center group'
+                          >
+                            {link.name}
+                            <ArrowUpRight className='w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200' />
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -220,20 +156,20 @@ const Footer = () => {
             <div className='flex flex-col lg:flex-row items-center justify-between space-y-6 lg:space-y-0'>
               <div className='text-center lg:text-left'>
                 <h3 className='text-2xl font-light text-white mb-2'>
-                  Stay in the loop
+                  Tetap terhubung
                 </h3>
                 <p className='text-slate-400 font-light'>
-                  Get the latest updates, insights, and exclusive content
-                  delivered to your inbox.
+                  Dapatkan info terbaru dan penawaran menarik langsung ke email
+                  kamu.
                 </p>
               </div>
               <div className='flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 w-full lg:w-auto'>
                 <input
                   type='email'
-                  placeholder='Enter your email'
+                  placeholder='Masukkan email kamu'
                   className='px-6 py-3 bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-600/50 focus:border-slate-600/50 transition-all duration-200 sm:min-w-[300px]'
                 />
-                <button className='px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 hover:scale-105 hover:shadow-lg'>
+                <button className='px-8 py-3 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-2xl font-medium hover:from-pink-600 hover:to-pink-700 transition-all duration-200 hover:scale-105 hover:shadow-lg'>
                   Subscribe
                 </button>
               </div>
@@ -246,7 +182,7 @@ const Footer = () => {
           <div className='max-w-7xl mx-auto px-6 py-8'>
             <div className='flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0'>
               <div className='text-slate-400 font-light text-sm'>
-                © {currentYear} Nexus. All rights reserved.
+                © {currentYear} JanjiKita. All rights reserved.
               </div>
               <div className='flex items-center space-x-8 text-sm'>
                 <span className='text-slate-400 font-light'>

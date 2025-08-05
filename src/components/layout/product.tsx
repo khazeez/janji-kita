@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { Sparkle, Landmark, Leaf, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Marquee } from "@/components/magicui/marquee";
 
@@ -66,13 +67,13 @@ const ReviewCard = ({
   );
 };
 
-const ThemeSection = ({ 
-  title, 
-  description, 
+const ThemeSection = ({
+  title,
+  description,
   accentColor = "pink"
-}: { 
-  title: string; 
-  description: string; 
+}: {
+  title: string;
+  description: string;
   accentColor?: string;
 }) => {
   const colorClasses = {
@@ -83,7 +84,7 @@ const ThemeSection = ({
   };
 
   return (
-    <div className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-6 md:p-8 hover:bg-white/10 transition-all duration-300">      
+    <div className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-6 md:p-8 hover:bg-white/10 transition-all duration-300">
       <div className="mb-4">
         <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r bg-clip-text text-transparent animate-pulse group-hover:animate-none transition-all duration-300`}>
           {title}
@@ -104,7 +105,7 @@ export default function Product() {
       accentColor: "pink"
     },
     {
-      title: "Thema Agama", 
+      title: "Thema Agama",
       description: "Indonesia dengan 6 agama resminya membentuk akulturasi budaya yang menawan dalam setiap perayaan",
       accentColor: "purple"
     },
@@ -130,7 +131,7 @@ export default function Product() {
               Koleksi Eksklusif
             </span>
           </div>
-          
+
           <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-6xl font-bold leading-tight mb-6 md:mb-8">
             <span className="text-white animate-pulse">
               Dengan{" "}
@@ -144,7 +145,7 @@ export default function Product() {
               {" "}yang kami sediakan
             </span>
           </h1>
-          
+
           <p className="text-white/60 text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed px-2">
             Temukan tema sempurna untuk momen spesial Anda dengan koleksi eksklusif yang telah dipilih khusus
           </p>
@@ -232,50 +233,50 @@ export default function Product() {
 
         {/* Themes Grid */}
         {/* Garis Saling Memotong dengan Teks Tema */}
-<div className="relative w-full h-[500px] flex items-center justify-center my-20">
-  {/* Garis Horizontal */}
-  <div className="absolute top-1/2 left-0 w-full h-px bg-white/30 -translate-y-1/2" />
+        <div className="relative w-full h-[500px] flex items-center justify-center my-20">
+          {/* Garis Horizontal */}
+          <div className="absolute top-1/2 left-0 w-full h-px bg-white/30 -translate-y-1/2" />
 
-  {/* Garis Vertikal */}
-  <div className="absolute left-1/2 top-0 h-full w-px bg-white/30 -translate-x-1/2" />
+          {/* Garis Vertikal */}
+          <div className="absolute left-1/2 top-0 h-full w-px bg-white/30 -translate-x-1/2" />
 
-  {/* Tema di sekitar garis */}
-  <div className="absolute grid grid-cols-2 grid-rows-2 gap-20 text-center text-white font-semibold text-lg">
-    {/* Kiri Atas */}
-    <div className="">
-      <h3 className="text-xl md:text-4xl font-bold text-pink-400">Thema Adat</h3>
-      <p className="text-white/60 mt-2">
-        10+ pilihan adat populer yang autentik dan berkesan.
-      </p>
-    </div>
+          {/* Tema di sekitar garis */}
+          <div className="absolute grid grid-cols-2 grid-rows-2 gap-20 text-center text-white font-semibold text-lg">
+            {/* Kiri Atas */}
+            <div className="">
+              <h3 className="text-xl md:text-4xl font-bold text-pink-400">Thema Adat</h3>
+              <p className="text-white/60 mt-2">
+                10+ pilihan adat populer yang autentik dan berkesan.
+              </p>
+            </div>
 
-    {/* Kanan Atas */}
-    <div className="">
-      <h3 className="text-xl md:text-4xl font-bold text-purple-400">Thema Agama</h3>
-      <p className="text-white/60 mt-2">
-        Perpaduan budaya dan agama yang menawan.
-      </p>
-    </div>
+            {/* Kanan Atas */}
+            <div className="">
+              <h3 className="text-xl md:text-4xl font-bold text-purple-400">Thema Agama</h3>
+              <p className="text-white/60 mt-2">
+                Perpaduan budaya dan agama yang menawan.
+              </p>
+            </div>
 
-    {/* Kiri Bawah */}
-    <div className="">
-      <h3 className="text-xl md:text-4xl font-bold text-blue-400">Thema Gen Z</h3>
-      <p className="text-white/60 mt-2">
-        Desain modern yang cocok untuk generasi muda.
-      </p>
-    </div>
+            {/* Kiri Bawah */}
+            <div className="">
+              <h3 className="text-xl md:text-4xl font-bold text-blue-400">Thema Gen Z</h3>
+              <p className="text-white/60 mt-2">
+                Desain modern yang cocok untuk generasi muda.
+              </p>
+            </div>
 
-    {/* Kanan Bawah */}
-    <div className="">
-      <h3 className="text-xl md:text-4xl font-bold text-emerald-400">Thema Luxury</h3>
-      <p className="text-white/60 mt-2">
-        Nuansa mewah dan elegan yang tak terlupakan.
-      </p>
-    </div>
-  </div>
-</div>
+            {/* Kanan Bawah */}
+            <div className="">
+              <h3 className="text-xl md:text-4xl font-bold text-emerald-400">Thema Luxury</h3>
+              <p className="text-white/60 mt-2">
+                Nuansa mewah dan elegan yang tak terlupakan.
+              </p>
+            </div>
+          </div>
+        </div>
 
-        
+
         {/* Background decorative elements for themes section */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute bottom-20 left-20 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
@@ -283,17 +284,17 @@ export default function Product() {
         </div>
         <div className='max-w-4xl mx-auto text-center mt-16 md:mt-20'>
           <div className='bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-8 md:p-12'>
-            
+
             <h3 className='text-2xl md:text-3xl lg:text-4xl font-bold mb-4'>
               <span className='bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent'>
                 Siap untuk memulai?
               </span>
             </h3>
-            
+
             <p className='text-gray-300 text-lg md:text-xl mb-8 leading-relaxed'>
               Bergabunglah dengan ribuan keluarga yang telah merasakan kebahagiaan bersama kami
             </p>
-            
+
             <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
               <button className='group bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-purple-500/25'>
                 <span className='flex items-center gap-2'>
@@ -301,7 +302,7 @@ export default function Product() {
                   <span className='group-hover:translate-x-1 transition-transform duration-300'>→</span>
                 </span>
               </button>
-              
+
               <button className='group text-white border border-white/30 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 hover:border-white/50 transition-all duration-300'>
                 <span className='flex items-center gap-2'>
                   Pelajari Lebih Lanjut
