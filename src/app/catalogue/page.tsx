@@ -2,7 +2,19 @@
 import React, { useState } from 'react';
 import { Heart, Eye, Star, ArrowRight, Search, X } from 'lucide-react';
 
-const catalogues = [
+interface CatalogueItem {
+  id: number;
+  name: string;
+  price: string;
+  originalPrice: string;
+  image: string;
+  category: string;
+  rating: number;
+  features: string[];
+  popular: boolean;
+}
+
+const catalogues: CatalogueItem[] = [
   {
     id: 1,
     name: 'Elegant Rose',
@@ -77,7 +89,7 @@ const catalogues = [
   },
 ];
 
-const categories = [
+const categories: string[] = [
   'All',
   'Classic',
   'Modern',
@@ -88,19 +100,21 @@ const categories = [
 ];
 
 export default function Catalogue() {
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [hoveredCard, setHoveredCard] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const filteredCatalogues = catalogues.filter((item) => {
     const matchesCategory =
       selectedCategory === 'All' || item.category === selectedCategory;
+
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.features.some((feature) =>
         feature.toLowerCase().includes(searchQuery.toLowerCase())
       );
+
     return matchesCategory && matchesSearch;
   });
 
