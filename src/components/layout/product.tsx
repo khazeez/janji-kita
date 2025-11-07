@@ -98,29 +98,6 @@ const ThemeSection = ({
 };
 
 export default function Product() {
-  const themes = [
-    {
-      title: "Thema Adat",
-      description: "Dengan pilihan 10+ adat populer yang bisa anda pilih untuk menciptakan pengalaman yang autentik dan berkesan",
-      accentColor: "pink"
-    },
-    {
-      title: "Thema Agama",
-      description: "Indonesia dengan 6 agama resminya membentuk akulturasi budaya yang menawan dalam setiap perayaan",
-      accentColor: "purple"
-    },
-    {
-      title: "Thema Gen Z",
-      description: "Desain modern dan trendy yang sesuai dengan selera generasi muda dengan sentuhan kontemporer yang menarik",
-      accentColor: "blue"
-    },
-    {
-      title: "Thema Luxury",
-      description: "Kemewahan dan elegansi dalam setiap detail untuk menciptakan moment yang tak terlupakan sepanjang masa",
-      accentColor: "emerald"
-    }
-  ];
-
   return (
     <>
       {/* Hero Title Section */}
@@ -216,23 +193,7 @@ export default function Product() {
 
       {/* Themes Section */}
       <div className="relative px-4 pb-20">
-        {/* Section Header */}
-        {/* <div className="max-w-6xl mx-auto text-center mb-16">
-          <div className="inline-block mb-4">
-            <span className="text-pink-400 text-lg font-medium tracking-wider uppercase">
-              Kategori Tema
-            </span>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent mb-6">
-            Pilih Tema Sesuai Keinginan
-          </h2>
-          <p className="text-white/60 text-xl max-w-2xl mx-auto">
-            Setiap tema dirancang khusus untuk memberikan pengalaman yang tak terlupakan
-          </p>
-        </div> */}
 
-        {/* Themes Grid */}
-        {/* Garis Saling Memotong dengan Teks Tema */}
         <div className="relative w-full h-[500px] flex items-center justify-center my-20">
           {/* Garis Horizontal */}
           <div className="absolute top-1/2 left-0 w-full h-px bg-white/30 -translate-y-1/2" />
@@ -241,7 +202,7 @@ export default function Product() {
           <div className="absolute left-1/2 top-0 h-full w-px bg-white/30 -translate-x-1/2" />
 
           {/* Tema di sekitar garis */}
-          <div className="absolute grid grid-cols-2 grid-rows-2 gap-20 text-center text-white font-semibold text-lg">
+          <div className="absolute grid grid-cols-2 grid-rows-2 gap-20 text-center text-white">
             {/* Kiri Atas */}
             <div className="">
               <h3 className="text-xl md:text-4xl font-bold text-pink-400">Thema Adat</h3>

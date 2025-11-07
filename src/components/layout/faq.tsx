@@ -18,36 +18,45 @@ const FAQ: React.FC = () => {
 
   const faqData: FAQItem[] = [
     {
-      question: "Apa yang membuat platform ini unik?",
-      answer: "Kami memadukan AI canggih dengan desain minimalis untuk pengalaman pengguna yang cepat, mudah, dan efisien.",
+      question: 'Apa yang membuat website undangan digital ini unik?',
+      answer:
+        'Kami menggabungkan desain elegan dengan teknologi modern untuk menciptakan undangan digital yang interaktif, mudah dibagikan, dan berkesan.',
     },
     {
-      question: "Bagaimana proses onboarding-nya?",
-      answer: "Hanya butuh beberapa menit. Kami bantu Anda mengatur semuanya secara otomatis dan intuitif.",
+      question: 'Bagaimana proses pembuatan undangannya?',
+      answer:
+        'Sangat mudah! Anda hanya perlu memilih template, mengisi data acara, dan undangan siap dibagikan dalam hitungan menit.',
     },
     {
-      question: "Apakah investasi ini sepadan?",
-      answer: "Ya. Banyak klien kami mendapatkan ROI signifikan dalam beberapa bulan berkat efisiensi dan otomatisasi yang kami tawarkan.",
+      question: 'Apakah layanan ini sepadan dengan harganya?',
+      answer:
+        'Tentu. Banyak pengguna kami menghemat waktu dan biaya cetak, sekaligus mendapatkan hasil yang lebih modern dan menarik.',
     },
     {
-      question: "Seberapa aman data saya?",
-      answer: "Keamanan adalah prioritas utama. Kami menggunakan enkripsi tingkat tinggi dan sepenuhnya patuh terhadap standar industri.",
+      question: 'Seberapa aman data tamu dan informasi acara saya?',
+      answer:
+        'Keamanan adalah prioritas kami. Semua data terenkripsi dan hanya dapat diakses oleh Anda dan penerima undangan yang dituju.',
     },
     {
-      question: "Bagaimana dengan dukungan teknis?",
-      answer: "Tim support kami siap membantu 24/7 melalui chat, email, atau panggilan langsung.",
+      question: 'Apakah ada dukungan jika saya mengalami kendala?',
+      answer:
+        'Ya! Tim support kami siap membantu Anda 24/7 melalui chat, email, atau WhatsApp.',
     },
     {
-      question: "Bisakah platform ini diintegrasikan dengan tools lain?",
-      answer: "Tentu. Platform kami mendukung integrasi dengan lebih dari 500 aplikasi populer.",
+      question:
+        'Bisakah undangan digital ini diintegrasikan dengan fitur lain?',
+      answer:
+        'Bisa. Undangan kami dapat dilengkapi dengan galeri foto, RSVP online, peta lokasi, hingga playlist musik.',
     },
     {
-      question: "Bagaimana jika ingin berhenti berlangganan?",
-      answer: "Anda bisa membatalkan kapan saja langsung dari dashboard. Tanpa biaya tersembunyi.",
+      question: 'Bagaimana jika saya ingin berhenti atau menghapus undangan?',
+      answer:
+        'Anda dapat menghapus atau menonaktifkan undangan kapan saja langsung dari dashboard pengguna.',
     },
     {
-      question: "Apakah tersedia panduan atau pelatihan?",
-      answer: "Kami menyediakan dokumentasi lengkap, video tutorial, webinar, dan komunitas aktif untuk membantu Anda.",
+      question: 'Apakah ada panduan untuk membuat undangan?',
+      answer:
+        'Kami menyediakan panduan lengkap, video tutorial, dan template yang mudah digunakan untuk membantu Anda membuat undangan sempurna.',
     },
   ];
 
@@ -56,7 +65,7 @@ const FAQ: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <p className="text-sm uppercase text-slate-400 mb-4 tracking-widest">
+          <p className="text-xl uppercase text-slate-400 mb-4 tracking-widest">
             FAQ
           </p>
           <h2 className="text-4xl font-semibold mb-4">Pertanyaan Umum</h2>
@@ -97,22 +106,6 @@ const FAQ: React.FC = () => {
             </div>
           ))}
         </div>
-
-        {/* CTA */}
-        {/* <div className="mt-24 text-center">
-          <h3 className="text-2xl font-medium mb-4">Masih punya pertanyaan?</h3>
-          <p className="text-slate-400 mb-6">
-            Tim kami siap membantu Anda kapan saja.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-6 py-3 rounded-full bg-white text-black hover:opacity-90 transition">
-              Hubungi Kami
-            </button>
-            <button className="px-6 py-3 rounded-full border border-slate-600 hover:border-slate-400 text-white transition">
-              Jadwalkan Demo
-            </button>
-          </div>
-        </div> */}
       </div>
     </section>
   );
