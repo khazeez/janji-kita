@@ -1,6 +1,6 @@
-"use client";
-import React, { useState } from "react";
-import { Plus, Minus } from "lucide-react";
+'use client';
+import React, { useState } from 'react';
+import { Plus, Minus } from 'lucide-react';
 
 interface FAQItem {
   question: string;
@@ -12,7 +12,9 @@ const FAQ: React.FC = () => {
 
   const toggleItem = (index: number) => {
     const newOpenItems = new Set(openItems);
-    newOpenItems.has(index) ? newOpenItems.delete(index) : newOpenItems.add(index);
+    newOpenItems.has(index)
+      ? newOpenItems.delete(index)
+      : newOpenItems.add(index);
     setOpenItems(newOpenItems);
   };
 
@@ -61,44 +63,51 @@ const FAQ: React.FC = () => {
   ];
 
   return (
-    <section className="bg-black min-h-screen py-24 px-6 text-white">
-      <div className="max-w-4xl mx-auto">
+    <section className='bg-black min-h-screen py-24 px-6 text-white'>
+      <div className='max-w-4xl mx-auto'>
         {/* Header */}
-        <div className="text-center mb-16">
-          <p className="text-xl uppercase text-slate-400 mb-4 tracking-widest">
+        <div className='text-center mb-16'>
+          <p className='text-xl uppercase text-slate-400 mb-4 tracking-widest'>
             FAQ
           </p>
-          <h2 className="text-4xl font-semibold mb-4">Pertanyaan Umum</h2>
-          <p className="text-slate-400 max-w-xl mx-auto">
+          <h2
+            className='lg:text-4xl text-2xl font-semibold mb-4 group 
+  bg-gradient-to-r from-pink-700 to-pink-400 
+  text-white px-6 py-3 rounded-xl inline-block'
+          >
+            Pertanyaan Umum
+          </h2>
+
+          <p className='text-slate-400 max-w-xl mx-auto'>
             Jawaban atas pertanyaan yang sering diajukan tentang platform kami.
           </p>
         </div>
 
         {/* FAQ Items */}
-        <div className="space-y-4">
+        <div className='space-y-4'>
           {faqData.map((item, index) => (
             <div
               key={index}
-              className="border border-slate-700 rounded-xl overflow-hidden transition-all"
+              className='border border-slate-700 rounded-xl overflow-hidden transition-all'
             >
               <button
                 onClick={() => toggleItem(index)}
-                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-slate-800 transition-colors"
+                className='w-full px-6 py-5 flex items-center justify-between text-left hover:bg-slate-800 transition-colors'
               >
-                <span className="text-lg font-medium">{item.question}</span>
+                <span className='text-lg font-medium'>{item.question}</span>
                 <span>
                   {openItems.has(index) ? (
-                    <Minus className="w-5 h-5 text-slate-400" />
+                    <Minus className='w-5 h-5 text-pink-400' />
                   ) : (
-                    <Plus className="w-5 h-5 text-slate-400" />
+                    <Plus className='w-5 h-5 text-pink-400' />
                   )}
                 </span>
               </button>
               <div
                 className={`px-6 pb-5 transition-all duration-300 text-slate-400 text-base leading-relaxed ${
                   openItems.has(index)
-                    ? "max-h-40 opacity-100"
-                    : "max-h-0 opacity-0 overflow-hidden"
+                    ? 'max-h-40 opacity-100'
+                    : 'max-h-0 opacity-0 overflow-hidden'
                 }`}
               >
                 {item.answer}

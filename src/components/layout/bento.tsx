@@ -1,6 +1,17 @@
 'use client';
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Music, Video, Clock, Mail, Calendar, MapPin } from 'lucide-react';
+import {
+  Music,
+  Video,
+  Clock,
+  Mail,
+  Calendar,
+  MapPin,
+  Gift,
+  Image,
+  Sparkles,
+  QrCode,
+} from 'lucide-react';
 
 export interface BentoCardProps {
   color?: string;
@@ -9,6 +20,7 @@ export interface BentoCardProps {
   label?: string;
   textAutoHide?: boolean;
   disableAnimations?: boolean;
+  image?: string;
 }
 
 export interface BentoProps {
@@ -35,49 +47,97 @@ const cardData: BentoCardProps[] = [
     color: '#060010',
     title: 'Music',
     description: 'Putar musik untuk acara spesial Anda',
-  },
-  {
-    color: '#060010',
-    title: 'Video',
-    description: 'Tonton video momen berharga',
+    image:
+      'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=300&fit=crop',
   },
   {
     color: '#060010',
     title: 'Countdown',
     description: 'Hitung mundur ke hari istimewa',
+    image:
+      'https://images.unsplash.com/photo-1501139083538-0139583c060f?w=400&h=300&fit=crop',
+  },
+  {
+    color: '#060010',
+    title: 'Gift',
+    description: 'Kiriman hadiah spesial',
+    image:
+      'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=400&h=300&fit=crop',
+  },
+  {
+    color: '#060010',
+    title: 'Animation',
+    description: 'Animasi interaktif yang memukau',
+    image:
+      'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&h=300&fit=crop',
+  },
+  {
+    color: '#060010',
+    title: 'Gallery',
+    description: 'Koleksi foto kenangan indah',
+    image:
+      'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&h=300&fit=crop',
+  },
+  {
+    color: '#060010',
+    title: 'Video',
+    description: 'Video momen berharga',
+    // image:
+    //   'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&h=300&fit=crop',
+  },
+  {
+    color: '#060010',
+    title: 'QR Code',
+    description: 'Scan untuk info lebih lanjut',
+    // image:
+    //   'https://images.unsplash.com/photo-1617039487629-24c5ee56c8f1?w=400&h=300&fit=crop',
   },
   {
     color: '#060010',
     title: 'RSVP',
     description: 'Konfirmasi kehadiran Anda',
+    image:
+      'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=400&h=300&fit=crop',
   },
   {
     color: '#060010',
     title: 'Calendar',
     description: 'Tandai tanggal penting',
+    image:
+      'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=400&h=300&fit=crop',
   },
   {
     color: '#060010',
     title: 'Location',
     description: 'Temukan lokasi acara',
+    // image:
+    //   'https://images.unsplash.com/photo-1569163139394-de4798aa62b6?w=400&h=300&fit=crop',
   },
 ];
 
 const getCardIcon = (title: string) => {
   const iconProps = { size: 120, strokeWidth: 1, className: 'opacity-20' };
   switch (title) {
-    case 'Music':
-      return <Music {...iconProps} />;
+    // case 'Music':
+    //   return <Music {...iconProps} />;
     case 'Video':
       return <Video {...iconProps} />;
-    case 'Countdown':
-      return <Clock {...iconProps} />;
-    case 'RSVP':
-      return <Mail {...iconProps} />;
-    case 'Calendar':
-      return <Calendar {...iconProps} />;
+    // case 'Countdown':
+    //   return <Clock {...iconProps} />;
+    // case 'RSVP':
+    //   return <Mail {...iconProps} />;
+    // case 'Calendar':
+    //   return <Calendar {...iconProps} />;
     case 'Location':
       return <MapPin {...iconProps} />;
+    // case 'Gift':
+    //   return <Gift {...iconProps} />;
+    // case 'Gallery':
+    //   return <Image {...iconProps} />;
+    // case 'Animation':
+    //   return <Sparkles {...iconProps} />;
+    case 'QR Code':
+      return <QrCode {...iconProps} />;
     default:
       return null;
   }
@@ -438,9 +498,9 @@ const MagicBento: React.FC<BentoProps> = ({
             --border-color: #392e4e;
             --background-dark: #060010;
             --white: hsl(0, 0%, 100%);
-            --purple-primary: rgba(132, 0, 255, 1);
-            --purple-glow: rgba(132, 0, 255, 0.2);
-            --purple-border: rgba(132, 0, 255, 0.8);
+            --pink-primary: rgba(132, 0, 255, 1);
+            --pink-glow: rgba(132, 0, 255, 0.2);
+            --pink-border: rgba(132, 0, 255, 0.8);
           }
           
           .card-responsive {
@@ -595,7 +655,18 @@ const MagicBento: React.FC<BentoProps> = ({
                   clickEffect={clickEffect}
                   enableMagnetism={enableMagnetism}
                 >
-                  <div className='card__header flex justify-between items-start gap-3 relative text-white'>
+                  {card.image && (
+                    <div className='absolute inset-0 z-0'>
+                      <img
+                        src={card.image}
+                        alt={card.title}
+                        className='w-full h-full object-cover opacity-30'
+                        loading='lazy'
+                      />
+                      <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent' />
+                    </div>
+                  )}
+                  <div className='card__header flex justify-between items-start gap-3 relative text-white z-10'>
                     <div className='flex items-center gap-2'>
                       {getCardIcon(card.title || '')}
                       <span className='card__label text-base'>
@@ -603,7 +674,7 @@ const MagicBento: React.FC<BentoProps> = ({
                       </span>
                     </div>
                   </div>
-                  <div className='card__content flex flex-col relative text-white'>
+                  <div className='card__content flex flex-col relative text-white z-10'>
                     <h3
                       className={`card__title font-semibold text-xl m-0 mb-2 ${
                         textAutoHide ? 'text-clamp-1' : ''
@@ -625,13 +696,24 @@ const MagicBento: React.FC<BentoProps> = ({
 
             return (
               <div key={index} className={baseClassName} style={cardStyle}>
-                <div className='card__header flex justify-between items-start gap-3 relative text-white'>
+                {card.image && (
+                  <div className='absolute inset-0 z-0'>
+                    <img
+                      src={card.image}
+                      alt={card.title}
+                      className='w-full h-full object-cover opacity-30'
+                      loading='lazy'
+                    />
+                    <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent' />
+                  </div>
+                )}
+                <div className='card__header flex justify-between items-start gap-3 relative text-white z-10'>
                   <div className='flex items-center gap-2'>
                     {getCardIcon(card.title || '')}
                     <span className='card__label text-base'>{card.label}</span>
                   </div>
                 </div>
-                <div className='card__content flex flex-col relative text-white'>
+                <div className='card__content flex flex-col relative text-white z-10'>
                   <h3
                     className={`card__title font-semibold text-xl m-0 mb-2 ${
                       textAutoHide ? 'text-clamp-1' : ''

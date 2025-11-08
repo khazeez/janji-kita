@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { Heart, Eye, Star, ArrowRight, Search, X } from 'lucide-react';
+import Link from 'next/link';
 
 interface CatalogueItem {
   id: number;
@@ -41,7 +42,7 @@ const catalogues: CatalogueItem[] = [
   },
   {
     id: 3,
-    name: 'Classic Gold',
+    name: 'Classic pink',
     price: 'Rp 180.000',
     originalPrice: 'Rp 250.000',
     image:
@@ -134,12 +135,7 @@ export default function Catalogue() {
         ></div>
 
         {/* Modern Gradient Overlay */}
-        <div className='absolute inset-0 bg-gradient-to-br from-pink-500/80 via-rose-600/70 to-purple-700/80'></div>
-        <div className='absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent'></div>
-
-        {/* Floating Elements */}
-        <div className='absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-3xl animate-pulse'></div>
-        <div className='absolute bottom-20 right-20 w-40 h-40 bg-pink-300/20 rounded-full blur-3xl animate-pulse delay-1000'></div>
+        <div className='absolute inset-0 bg-gradient-to-br from-pink-700 to-pink-200/50'></div>
 
         <div className='relative z-10 text-center py-20 px-6 w-full'>
           <div className='max-w-5xl mx-auto'>
@@ -170,18 +166,6 @@ export default function Catalogue() {
                 Personal
               </span>
             </div>
-
-            {/* CTA Buttons */}
-            {/* <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-              <button className='px-8 py-4 bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:via-rose-600 hover:to-pink-700 text-white font-semibold rounded-2xl shadow-2xl shadow-pink-500/25 hover:shadow-pink-500/40 transition-all duration-300 transform hover:scale-105 flex items-center gap-2'>
-                Jelajahi Template
-                <ArrowRight className='w-5 h-5' />
-              </button>
-              <button className='px-8 py-4 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-semibold rounded-2xl border border-white/30 hover:border-white/50 transition-all duration-300 flex items-center gap-2'>
-                <Eye className='w-5 h-5' />
-                Lihat Demo
-              </button>
-            </div> */}
           </div>
         </div>
       </header>
@@ -218,10 +202,10 @@ export default function Catalogue() {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 transform ${
                   selectedCategory === category
-                    ? 'bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white shadow-lg shadow-pink-500/25 border border-pink-400/50'
-                    : 'bg-gray-800/60 backdrop-blur-sm text-gray-300 hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-rose-500/20 hover:text-pink-300 border border-gray-700/50 hover:border-pink-500/30'
+                    ? 'bg-gradient-to-r from-pink-700 to-pink-400 text-white shadow-lg shadow-pink-500/25 border border-pink-400/50'
+                    : 'bg-gray-800/60 backdrop-blur-sm text-gray-300 hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-rose-500/20 hover:text-pink-300 border border-gray-700/50'
                 }`}
               >
                 {category}
@@ -251,7 +235,7 @@ export default function Catalogue() {
               {filteredCatalogues.map((item) => (
                 <div
                   key={item.id}
-                  className='group relative bg-gray-800/50 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-500 overflow-hidden border border-gray-700/50 hover:border-pink-500/30 transform hover:scale-105'
+                  className='group relative bg-gray-800/50 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-500 overflow-hidden border border-gray-700/50 transform'
                   // onMouseEnter={() => setHoveredCard(item.id)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
@@ -329,10 +313,13 @@ export default function Catalogue() {
                     </div>
 
                     {/* CTA Button */}
-                    <button className='w-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:via-rose-600 hover:to-pink-700 text-white py-3 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-pink-500/25 transform hover:scale-105'>
+                    <Link
+                      href=''
+                      className='w-full bg-gradient-to-r from-pink-700 to-pink-400 text-white py-3 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-pink-500/25'
+                    >
                       Pilih Template
                       <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}
@@ -350,10 +337,19 @@ export default function Catalogue() {
           <p className='text-xl text-gray-300 mb-8'>
             Tim designer kami siap membantu mewujudkan undangan impian Anda
           </p>
-          <button className='bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:via-rose-600 hover:to-pink-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 inline-flex items-center gap-2 shadow-lg hover:shadow-pink-500/25 transform hover:scale-105'>
-            Konsultasi Gratis
-            <ArrowRight className='w-5 h-5' />
-          </button>
+          <div className='flex flex-col w-100 rounded-2xl ml-60'>
+            <Link
+              href='/catalogue'
+              className='group px-6 py-4 md:px-8 md:py-5 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-xl font-bold text-lg md:text-xl transition-all duration-300 transform shadow-lg shadow-pink-500/25 w-full sm:w-auto'
+            >
+              <span className='flex items-center justify-center gap-2 text-white'>
+                Konsultasi gratis
+                <span className='group-hover:rotate-45 transition-transform duration-300'>
+                  ↗
+                </span>
+              </span>
+            </Link>
+          </div>
         </div>
       </section>
     </div>

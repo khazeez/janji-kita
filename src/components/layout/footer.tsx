@@ -1,13 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import {
-  
-  Instagram,
-  Twitter,
-  Linkedin,
-  Github,
-  Music
-} from 'lucide-react';
+import { Instagram, Twitter, Linkedin, Github, Youtube, Facebook } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -20,37 +13,36 @@ const Footer = () => {
       color: 'hover:text-pink-400',
     },
     {
-      name: 'Tiktok',
-      icon: Music,
+      name: 'Youtube',
+      icon: Youtube,
       href: '#',
-      color: 'hover:text-sky-400',
+      color: 'hover:text-red-400',
     },
     {
-      name: 'LinkedIn',
-      icon: Linkedin,
+      name: 'Facebook',
+      icon: Facebook,
       href: '#',
-      color: 'hover:text-blue-400',
-    },
-    {
-      name: 'GitHub',
-      icon: Github,
-      href: '#',
-      color: 'hover:text-gray-300',
+      color: 'hover:text-blue-300',
     },
   ];
 
   return (
-    <footer className='relative border-t border-slate-800/50 bg-transparent'>
+    <footer className='relative bg-transparent h-full'>
       {/* Background Effects */}
       <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-        <div className='absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl bg-gradient-to-r from-pink-600/5 to-purple-600/5' />
-        <div className='absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl bg-gradient-to-r from-purple-600/5 to-pink-600/5' />
+        <div className='absolute left-30 top-15 lg:top-20 lg:left-115 lg:w-80 lg:h-80 w-50 h-50 rounded-full blur-3xl bg-gradient-to-r lg:from-pink-600/50 lg:to-pink-300/50 from-pink-600/60 to-pink-300/70' />
+        {/* <div className='absolute bottom-0 right-1/4 w-60 h-60 rounded-full blur-3xl bg-gradient-to-r from-pink-600 to-pink-300' /> */}
       </div>
 
       <div className='relative z-10 flex flex-col items-center text-center px-6 py-16 max-w-3xl mx-auto'>
         {/* Brand Section */}
         <div className='items-center space-y-6'>
-          <h3 className='text-white text-5xl'>JanjiKita</h3>
+          <Image
+            src='/janjiKitaHitam.png'
+            alt=''
+            width={500}
+            height={500}
+          ></Image>
 
           <div className='flex justify-center space-x-4 pt-4'>
             {socialLinks.map((social) => (
