@@ -159,14 +159,13 @@ export default function PaymentStatus() {
     activeTab === 'inprogress' ? inProgressOrders : historyOrders;
 
   return (
-    <div className='min-h-screen bg-gray-900 p-4 md:p-8'>
+    <div className='min-h-screen bg-transparent md:p-8'>
       <div className='max-w-4xl mx-auto'>
-        <h2 className='text-xl md:text-2xl font-bold mb-4 md:mb-6 text-white'>
+        {/* Tabs */}
+        <h2 className='text-xl md:text-2xl font-bold mb-4 -mt-7 md:mb-6 text-white text-center'>
           Status Pembayaran
         </h2>
-
-        {/* Tabs */}
-        <div className='flex gap-2 mb-6 border-b border-gray-700 sticky top-0 bg-gray-900 z-10 -mx-4 px-4 md:-mx-8 md:px-8'>
+        <div className='flex gap-2 mb-6 border-b border-gray-100 top-0 bg-gray-900 z-10'>
           <button
             onClick={() => setActiveTab('inprogress')}
             className={`px-4 py-3 text-sm md:text-base font-medium transition-colors relative ${
@@ -175,7 +174,7 @@ export default function PaymentStatus() {
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            Sedang Berlangsung
+            Transaksi inprogress
             {inProgressOrders.length > 0 && (
               <span className='ml-2 px-2 py-0.5 bg-pink-600 text-white text-xs rounded-full'>
                 {inProgressOrders.length}
@@ -187,7 +186,7 @@ export default function PaymentStatus() {
           </button>
           <button
             onClick={() => setActiveTab('history')}
-            className={`px-4 py-3 text-sm md:text-base font-medium transition-colors relative ${
+            className={`px-10 py-3 text-sm md:text-base font-medium transition-colors relative pl-10 ${
               activeTab === 'history'
                 ? 'text-pink-500'
                 : 'text-gray-400 hover:text-white'

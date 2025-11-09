@@ -14,7 +14,7 @@ export default function Invitation() {
 
   return (
     <div>
-      <h2 className='text-2xl font-bold mb-6 text-white'>Invitation</h2>
+      <h2 className='text-2xl font-bold mb-6 text-white text-center'>Invitation</h2>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-12'>
         <div className='bg-gray-800 border border-gray-700 rounded-lg p-6 hover:border-pink-500 transition-colors cursor-pointer'>

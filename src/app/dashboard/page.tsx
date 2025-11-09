@@ -3,7 +3,6 @@ import { useState } from 'react';
 import {
   User,
   Palette,
-  Clock,
   CreditCard,
   ListChecks,
   Users,
@@ -13,31 +12,39 @@ import {
   Heart,
   Mail,
   Bell,
-  Star
+  Star,
 } from 'lucide-react';
 import Invitation from '@/components/layout/dashboard/invitation';
 import TransactionHistory from '@/components/layout/dashboard/transactionHistory';
 import PaymentStatus from '@/components/layout/dashboard/paymentStatus';
 import InvitationProgress from '@/components/layout/dashboard/progressInvitation';
 import Saved from '@/components/layout/dashboard/favorite';
-
-
+import Catalogue from '@/components/layout/dashboard/theme';
 
 export default function Dashboard() {
-  const [activeMenu, setActiveMenu] = useState('invitation');
+  const [activeMenu, setActiveMenu] = useState<
+    | 'profile'
+    | 'invitation'
+    | 'theme'
+    | 'favorite'
+    | 'payment'
+    | 'progress'
+    | 'attendance'
+  >('invitation');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  // State untuk badge notifikasi
-  const [notifications, setNotifications] = useState({
-    cart: 3, // Jumlah item di keranjang
-    payment: 2, // Jumlah transaksi pending/perlu perhatian
-    progress: 1, // Jumlah undangan yang sedang diproses
-  });
+  // Data notifikasi
+  const notifications = {
+    cart: 3,
+    payment: 2,
+    progress: 1,
+  };
 
+  // Menu Sidebar
   const menuItems = [
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'invitation', label: 'Invitation', icon: Mail },
-    { id: 'theme', label: 'Pilih Tema', icon: Palette },
+    { id: 'theme', label: 'Tema', icon: Palette },
     {
       id: 'favorite',
       label: 'Favorite',
@@ -60,32 +67,25 @@ export default function Dashboard() {
   ];
 
   const handleLogout = () => {
-    console.log('Logout clicked');
-    // Fungsi logout akan ditambahkan di sini
+    alert('Logout clicked');
   };
 
+  // Komponen konten dinamis (SPA)
   const renderContent = () => {
     switch (activeMenu) {
       case 'profile':
         return (
-          <div>
+          <section>
             <h2 className='text-2xl font-bold mb-4 text-white'>Profile</h2>
             <p className='text-gray-400'>
-              Halaman profile akan ditampilkan di sini
+              Halaman profile akan ditampilkan di sini.
             </p>
-          </div>
+          </section>
         );
       case 'invitation':
         return <Invitation />;
       case 'theme':
-        return (
-          <div>
-            <h2 className='text-2xl font-bold mb-4 text-white'>Pilih Tema</h2>
-            <p className='text-gray-400'>
-              Halaman pilih tema/design akan ditampilkan di sini
-            </p>
-          </div>
-        );
+        return <Catalogue />
       case 'favorite':
         return <Saved />;
       case 'payment':
@@ -94,24 +94,23 @@ export default function Dashboard() {
         return <InvitationProgress />;
       case 'attendance':
         return (
-          <div>
+          <section>
             <h2 className='text-2xl font-bold mb-4 text-white'>
               Data Kehadiran
             </h2>
             <p className='text-gray-400'>
-              Data jumlah orang yang hadir akan ditampilkan di sini
+              Data jumlah orang yang hadir akan ditampilkan di sini.
             </p>
-          </div>
+          </section>
         );
       default:
         return null;
     }
   };
 
-  // Component untuk Badge
+  // Komponen Badge
   const Badge = ({ count }: { count?: number }) => {
-    if (!count || count === 0) return null;
-
+    if (!count) return null;
     return (
       <span className='absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1'>
         {count > 99 ? '99+' : count}
@@ -121,7 +120,7 @@ export default function Dashboard() {
 
   return (
     <div className='flex flex-col md:flex-row min-h-screen bg-gray-900'>
-      {/* Mobile Header - Only visible on mobile */}
+      {/* Header Mobile */}
       <div className='md:hidden fixed top-0 left-0 right-0 bg-gray-800 border-b border-gray-700 z-40 px-4 py-3 flex items-center justify-between'>
         <button
           onClick={() => setActiveMenu('profile')}
@@ -136,14 +135,14 @@ export default function Dashboard() {
         <div className='flex items-center gap-3'>
           <button
             onClick={() => setActiveMenu('favorite')}
-            className='text-gray-300 hover:text-white relative'
+            className='relative text-gray-300 hover:text-white'
           >
             <Star size={24} />
             <Badge count={notifications.cart} />
           </button>
           <button
             onClick={() => setActiveMenu('payment')}
-            className='text-gray-300 hover:text-white relative'
+            className='relative text-gray-300 hover:text-white'
           >
             <Bell size={24} />
             <Badge count={notifications.payment} />
@@ -151,13 +150,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Sidebar Desktop - Fixed Left */}
+      {/* Sidebar Desktop */}
       <aside
         className={`hidden md:flex md:flex-col bg-gray-800 border-r border-gray-700 fixed left-0 top-0 h-screen transition-all duration-300 ${
           sidebarCollapsed ? 'w-20' : 'w-64'
         }`}
       >
-        {/* Logo */}
         <div
           className={`p-6 flex items-center border-b border-gray-700 ${
             sidebarCollapsed ? 'justify-center' : 'gap-2'
@@ -169,7 +167,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Toggle Button */}
+        {/* Tombol Collapse */}
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           className='w-full py-3 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-colors border-b border-gray-700'
@@ -181,14 +179,14 @@ export default function Dashboard() {
           )}
         </button>
 
-        {/* Menu Items */}
+        {/* Menu */}
         <nav className='flex-1 p-4 space-y-2 overflow-y-auto'>
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveMenu(item.id)}
+                onClick={() => setActiveMenu(item.id as typeof activeMenu)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors relative ${
                   activeMenu === item.id
                     ? 'bg-pink-600 text-white'
@@ -217,7 +215,7 @@ export default function Dashboard() {
           })}
         </nav>
 
-        {/* Logout Button */}
+        {/* Logout */}
         <div className='p-4 border-t border-gray-700'>
           <button
             onClick={handleLogout}
@@ -232,32 +230,29 @@ export default function Dashboard() {
         </div>
       </aside>
 
-      {/* Main Content */}
+      {/* Konten Utama (SPA Content) */}
       <main
-        className={`flex-1 p-6 pb-24 pt-20 md:pt-6 md:pb-6 transition-all duration-300 ${
+        className={`flex-1 p-2 pb-24 pt-20 md:pt-6 md:pb-6 transition-all duration-300 ${
           sidebarCollapsed ? 'md:ml-20' : 'md:ml-64'
         }`}
       >
         <div className='max-w-4xl mx-auto'>{renderContent()}</div>
       </main>
 
-      {/* Bottom Navigation Mobile - Fixed Bottom */}
+      {/* Bottom Nav Mobile */}
       <nav className='md:hidden fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 z-50'>
         <div className='flex justify-around items-center py-2'>
           {menuItems
             .filter(
               (item) =>
-                item.id !== 'favorite' &&
-                item.id !== 'history' &&
-                item.id !== 'profile' &&
-                item.id !== 'payment'
+                !['favorite', 'history', 'profile', 'payment'].includes(item.id)
             )
             .map((item) => {
               const Icon = item.icon;
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveMenu(item.id)}
+                  onClick={() => setActiveMenu(item.id as typeof activeMenu)}
                   className={`flex flex-col items-center gap-1 px-3 py-2 relative ${
                     activeMenu === item.id ? 'text-pink-500' : 'text-gray-400'
                   }`}

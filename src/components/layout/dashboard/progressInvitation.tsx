@@ -405,9 +405,9 @@ export default function InvitationProgress() {
   return (
     <div className='min-h-screen bg-gray-900 p-4 md:p-8'>
       <div className='max-w-6xl mx-auto'>
-        <div className='flex items-center justify-between mb-6'>
-          <h1 className='text-2xl md:text-3xl font-bold text-white'>
-            Progress Undangan
+        <div className='flex items-center mb-6'>
+          <h1 className='text-2xl font-bold text-white'>
+            Progres Undangan
           </h1>
         </div>
 
@@ -417,7 +417,7 @@ export default function InvitationProgress() {
             <div
               key={invitation.id}
               onClick={() => setSelectedInvitation(invitation)}
-              className='bg-gray-800 border border-gray-700 rounded-lg p-5 hover:border-pink-500 transition-all cursor-pointer group hover:scale-105'
+              className='bg-gray-800 border border-gray-700 rounded-lg p-5 hover:border-pink-500 transition-all cursor-pointer'
             >
               {/* Card Header */}
               <div className='flex items-start justify-between mb-4'>
