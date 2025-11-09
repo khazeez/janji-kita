@@ -1,18 +1,14 @@
 'use client';
-import React, { useState } from 'react';
-import { Heart, Eye, Star, ArrowRight, Search, X } from 'lucide-react';
-import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
+import { Search, X, Heart, Star } from 'lucide-react';
 
 interface CatalogueItem {
   id: number;
   name: string;
   price: string;
-  originalPrice: string;
+  segment: 'Platinum' | 'Gold' | 'Silver' | 'Bronze';
+  theme: string;
   image: string;
-  category: string;
-  rating: number;
-  features: string[];
-  popular: boolean;
 }
 
 const catalogues: CatalogueItem[] = [
@@ -20,112 +16,119 @@ const catalogues: CatalogueItem[] = [
     id: 1,
     name: 'Elegant Rose',
     price: 'Rp 150.000',
-    originalPrice: 'Rp 200.000',
+    segment: 'Gold',
+    theme: 'Adat',
     image:
       'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=300&fit=crop',
-    category: 'Classic',
-    rating: 4.9,
-    features: ['Animasi Halus', 'Musik Latar', 'Galeri Foto'],
-    popular: false,
   },
   {
     id: 2,
     name: 'Minimalist Love',
     price: 'Rp 120.000',
-    originalPrice: 'Rp 160.000',
+    segment: 'Silver',
+    theme: 'Casual',
     image:
       'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=400&h=300&fit=crop',
-    category: 'Modern',
-    rating: 4.8,
-    features: ['Design Clean', 'Fast Loading', 'Mobile Friendly'],
-    popular: true,
   },
   {
     id: 3,
-    name: 'Classic pink',
-    price: 'Rp 180.000',
-    originalPrice: 'Rp 250.000',
+    name: 'Classic Pink',
+    price: 'Rp 250.000',
+    segment: 'Platinum',
+    theme: 'Luxury',
     image:
       'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=300&fit=crop',
-    category: 'Luxury',
-    rating: 5.0,
-    features: ['Premium Design', 'Custom Domain', 'RSVP System'],
-    popular: false,
   },
   {
     id: 4,
     name: 'Garden Dream',
     price: 'Rp 140.000',
-    originalPrice: 'Rp 180.000',
+    segment: 'Gold',
+    theme: 'Agama',
     image:
       'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?w=400&h=300&fit=crop',
-    category: 'Nature',
-    rating: 4.7,
-    features: ['Floral Animation', 'Green Theme', 'Eco Friendly'],
-    popular: false,
   },
   {
     id: 5,
     name: 'Modern Chic',
-    price: 'Rp 165.000',
-    originalPrice: 'Rp 220.000',
+    price: 'Rp 220.000',
+    segment: 'Platinum',
+    theme: 'Luxury',
     image:
       'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=400&h=300&fit=crop',
-    category: 'Contemporary',
-    rating: 4.9,
-    features: ['Bold Typography', 'Interactive Elements', 'Social Share'],
-    popular: true,
   },
   {
     id: 6,
     name: 'Vintage Romance',
-    price: 'Rp 175.000',
-    originalPrice: 'Rp 230.000',
+    price: 'Rp 130.000',
+    segment: 'Silver',
+    theme: 'Casual',
     image:
       'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=300&fit=crop',
-    category: 'Vintage',
-    rating: 4.8,
-    features: ['Retro Style', 'Warm Colors', 'Classic Fonts'],
-    popular: false,
+  },
+  {
+    id: 7,
+    name: 'Royal Wedding',
+    price: 'Rp 180.000',
+    segment: 'Gold',
+    theme: 'Adat',
+    image:
+      'https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=400&h=300&fit=crop',
+  },
+  {
+    id: 8,
+    name: 'Simple Elegance',
+    price: 'Rp 90.000',
+    segment: 'Bronze',
+    theme: 'Agama',
+    image:
+      'https://images.unsplash.com/photo-1522673607212-f2f8ca47c9d4?w=400&h=300&fit=crop',
   },
 ];
 
-const categories: string[] = [
-  'All',
-  'Classic',
-  'Modern',
-  'Luxury',
-  'Nature',
-  'Contemporary',
-  'Vintage',
-];
+const segments: string[] = ['All', 'Platinum', 'Gold', 'Silver', 'Bronze'];
 
 export default function Catalogue() {
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [selectedSegment, setSelectedSegment] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isHeaderFixed, setIsHeaderFixed] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsHeaderFixed(window.scrollY > 300);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const filteredCatalogues = catalogues.filter((item) => {
-    const matchesCategory =
-      selectedCategory === 'All' || item.category === selectedCategory;
-
+    const matchesSegment =
+      selectedSegment === 'All' || item.segment === selectedSegment;
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.features.some((feature) =>
-        feature.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-
-    return matchesCategory && matchesSearch;
+      item.theme.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSegment && matchesSearch;
   });
 
   const clearSearch = () => setSearchQuery('');
 
+  const getSegmentColor = (segment: string) => {
+    switch (segment) {
+      case 'Platinum':
+        return 'bg-gradient-to-r from-slate-300 to-slate-500 text-white';
+      case 'Gold':
+        return 'bg-gradient-to-r from-amber-400 to-yellow-600 text-white';
+      case 'Silver':
+        return 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-900';
+      case 'Bronze':
+        return 'bg-gradient-to-r from-orange-400 to-amber-600 text-white';
+      default:
+        return 'bg-gray-500 text-white';
+    }
+  };
+
   return (
     <div className='min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800'>
-      {/* Header */}
-      <header className='relative overflow-hidden text-white min-h-[60vh] flex items-center'>
-        {/* Background Image */}
+      {/* Hero Header */}
+      <section className='relative overflow-hidden text-white min-h-[50vh] sm:min-h-[60vh] flex items-center'>
         <div
           className='absolute inset-0 bg-cover bg-center bg-no-repeat'
           style={{
@@ -133,223 +136,143 @@ export default function Catalogue() {
               'url(https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&h=1080&fit=crop&crop=center)',
           }}
         ></div>
+        <div className='absolute inset-0 bg-gradient-to-br from-pink-700/80 to-pink-200/40'></div>
 
-        {/* Modern Gradient Overlay */}
-        <div className='absolute inset-0 bg-gradient-to-br from-pink-700 to-pink-200/50'></div>
-
-        <div className='relative z-10 text-center py-20 px-6 w-full'>
+        <div className='relative z-10 text-center py-16 sm:py-20 px-4 sm:px-6 w-full'>
           <div className='max-w-5xl mx-auto'>
-            <div className='mb-6'>
-              <span className='inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium border border-white/30'>
+            {/* SPAN TIDAK DIHILANGKAN */}
+            <div className='mb-4 sm:mb-6'>
+              <span className='inline-block px-3 py-1.5 sm:px-4 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium border border-white/30'>
                 ✨ Premium Wedding Invitations
               </span>
             </div>
-            <h1 className='text-6xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-white via-pink-100 to-white bg-clip-text text-transparent leading-tight'>
+            <h1 className='text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight mb-4 sm:mb-6 bg-gradient-to-r from-white via-pink-100 to-white bg-clip-text text-transparent leading-tight'>
               Undangan Digital
             </h1>
-            <p className='text-xl md:text-2xl font-light mb-8 text-white/95 max-w-3xl mx-auto leading-relaxed'>
+            <p className='text-base sm:text-xl md:text-2xl font-light mb-6 sm:mb-8 text-white/95 max-w-3xl mx-auto leading-relaxed'>
               Ciptakan momen istimewa dengan desain yang tak terlupakan.
               Sentuhan modern untuk hari bahagia Anda.
             </p>
 
-            {/* Feature Pills */}
-            <div className='flex flex-wrap items-center justify-center gap-4 mb-8'>
-              <span className='flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30'>
-                <Heart className='w-4 h-4 fill-current text-pink-300' />
+            <div className='flex flex-wrap items-center justify-center gap-3 sm:gap-4'>
+              <span className='flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 text-xs sm:text-sm'>
+                <Heart className='w-3 h-3 sm:w-4 sm:h-4 fill-current text-pink-300' />
                 <span className='text-white/90'>Elegan</span>
               </span>
-              <span className='flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30'>
-                <Star className='w-4 h-4 fill-current text-yellow-300' />
+              <span className='flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 text-xs sm:text-sm'>
+                <Star className='w-3 h-3 sm:w-4 sm:h-4 fill-current text-yellow-300' />
                 <span className='text-white/90'>Modern</span>
               </span>
-              <span className='px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 text-white/90'>
+              <span className='px-3 py-1.5 sm:px-4 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 text-white/90 text-xs sm:text-sm'>
                 Personal
               </span>
             </div>
           </div>
         </div>
-      </header>
+      </section>
 
-      {/* Search Bar */}
-      <section className='py-8 px-6 bg-gray-800/50 backdrop-blur-sm'>
-        <div className='max-w-2xl mx-auto'>
-          <div className='relative'>
-            <Search className='absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
+      {/* Sticky Header with smooth animation */}
+      <header
+        className={`z-50 sticky top-0 backdrop-blur-xl border-b border-gray-700/40 transition-all duration-500 ${
+          isHeaderFixed
+            ? 'bg-gray-900/95 shadow-lg shadow-pink-500/10 scale-[1.01] opacity-100'
+            : 'bg-gray-900/60 opacity-90'
+        }`}
+      >
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 transition-all duration-500'>
+          {/* Search Bar */}
+          <div className='relative max-w-2xl mx-auto mb-4 sm:mb-6'>
+            <Search className='absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5' />
             <input
               type='text'
-              placeholder='Cari template, kategori, atau fitur...'
+              placeholder='Cari nama atau tema undangan...'
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className='w-full pl-12 pr-12 py-4 bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500/50 transition-all duration-300'
+              className='w-full pl-10 pr-10 py-2.5 sm:pl-12 sm:pr-12 sm:py-3 text-sm sm:text-base bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300'
             />
             {searchQuery && (
               <button
                 onClick={clearSearch}
-                className='absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-400 transition-colors'
+                className='absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-400 transition-colors'
               >
-                <X className='w-5 h-5' />
+                <X className='w-4 h-4 sm:w-5 sm:h-5' />
               </button>
             )}
           </div>
-        </div>
-      </section>
 
-      {/* Category Filter */}
-      <section className='py-12 px-6'>
-        <div className='max-w-6xl mx-auto'>
-          <div className='flex flex-wrap justify-center gap-3 mb-12'>
-            {categories.map((category) => (
+          {/* Segment Filter */}
+          <div className='flex flex-wrap justify-center gap-2 sm:gap-3'>
+            {segments.map((segment) => (
               <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 transform ${
-                  selectedCategory === category
-                    ? 'bg-gradient-to-r from-pink-700 to-pink-400 text-white shadow-lg shadow-pink-500/25 border border-pink-400/50'
-                    : 'bg-gray-800/60 backdrop-blur-sm text-gray-300 hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-rose-500/20 hover:text-pink-300 border border-gray-700/50'
+                key={segment}
+                onClick={() => setSelectedSegment(segment)}
+                className={`px-4 py-2 sm:px-6 sm:py-2.5 rounded-full font-medium text-xs sm:text-sm transition-all duration-300 ${
+                  selectedSegment === segment
+                    ? 'bg-gradient-to-r from-pink-600 to-pink-500 text-white shadow-lg shadow-pink-500/30'
+                    : 'bg-gray-800/60 text-gray-300 hover:bg-gray-700/80 border border-gray-700/50'
                 }`}
               >
-                {category}
+                {segment}
               </button>
             ))}
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* Catalogue Grid */}
-      <section className='pb-20 px-6'>
+      {/* Catalogue */}
+      <section className='py-8 px-4 sm:px-6'>
         <div className='max-w-7xl mx-auto'>
           {filteredCatalogues.length === 0 ? (
             <div className='text-center py-16'>
-              <div className='text-gray-400 mb-4'>
-                <Search className='w-16 h-16 mx-auto mb-4 opacity-50' />
-              </div>
-              <h3 className='text-xl font-semibold text-gray-300 mb-2'>
+              <Search className='w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 text-gray-500 opacity-50' />
+              <h3 className='text-lg sm:text-xl font-semibold text-gray-300 mb-2'>
                 Tidak ada template ditemukan
               </h3>
-              <p className='text-gray-500'>
-                Coba ubah kata kunci pencarian atau kategori
-              </p>
             </div>
           ) : (
-            <div className='grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8'>
+            <div className='grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
               {filteredCatalogues.map((item) => (
                 <div
                   key={item.id}
-                  className='group relative bg-gray-800/50 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-500 overflow-hidden border border-gray-700/50 transform'
-                  // onMouseEnter={() => setHoveredCard(item.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
+                  className='group bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 overflow-hidden border border-gray-700/50 hover:-translate-y-1 cursor-pointer'
                 >
-                  {/* Popular Badge */}
-                  {item.popular && (
-                    <div className='absolute top-4 left-4 z-20 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full'>
-                      POPULER
-                    </div>
-                  )}
-
-                  {/* Image Container */}
-                  <div className='relative h-64 overflow-hidden'>
+                  <div className='relative h-48 sm:h-56 overflow-hidden'>
                     <img
                       src={item.image}
                       alt={item.name}
-                      className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-700'
+                      className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
                     />
-                    <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300'></div>
+                    <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20'></div>
 
-                    {/* Hover Overlay */}
-                    <div
-                      className={`absolute inset-0 bg-black/60 flex items-center justify-center transition-all duration-300 ${
-                        hoveredCard === item.id ? 'opacity-100' : 'opacity-0'
-                      }`}
-                    >
-                      <button className='bg-white text-gray-900 px-6 py-3 rounded-full font-semibold flex items-center gap-2 hover:bg-gray-100 transition-colors'>
-                        <Eye className='w-4 h-4' />
-                        Preview
-                      </button>
+                    <div className='absolute top-2 left-2 sm:top-3 sm:left-3'>
+                      <span
+                        className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-full shadow-lg ${getSegmentColor(
+                          item.segment
+                        )}`}
+                      >
+                        {item.segment}
+                      </span>
+                    </div>
+
+                    <div className='absolute bottom-2 left-2 sm:bottom-3 sm:left-3'>
+                      <span className='text-[10px] sm:text-xs font-medium text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-white/20'>
+                        {item.theme}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Content */}
-                  <div className='p-6'>
-                    {/* Category & Rating */}
-                    <div className='flex items-center justify-between mb-3'>
-                      <span className='text-xs font-medium text-pink-300 bg-gradient-to-r from-pink-500/20 to-rose-500/20 px-3 py-1 rounded-full border border-pink-500/30 backdrop-blur-sm'>
-                        {item.category}
-                      </span>
-                      <div className='flex items-center gap-1'>
-                        <Star className='w-4 h-4 fill-amber-400 text-amber-400' />
-                        <span className='text-sm font-medium text-gray-300'>
-                          {item.rating}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className='text-xl font-semibold text-white mb-3 group-hover:bg-gradient-to-r group-hover:from-pink-400 group-hover:to-rose-400 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300'>
+                  <div className='p-3 sm:p-4 flex items-center justify-between gap-2'>
+                    <h3 className='text-xs sm:text-base font-semibold text-white group-hover:text-pink-400 transition-colors line-clamp-1'>
                       {item.name}
                     </h3>
-
-                    {/* Features */}
-                    <div className='flex flex-wrap gap-1 mb-4'>
-                      {item.features.map((feature, index) => (
-                        <span
-                          key={index}
-                          className='text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded border border-gray-600/50'
-                        >
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Pricing */}
-                    <div className='flex items-center justify-between mb-4'>
-                      <div>
-                        <span className='text-2xl font-bold text-white'>
-                          {item.price}
-                        </span>
-                        <span className='text-sm text-gray-500 line-through ml-2'>
-                          {item.originalPrice}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* CTA Button */}
-                    <Link
-                      href=''
-                      className='w-full bg-gradient-to-r from-pink-700 to-pink-400 text-white py-3 px-6 rounded-xl font-medium flex items-center justify-center gap-2 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-pink-500/25'
-                    >
-                      Pilih Template
-                      <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform' />
-                    </Link>
+                    <span className='text-xs sm:text-base font-bold text-pink-400 whitespace-nowrap'>
+                      {item.price}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Bottom CTA */}
-      <section className='py-16 px-6 bg-gradient-to-r from-gray-800 to-gray-700 border-t border-gray-700/50'>
-        <div className='max-w-4xl mx-auto text-center'>
-          <h2 className='text-3xl md:text-4xl font-light mb-4 text-white'>
-            Butuh Desain Custom?
-          </h2>
-          <p className='text-xl text-gray-300 mb-8'>
-            Tim designer kami siap membantu mewujudkan undangan impian Anda
-          </p>
-          <div className='flex flex-col w-100 rounded-2xl ml-60'>
-            <Link
-              href='/catalogue'
-              className='group px-6 py-4 md:px-8 md:py-5 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-xl font-bold text-lg md:text-xl transition-all duration-300 transform shadow-lg shadow-pink-500/25 w-full sm:w-auto'
-            >
-              <span className='flex items-center justify-center gap-2 text-white'>
-                Konsultasi gratis
-                <span className='group-hover:rotate-45 transition-transform duration-300'>
-                  ↗
-                </span>
-              </span>
-            </Link>
-          </div>
         </div>
       </section>
     </div>

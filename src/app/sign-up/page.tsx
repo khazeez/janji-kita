@@ -165,19 +165,21 @@ export default function SignUp() {
           </div>
 
           {/* Right Side - Form */}
-          <div className='p-8 md:p-12 flex flex-col justify-center'>
-            <div className='mb-8'>
-              <h1 className='text-3xl md:text-4xl font-bold bg-gradient-to-r from-pink-400 via-pink-500 to-pink-700 bg-clip-text text-transparent mb-2'>
+          <div className='p-6 md:p-12 flex flex-col justify-center'>
+            <div className='mb-6 md:mb-8'>
+              <h1 className='text-2xl md:text-4xl font-bold bg-gradient-to-r from-pink-400 via-pink-500 to-pink-700 bg-clip-text text-transparent mb-2'>
                 Yuk! bikin akun dulu
               </h1>
-              <p className='text-gray-400'>Daftar untuk memulai perjalananmu</p>
+              <p className='text-sm md:text-base text-gray-400'>
+                Daftar untuk memulai perjalananmu
+              </p>
             </div>
 
             {/* Google Sign Up Button */}
             <button
               onClick={handleGoogleSignUp}
               disabled={isLoading}
-              className='w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-900 font-medium py-3.5 px-4 rounded-xl transition-all duration-200 mb-6 border border-gray-200 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed'
+              className='w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-900 font-medium py-3 md:py-3.5 px-4 rounded-xl transition-all duration-200 mb-6 border border-gray-200 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base'
             >
               <svg className='w-5 h-5' viewBox='0 0 24 24'>
                 <path
@@ -203,7 +205,7 @@ export default function SignUp() {
             {/* Divider */}
             <div className='flex items-center mb-6'>
               <div className='flex-1 border-t border-gray-800'></div>
-              <span className='px-4 text-gray-500 text-sm font-medium'>
+              <span className='px-4 text-gray-500 text-xs md:text-sm font-medium'>
                 ATAU
               </span>
               <div className='flex-1 border-t border-gray-800'></div>
@@ -222,7 +224,7 @@ export default function SignUp() {
                     onFocus={() => setFocusedField('name')}
                     onBlur={() => setFocusedField(null)}
                     placeholder='Nama Lengkap'
-                    className={`w-full px-4 py-3.5 bg-gray-800/50 border ${
+                    className={`w-full px-4 py-3 md:py-3.5 bg-gray-800/50 border text-sm md:text-base ${
                       errors.name
                         ? 'border-red-500 focus:ring-red-500'
                         : 'border-gray-700 focus:ring-pink-500'
@@ -287,7 +289,7 @@ export default function SignUp() {
                     onFocus={() => setFocusedField('email')}
                     onBlur={() => setFocusedField(null)}
                     placeholder='Alamat Email'
-                    className={`w-full px-4 py-3.5 bg-gray-800/50 border ${
+                    className={`w-full px-4 py-3 md:py-3.5 bg-gray-800/50 border text-sm md:text-base ${
                       errors.email
                         ? 'border-red-500 focus:ring-red-500'
                         : 'border-gray-700 focus:ring-pink-500'
@@ -354,7 +356,7 @@ export default function SignUp() {
                     onFocus={() => setFocusedField('password')}
                     onBlur={() => setFocusedField(null)}
                     placeholder='Password'
-                    className={`w-full px-4 py-3.5 pr-12 bg-gray-800/50 border ${
+                    className={`w-full px-4 py-3 md:py-3.5 pr-12 bg-gray-800/50 border text-sm md:text-base ${
                       errors.password
                         ? 'border-red-500 focus:ring-red-500'
                         : 'border-gray-700 focus:ring-pink-500'
@@ -470,7 +472,7 @@ export default function SignUp() {
                     onFocus={() => setFocusedField('confirmPassword')}
                     onBlur={() => setFocusedField(null)}
                     placeholder='Konfirmasi Password'
-                    className={`w-full px-4 py-3.5 pr-12 bg-gray-800/50 border ${
+                    className={`w-full px-4 py-3 md:py-3.5 pr-12 bg-gray-800/50 border text-sm md:text-base ${
                       errors.confirmPassword
                         ? 'border-red-500 focus:ring-red-500'
                         : 'border-gray-700 focus:ring-pink-500'
@@ -572,7 +574,7 @@ export default function SignUp() {
               <button
                 onClick={handleSubmit}
                 disabled={isLoading}
-                className='w-full bg-gradient-to-r from-pink-600 via-pink-500 to-pink-400 hover:from-pink-700 hover:via-pink-600 hover:to-pink-500 text-white font-bold py-3.5 rounded-xl mt-2 transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2'
+                className='w-full bg-gradient-to-r from-pink-600 via-pink-500 to-pink-400 hover:from-pink-700 hover:via-pink-600 hover:to-pink-500 text-white font-bold py-3 md:py-3.5 rounded-xl mt-2 transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm md:text-base'
               >
                 {isLoading ? (
                   <>
@@ -605,7 +607,7 @@ export default function SignUp() {
             </form>
 
             {/* Footer */}
-            <p className='text-center text-gray-400 text-sm mt-8'>
+            <p className='text-center text-gray-400 text-xs md:text-sm mt-6 md:mt-8'>
               Sudah punya akun?{' '}
               <button
                 onClick={openLoginPopup}
@@ -616,7 +618,7 @@ export default function SignUp() {
             </p>
 
             {/* Terms */}
-            <p className='text-center text-gray-500 text-xs mt-4'>
+            <p className='text-center text-gray-500 text-xs mt-3 md:mt-4'>
               Dengan mendaftar, Anda menyetujui{' '}
               <a href='#' className='text-pink-500 hover:underline'>
                 Syarat & Ketentuan
