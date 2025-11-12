@@ -38,7 +38,7 @@ const Footer = () => {
         {/* Brand Section */}
         <div className='items-center space-y-6'>
           <Image
-            src='/janjiKitaHitam.png'
+            src='/logo.png'
             alt=''
             width={500}
             height={500}

@@ -9,15 +9,30 @@ interface InvitationType {
   type: 'web' | 'video' | 'filter';
 }
 
-export default function Invitation() {
+interface InvitationProps {
+  onNavigateToTheme?: () => void;
+}
+
+export default function Invitation({ onNavigateToTheme }: InvitationProps) {
   const [invitations] = useState<InvitationType[]>([]);
 
+  const handleCreateWeb = () => {
+    if (onNavigateToTheme) {
+      onNavigateToTheme();
+    }
+  };
+
   return (
-    <div>
-      <h2 className='text-2xl font-bold mb-6 text-white text-center'>Invitation</h2>
+    <div className='px-4'>
+      <h2 className='text-2xl font-bold mb-6 text-white'>
+        Invitation
+      </h2>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-12'>
-        <div className='bg-gray-800 border border-gray-700 rounded-lg p-6 hover:border-pink-500 transition-colors cursor-pointer'>
+        <div
+          onClick={handleCreateWeb}
+          className='bg-gray-800 border border-gray-700 rounded-lg p-6 hover:border-pink-500 transition-colors cursor-pointer'
+        >
           <div className='flex flex-col items-center text-center'>
             <div className='bg-pink-600 p-4 rounded-full mb-4'>
               <Globe size={32} className='text-white' />

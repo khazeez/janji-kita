@@ -162,19 +162,19 @@ export default function PaymentStatus() {
     <div className='min-h-screen bg-transparent md:p-8'>
       <div className='max-w-4xl mx-auto'>
         {/* Tabs */}
-        <h2 className='text-xl md:text-2xl font-bold mb-4 -mt-7 md:mb-6 text-white text-center'>
+        <h2 className='text-xl md:text-2xl font-bold  mt-2 mb-3 md:mb-6 text-white'>
           Status Pembayaran
         </h2>
-        <div className='flex gap-2 mb-6 border-b border-gray-100 top-0 bg-gray-900 z-10'>
+        <div className='flex gap-2 mb-6 border-b border-gray-100 top-0 bg-gray-900 z-10 justify-between'>
           <button
             onClick={() => setActiveTab('inprogress')}
-            className={`px-4 py-3 text-sm md:text-base font-medium transition-colors relative ${
+            className={` px-10 py-3 text-sm md:text-base font-medium transition-colors relative ${
               activeTab === 'inprogress'
                 ? 'text-pink-500'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            Transaksi inprogress
+            Transaksi Inprogress
             {inProgressOrders.length > 0 && (
               <span className='ml-2 px-2 py-0.5 bg-pink-600 text-white text-xs rounded-full'>
                 {inProgressOrders.length}

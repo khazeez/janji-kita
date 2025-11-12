@@ -14,12 +14,12 @@ import {
   Bell,
   Star,
 } from 'lucide-react';
-import Invitation from '@/components/layout/dashboard/invitation';
-import TransactionHistory from '@/components/layout/dashboard/transactionHistory';
-import PaymentStatus from '@/components/layout/dashboard/paymentStatus';
-import InvitationProgress from '@/components/layout/dashboard/progressInvitation';
-import Saved from '@/components/layout/dashboard/favorite';
-import Catalogue from '@/components/layout/dashboard/theme';
+import Invitation from '@/components/layout/dashboard-layout/invitation';
+import TransactionHistory from '@/components/layout/dashboard-layout/transactionHistory';
+import PaymentStatus from '@/components/layout/dashboard-layout/paymentStatus';
+import InvitationProgress from '@/components/layout/dashboard-layout/progressInvitation';
+import Saved from '@/components/layout/dashboard-layout/favorite';
+import Catalogue from '@/components/layout/dashboard-layout/theme';
 
 export default function Dashboard() {
   const [activeMenu, setActiveMenu] = useState<
@@ -82,10 +82,11 @@ export default function Dashboard() {
             </p>
           </section>
         );
+      // Di bagian renderContent, ubah case 'invitation':
       case 'invitation':
-        return <Invitation />;
+        return <Invitation onNavigateToTheme={() => setActiveMenu('theme')} />;
       case 'theme':
-        return <Catalogue />
+        return <Catalogue />;
       case 'favorite':
         return <Saved />;
       case 'payment':
