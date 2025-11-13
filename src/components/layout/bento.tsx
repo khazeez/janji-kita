@@ -504,13 +504,13 @@ const MagicBento: React.FC<BentoProps> = ({
           }
           
           .card-responsive {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             width: 100%;
             margin: 0 auto;
             padding: 0.5rem;
           }
           
-          @media (min-width: 600px) {
+          @media (min-width: 700px) {
             .card-responsive {
               grid-template-columns: repeat(2, 1fr);
             }
@@ -542,7 +542,7 @@ const MagicBento: React.FC<BentoProps> = ({
             content: '';
             position: absolute;
             inset: 0;
-            padding: 6px;
+            padding: 7px;
             background: radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y),
                 rgba(${glowColor}, calc(var(--glow-intensity) * 0.8)) 0%,
                 rgba(${glowColor}, calc(var(--glow-intensity) * 0.4)) 30%,
@@ -599,10 +599,10 @@ const MagicBento: React.FC<BentoProps> = ({
             text-overflow: ellipsis;
           }
           
-          @media (max-width: 599px) {
+          @media (max-width: 699px) {
             .card-responsive {
-              grid-template-columns: 1fr;
-              width: 90%;
+              grid-template-columns: 2fr;
+              width: 100%;
               margin: 0 auto;
               padding: 0.5rem;
             }

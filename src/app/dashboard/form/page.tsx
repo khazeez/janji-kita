@@ -16,8 +16,10 @@ export default function Form() {
 
   const [brideGroomData, setBrideGroomData] = useState({
     brideName: '',
+    brideNickName: '',
     brideParents: '',
     groomName: '',
+    groomNickName: '',
     groomParents: '',
   });
 
@@ -131,7 +133,7 @@ export default function Form() {
     <div className='min-h-screen bg-gray-900 pb-24'>
       {/* Header */}
       <header className='bg-gray-800 border-b border-gray-700 sticky top-0 z-50'>
-        <div className='max-w-4xl mx-auto px-4 py-4'>
+        <div className='max-w-4xl mx-auto px-4 py-2'>
           <div className='flex items-center justify-between mb-3'>
             <button
               onClick={handleBack}
@@ -212,7 +214,7 @@ export default function Form() {
             <button
               onClick={currentStep === 5 ? handleSubmit : handleNext}
               disabled={!isStepValid}
-              className={`w-full px-6 py-3 font-semibold rounded-lg transition-all duration-200 shadow-lg ${
+              className={`w-full px-6 py-3 font-semibold rounded-3xl transition-all duration-200 shadow-lg ${
                 isStepValid
                   ? 'bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white hover:shadow-xl cursor-pointer'
                   : 'bg-gray-600 text-gray-400 cursor-not-allowed'

@@ -4,7 +4,7 @@ export default function Services() {
   return (
     <>
       {/* Main Content */}
-      <div className='relative min-h-screen pt-24 pb-16 px-4'>
+      <div className='relative min-h-screen pt-5 pb-16 px-10'>
         {/* Header Section */}
         <div className='max-w-7xl mx-auto text-center mb-12 md:mb-16'>
           {/* Subtitle Badge */}
@@ -90,8 +90,6 @@ export default function Services() {
             </div>
           </div>
         </div>
-
-        {/* Bottom CTA Section */}
       </div>
     </>
   );
