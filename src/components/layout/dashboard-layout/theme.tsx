@@ -445,7 +445,7 @@ export default function Catalogue() {
               <button
                 key={segment}
                 onClick={() => setSelectedSegment(segment)}
-                className={`px-4 py-2 sm:px-6 sm:py-2.5 rounded-full font-medium text-xs sm:text-sm transition-all duration-300 ${
+                className={`px-2 py-2 sm:px-6 sm:py-2.5 rounded-full font-medium text-xs sm:text-sm transition-all duration-300 ${
                   selectedSegment === segment
                     ? 'bg-gradient-to-r from-pink-600 to-pink-500 text-white shadow-lg shadow-pink-500/30'
                     : 'bg-gray-800/60 text-gray-300 hover:bg-gray-700/80 border border-gray-700/50'
