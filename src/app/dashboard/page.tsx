@@ -23,13 +23,13 @@ import Catalogue from '@/components/layout/dashboard-layout/theme';
 
 export default function Dashboard() {
   const [activeMenu, setActiveMenu] = useState<
-    | 'profile'
     | 'invitation'
     | 'theme'
     | 'favorite'
     | 'payment'
     | 'progress'
     | 'attendance'
+    | 'profile'
   >('invitation');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -42,7 +42,6 @@ export default function Dashboard() {
 
   // Menu Sidebar
   const menuItems = [
-    { id: 'profile', label: 'Profile', icon: User },
     { id: 'invitation', label: 'Invitation', icon: Mail },
     { id: 'theme', label: 'Tema', icon: Palette },
     {
@@ -64,6 +63,7 @@ export default function Dashboard() {
       badge: notifications.progress,
     },
     { id: 'attendance', label: 'Data Kehadiran', icon: Users },
+    { id: 'profile', label: 'Profile', icon: User }
   ];
 
   const handleLogout = () => {
@@ -123,16 +123,12 @@ export default function Dashboard() {
     <div className='flex flex-col md:flex-row min-h-screen bg-gray-900'>
       {/* Header Mobile */}
       <div className='md:hidden fixed top-0 left-0 right-0 bg-gray-800 border-b border-gray-700 z-40 px-4 py-3 flex items-center justify-between'>
-        <button
-          onClick={() => setActiveMenu('profile')}
-          className='text-gray-300 hover:text-white'
-        >
-          <User size={24} />
-        </button>
         <div className='flex items-center gap-2'>
           <Heart className='text-pink-500' size={20} />
           <h1 className='text-sm font-bold text-white'>JanjiKita</h1>
         </div>
+        
+        
         <div className='flex items-center gap-3'>
           <button
             onClick={() => setActiveMenu('favorite')}
@@ -246,7 +242,7 @@ export default function Dashboard() {
           {menuItems
             .filter(
               (item) =>
-                !['favorite', 'history', 'profile', 'payment'].includes(item.id)
+                !['favorite', 'history', 'payment'].includes(item.id)
             )
             .map((item) => {
               const Icon = item.icon;

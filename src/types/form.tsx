@@ -1,7 +1,9 @@
 export interface BrideGroomData {
   brideName: string;
+  brideNickName: string
   brideParents: string;
   groomName: string;
+  groomNickName: string
   groomParents: string;
 }
 

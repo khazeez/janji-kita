@@ -11,7 +11,7 @@ export default function Introduction() {
 
       {/* Konten di tengah, di atas device */}
       <div className='absolute inset-0 z-10 flex items-center justify-center text-white'>
-        <div className='text-center px-4 pt-60'>
+        <div className='text-center px-10 pt-60'>
           <h1 className='md:text-5xl text-3xl font-bold'>
             Mulailah perjalanananmu di sini
           </h1>
@@ -19,7 +19,7 @@ export default function Introduction() {
             Berbagi moment kebahagiaan dengan keluarga, sanak saudara dan
             sahabat
           </p>
-          <div className='flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 mt-10'>
+          <div className='flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mt-10'>
             {/* Primary Button */}
 
             <Link

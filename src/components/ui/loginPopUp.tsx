@@ -124,7 +124,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       } else {
         setErrors({
           email:
-            'Email atau password salah. Coba: admin@example.com / admin123',
+            'Email atau password salah!',
         });
       }
     } catch (error) {
