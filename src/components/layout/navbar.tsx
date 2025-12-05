@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import clsx from 'clsx';
-import LoginPopup from '../ui/loginPopUp'; // pastikan path sesuai
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,13 +63,13 @@ export default function Navbar() {
 
           {/* Auth Buttons (Desktop) */}
           <div className='hidden md:flex items-center space-x-3'>
-            <button
-              onClick={openLoginPopup}
+            <Link
+              href='/sign-in'
               className='relative group px-4 py-2 font-medium transition-all duration-300 ease-out border border-pink-400/60 rounded-lg hover:border-transparent'
             >
               Sign in
               <span className='absolute bottom-1 left-4 right-4 h-0.5 bg-gradient-to-r from-pink-400 to-pink-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out origin-left'></span>
-            </button>
+            </Link>
             <Link
               href='/sign-up'
               className='px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-lg hover:from-pink-600 hover:to-pink-700 transition-all duration-200 font-medium shadow-lg'
@@ -175,9 +174,6 @@ export default function Navbar() {
           </nav>
         </div>
       </div>
-
-      {/* Login Popup */}
-      <LoginPopup isOpen={showLoginPopup} onClose={closeLoginPopup} />
     </>
   );
 }

@@ -7,6 +7,7 @@ import Product from "@/components/layout/product";
 import FAQ from "@/components/layout/faq";
 import Footer from "@/components/layout/footer";
 
+
 export default function Home() {
   return (
     <>

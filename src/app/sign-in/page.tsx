@@ -5,17 +5,11 @@ import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-export interface LoginPopupProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
 interface FormErrors {
   email?: string;
   password?: string;
 }
 
-// User dummy untuk testing
 const DUMMY_USERS = [
   {
     email: 'admin@example.com',
@@ -34,7 +28,7 @@ const DUMMY_USERS = [
   },
 ];
 
-const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
+export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +46,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
-    // Clear error when user starts typing
+
     if (errors[name as keyof FormErrors]) {
       setErrors({
         ...errors,
@@ -64,7 +58,6 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
       newErrors.email = 'Email wajib diisi';
@@ -72,7 +65,6 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       newErrors.email = 'Format email tidak valid';
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = 'Password wajib diisi';
     } else if (formData.password.length < 8) {
@@ -86,17 +78,13 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsLoading(true);
 
     try {
-      // Simulasi API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // Cek kredensial dengan user dummy
       const validUser = DUMMY_USERS.find(
         (user) =>
           user.email === formData.email && user.password === formData.password
@@ -105,7 +93,6 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       if (validUser) {
         console.log('Login berhasil:', validUser);
 
-        // Simpan data user ke localStorage (optional)
         if (formData.rememberMe) {
           localStorage.setItem(
             'user',
@@ -116,15 +103,10 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
           );
         }
 
-        // Redirect ke dashboard
         router.push('/dashboard');
-
-        // Close popup
-        onClose();
       } else {
         setErrors({
-          email:
-            'Email atau password salah!',
+          email: 'Email atau password salah!',
         });
       }
     } catch (error) {
@@ -137,32 +119,16 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
   const handleGoogleLogin = () => {
     console.log('Google login clicked');
-    // Implement Google OAuth here
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
-      {/* Backdrop */}
-      <div
-        className='absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300'
-        onClick={onClose}
-      />
-
-      {/* Modal Content */}
+    <div className='min-h-screen flex items-center justify-center  p-4'>
       <div className='relative bg-white rounded-2xl md:rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100 max-h-[95vh] overflow-y-auto'>
         {/* Header */}
         <div className='flex items-center justify-between p-4 md:p-6 border-b border-gray-200'>
           <h2 className='text-xl md:text-2xl font-bold text-gray-800'>
             Welcome Back!
           </h2>
-          <button
-            onClick={onClose}
-            className='text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1'
-          >
-            <X className='w-5 h-5 md:w-6 md:h-6' />
-          </button>
         </div>
 
         {/* Body */}
@@ -383,7 +349,6 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               disabled={isLoading}
               className='flex items-center justify-center w-full px-4 py-2.5 md:py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200 space-x-2 md:space-x-3 disabled:opacity-50 disabled:cursor-not-allowed'
             >
-              {/* Google Logo */}
               <svg className='w-4 h-4 md:w-5 md:h-5' viewBox='0 0 533.5 544.3'>
                 <path
                   d='M533.5 278.4c0-17.2-1.5-34.4-4.7-51.1H272v96.7h146.9c-6.4 34.5-25.3 63.7-53.9 83.3v69.1h87.1c51-47 80.4-116.2 80.4-198z'
@@ -403,7 +368,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
                 />
               </svg>
               <span className='text-xs md:text-sm font-medium text-gray-700'>
-                Lanjutkan dengan google
+                Lanjutkan dengan Google
               </span>
             </button>
           </div>
@@ -415,7 +380,6 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
             Tidak punya akun?
             <Link
               href='/sign-up'
-              onClick={onClose}
               className='text-pink-500 hover:text-pink-600 font-medium ml-1 transition-colors duration-200'
             >
               daftar di sini
@@ -425,6 +389,4 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       </div>
     </div>
   );
-};
-
-export default LoginPopup;
+}

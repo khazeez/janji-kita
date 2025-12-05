@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import LoginPopup from '@/components/ui/loginPopUp';
+import LoginPopup from '@/app/sign-in/page';
 import Image from 'next/image';
 
 interface FormErrors {
@@ -132,39 +132,10 @@ export default function SignUp() {
   return (
     <div className='min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center p-4 relative overflow-hidden'>
       <div
-        className='w-full max-w-6xl bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-gray-800/50 relative z-1 md:overflow-hidden
+        className='w-50% max-w-6xl bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-gray-800/50 relative z-1 md:overflow-hidden
 '
       >
-        <div className='grid md:grid-cols-2'>
           {/* Left Side - Image */}
-          <div className='hidden md:flex relative min-h-[700px]'>
-            {/* Opsi 1: Gunakan image dari Unsplash (pastikan sudah config next.config.js) */}
-            <Image
-              src='/IMG_1309.jpg'
-              alt='Wedding Celebration'
-              fill
-              className='object-cover'
-              priority
-            />
-            <div className='absolute inset-0 bg-gradient-to-br from-pink-600/50 to-transparent'></div>
-            <div className='absolute inset-0 flex flex-col justify-end p-12 z-10 text-white'>
-              <div className='space-y-4 mb-8'>
-                <h2 className='text-5xl font-bold leading-tight'>
-                  Mulai Perjalanan
-                  <br />
-                  <span className='text-pink-600'>Pernikahan Anda</span>
-                </h2>
-                <p className='text-lg text-white/90 max-w-md'>
-                  Bergabunglah dengan ribuan pasangan yang telah mempercayai
-                  kami untuk menciptakan undangan digital yang berkesan
-                </p>
-              </div>
-
-              {/* Features */}
-            </div>
-          </div>
-
-          {/* Right Side - Form */}
           <div className='p-6 md:p-12 flex flex-col justify-center'>
             <div className='mb-6 md:mb-8'>
               <h1 className='text-2xl md:text-4xl font-bold bg-gradient-to-r from-pink-400 via-pink-500 to-pink-700 bg-clip-text text-transparent mb-2'>
@@ -631,9 +602,5 @@ export default function SignUp() {
           </div>
         </div>
       </div>
-
-      {/* Login Popup */}
-      <LoginPopup isOpen={showLoginPopup} onClose={closeLoginPopup} />
-    </div>
   );
 }

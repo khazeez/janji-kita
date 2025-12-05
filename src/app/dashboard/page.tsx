@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   User,
   Palette,
@@ -14,6 +14,9 @@ import {
   Bell,
   Star,
 } from 'lucide-react';
+
+import { useRouter } from 'next/navigation';
+import { isLoggedIn } from '@/lib/auth';
 import Invitation from '@/components/layout/dashboard-layout/invitation';
 import TransactionHistory from '@/components/layout/dashboard-layout/transactionHistory';
 import PaymentStatus from '@/components/layout/dashboard-layout/paymentStatus';
@@ -22,6 +25,13 @@ import Saved from '@/components/layout/dashboard-layout/favorite';
 import Catalogue from '@/components/layout/dashboard-layout/theme';
 
 export default function Dashboard() {
+  const router = useRouter();
+
+  // useEffect(() => {
+  //   if (!isLoggedIn()) {
+  //     router.replace('/sign-in'); // redirect ke login
+  //   }
+  // }, []);
   const [activeMenu, setActiveMenu] = useState<
     | 'invitation'
     | 'theme'
@@ -63,7 +73,7 @@ export default function Dashboard() {
       badge: notifications.progress,
     },
     { id: 'attendance', label: 'Data Kehadiran', icon: Users },
-    { id: 'profile', label: 'Profile', icon: User }
+    { id: 'profile', label: 'Profile', icon: User },
   ];
 
   const handleLogout = () => {
@@ -127,8 +137,7 @@ export default function Dashboard() {
           <Heart className='text-pink-500' size={20} />
           <h1 className='text-sm font-bold text-white'>JanjiKita</h1>
         </div>
-        
-        
+
         <div className='flex items-center gap-3'>
           <button
             onClick={() => setActiveMenu('favorite')}
@@ -241,8 +250,7 @@ export default function Dashboard() {
         <div className='flex justify-around items-center py-2'>
           {menuItems
             .filter(
-              (item) =>
-                !['favorite', 'history', 'payment'].includes(item.id)
+              (item) => !['favorite', 'history', 'payment'].includes(item.id)
             )
             .map((item) => {
               const Icon = item.icon;

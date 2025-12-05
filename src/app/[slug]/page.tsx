@@ -32,8 +32,6 @@ export default function Slug() {
           <h1 className='text-white text-2xl mb-4'>
             Wedding Invitation Not Found
           </h1>
-          <p className='text-gray-400'>Current URL slug: {slug}</p>
-          <p className='text-gray-500 mt-2 text-sm'>Expected: {dummySlug}</p>
         </div>
       </div>
     );
