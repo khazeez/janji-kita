@@ -6,6 +6,48 @@
 /* Custom variant untuk dark mode */
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: 'Brown Sugar';
+  src: url('/fonts/Brown-Sugar.otf') format('opentype'),
+       url('/fonts/Brown-Sugar.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'amalfi';
+  src: url('/fonts/Amalfi-Coast.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-brown-sugar {
+   font-family: 'Brown Sugar', cursive;
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-amalfi {
+  font-family: 'amalfi', cursive;
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+
 /* Inline theme variable */
 @theme inline {
   --color-background: var(--background);

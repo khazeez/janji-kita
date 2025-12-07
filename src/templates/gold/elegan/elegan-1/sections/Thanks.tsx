@@ -1,3 +1,9 @@
 export default function Thanks() {
-  return <></>;
+  return (
+    <>
+      <div className=''>
+        <h1>THANKS</h1>
+      </div>
+    </>
+  );
 }

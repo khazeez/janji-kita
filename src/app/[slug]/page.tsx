@@ -2,7 +2,9 @@
 
 import { useParams } from 'next/navigation';
 import dummyWeddingData from '@/data/dummyData';
+import { dummyInvitation } from '@/data/dummy2';
 import NetflixDesign from '@/templates/gold/special';
+import GlassesDesign from '@/templates/gold/elegan/elegan-1/main';
 
 export default function Slug() {
   const params = useParams();
@@ -11,7 +13,7 @@ export default function Slug() {
   const slugParam = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
   const slug = slugParam?.toString().toLowerCase();
 
-  const dummySlug = dummyWeddingData.invitation_link?.toLowerCase();
+  const dummySlug = dummyInvitation.invitationUrl?.toLowerCase();
 
   // Debug
   console.log('Current slug:', slug);
@@ -37,11 +39,12 @@ export default function Slug() {
     );
   }
 
-  switch (dummyWeddingData.invitation_id) {
+  switch (dummyInvitation.productId) {
     case 'Inkjlsd':
       return <NetflixDesign data={dummyWeddingData} />;
       break;
-
+    case 'prod-001':
+      return <GlassesDesign data={dummyInvitation} />;
     default:
       break;
   }

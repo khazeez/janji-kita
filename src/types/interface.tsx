@@ -1,0 +1,227 @@
+export interface Profile {
+  userId: string;
+  email: string;
+  phoneNumber?: string;
+  fullName: string;
+  isActive: boolean;
+  loginMethod: 'email' | 'google';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserCredential {
+  credentialId: string;
+  userId: string;
+  passwordHash?: string;
+  failedLoginAttempts: number;
+  lockedUntil?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CredentialReset {
+  resetId: string;
+  userId: string;
+  token: string;
+  requestedAt: string;
+  usedAt?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  expiresAt: string;
+}
+
+
+export interface Product {
+  productId: string;
+  designId: string;
+  productName: string;
+  coverImage: string;
+  segmentation:
+    | 'adat'
+    | 'modern'
+    | 'klasik'
+    | 'rustic'
+    | 'minimalis'
+    | 'elegant';
+  tier: 'bronze' | 'silver' | 'gold' | 'platinum';
+  basePriceNoPhoto: number;
+  basePriceWithPhoto?: number;
+  promoPriceNoPhoto: number;
+  promoPriceWithPhoto?: number;
+  features: any[]; // bisa kamu buat tipe khusus nanti
+  isPromo: boolean;
+  isNew: boolean;
+  isActive: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+}
+
+export interface Promo {
+  promoId: string;
+  promoCode: string;
+  promoName: string;
+  promoType: 'percentage' | 'fixed_amount' | 'free_shipping';
+  discountValue: number;
+  maxDiscountAmount?: number;
+  minPurchaseAmount?: number;
+  isActive: boolean;
+  usageLimit?: number;
+  usedCount: number;
+  validFrom: string;
+  validUntil: string;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+}
+
+export interface Invitation {
+  invitationId: string;
+  userId: string;
+  productId: string;
+  invitationUrl: string;
+  invitationStatus:
+    | 'DRAFT'
+    | 'IN-PROGRESS'
+    | 'COMPLETED'
+    | 'PUBLISHED'
+    | 'EXPIRED';
+  invitationDataUser: InvitationDataUser;
+  invitationEvent: InvitationEvent[];
+  invitationGift: InvitationGift;
+  publishedAt?: string;
+  expiredAt?: string;
+  viewCount: number;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+}
+
+export interface InvitationDataUser {
+  dataId: string;
+  invitationId: string;
+
+  // Groom
+  groomFullName: string;
+  groomNickName: string;
+  groomParentName?: string;
+  groomInstagram?: string;
+  groomPhotoUrl?: string;
+
+  // Bride
+  brideFullName: string;
+  brideNickName: string;
+  brideParentName?: string;
+  brideInstagram?: string;
+  bridePhotoUrl?: string;
+
+  // Gallery & Story
+  galleryPhotos: any[];
+  loveStory: any[];
+
+  // Meta
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+}
+
+export interface InvitationEvent {
+  eventId: string;
+  invitationId: string;
+  eventType: 'AKAD' | 'RESEPSI' | 'OTHER';
+  location: string;
+  locationDetail: string;
+  mapsUrl: string;
+  startTime: string;
+  endTime: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InvitationGift {
+  giftId: string;
+  invitationId: string;
+  address?: string;
+  giftBank: InvitationGiftBank;
+  giftWallet: InvitationGiftWallet
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InvitationGiftBank {
+  giftBankId: string;
+  giftId: string;
+  account: any[];
+  owner: 'BRIDE' | 'GROOM';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InvitationGiftWallet {
+  giftWalletId: string;
+  giftId: string;
+  address: any[];
+  owner: 'BRIDE' | 'GROOM';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Transaction {
+  transactionId: string;
+  userId: string;
+  invitationId: string;
+  productId: string;
+  promoId?: string;
+
+  // Pricing
+  originalAmount: number;
+  discountAmount: number;
+  finalAmount: number;
+
+  // Payment
+  paymentStatus:
+    | 'PENDING'
+    | 'PROCESSING'
+    | 'PAID'
+    | 'FAILED'
+    | 'CANCELLED'
+    | 'REFUNDED';
+  paymentMethod: 'BANK_TRANSFER' | 'E_WALLET' | 'CREDIT_CARD' | 'QRIS';
+  paymentProofUrl?: string;
+  paymentGatewayRef?: string;
+
+  // Time
+  paidAt?: string;
+  cancelledAt?: string;
+  refundedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GuestBook {
+  guestId: string;
+  invitationId: string;
+  guestName: string;
+  attendanceStatus: 'ATTENDING' | 'NOT_ATTENDING' | 'MAYBE';
+  guestCount: number;
+  message?: string;
+  ipAddress?: string;
+  createdAt: string;
+}
+
+export interface AuditLog {
+  logId: string;
+  userId?: string;
+  tableName: string;
+  recordId: string;
+  action: 'CREATE' | 'UPDATE' | 'DELETE';
+  oldData?: any;
+  newData?: any;
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: string;
+}
