@@ -35,7 +35,7 @@ export default function Cover({
           {/* 🌿 Background */}
           <div className='absolute inset-0'>
             <img
-              src={bridePhoto || '/images/imam73.jpg'}
+              src={bridePhoto || '/images/imam73.webp'}
               alt='Background'
               className='w-full h-full object-cover brightness-75 scale-105 animate-slow-zoom'
             />

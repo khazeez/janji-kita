@@ -10,13 +10,13 @@ export interface Props {
 export default function Couple({ data }: Props) {
   // Array foto untuk marquee (bisa ganti sesuai kebutuhan)
   const photos = [
-    '/images/imam22.jpg',
-    '/images/imam22.jpg',
-    '/images/imam22.jpg',
-    '/images/imam22.jpg',
-    '/images/imam22.jpg',
-    '/images/imam22.jpg',
-    '/images/imam22.jpg',
+    '/images/imam22.webp',
+    '/images/imam22.webp',
+    '/images/imam22.webp',
+    '/images/imam22.webp',
+    '/images/imam22.webp',
+    '/images/imam22.webp',
+    '/images/imam22.webp',
   ];
 
   return (
@@ -57,7 +57,7 @@ export default function Couple({ data }: Props) {
           <div className='groom flex items-start gap-4 justify-start'>
             <div className='flex-shrink-0'>
               <img
-                src={'/images/groom.jpg'}
+                src={'/images/groom.webp'}
                 alt={data.brideNickName}
                 className='w-68 h-88 border-4 border-b-30 border-white object-cover shadow-xl'
               />
@@ -111,7 +111,7 @@ export default function Couple({ data }: Props) {
             </div>
             <div className='flex-shrink-0'>
               <img
-                src={'/images/bride.jpg'}
+                src={'/images/bride.webp'}
                 alt={data.brideNickName}
                 className='w-68 h-88 border-4 border-b-30 border-white object-cover shadow-xl'
               />
