@@ -63,8 +63,8 @@ export default function GlassesDesign({ data }: Props) {
   const [currentImage, setCurrentImage] = useState(0);
 
   const images = [
+    '/images/imam81.webp',
     '/images/imam22.webp',
-    '/images/imam39.webp',
     '/images/imam53.webp',
     '/images/imam73.webp',
   ];

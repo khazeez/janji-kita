@@ -7,12 +7,12 @@ export default function Gallery() {
   // Sample images - ganti dengan foto wedding Anda
   const images = [
     { id: 1, src: '/images/imam22.webp', alt: 'Wedding Photo 1' },
-    { id: 2, src: '/images/imam22.webp', alt: 'Wedding Photo 2' },
-    { id: 3, src: '/images/imam22.webp', alt: 'Wedding Photo 3' },
-    { id: 4, src: '/images/imam22.webp', alt: 'Wedding Photo 4' },
-    { id: 5, src: '/images/imam22.webp', alt: 'Wedding Photo 5' },
-    { id: 6, src: '/images/imam22.webp', alt: 'Wedding Photo 6' },
-    { id: 7, src: '/images/imam22.webp', alt: 'Wedding Photo 7' },
+    { id: 2, src: '/images/imam31.webp', alt: 'Wedding Photo 2' },
+    { id: 3, src: '/images/imam39.webp', alt: 'Wedding Photo 3' },
+    { id: 4, src: '/images/imam53.webp', alt: 'Wedding Photo 4' },
+    { id: 5, src: '/images/imam73.webp', alt: 'Wedding Photo 5' },
+    { id: 6, src: '/images/imam81.webp', alt: 'Wedding Photo 6' },
+    { id: 7, src: '/images/imam110.webp', alt: 'Wedding Photo 7' },
     { id: 8, src: '/images/imam22.webp', alt: 'Wedding Photo 8' },
     { id: 9, src: '/images/imam22.webp', alt: 'Wedding Photo 9' },
     { id: 10, src: '/images/imam22.webp', alt: 'Wedding Photo 10' },

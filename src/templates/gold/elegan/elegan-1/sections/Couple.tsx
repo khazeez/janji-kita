@@ -11,12 +11,12 @@ export default function Couple({ data }: Props) {
   // Array foto untuk marquee (bisa ganti sesuai kebutuhan)
   const photos = [
     '/images/imam22.webp',
-    '/images/imam22.webp',
-    '/images/imam22.webp',
-    '/images/imam22.webp',
-    '/images/imam22.webp',
-    '/images/imam22.webp',
-    '/images/imam22.webp',
+    '/images/imam31.webp',
+    '/images/imam39.webp',
+    '/images/imam53.webp',
+    '/images/imam73.webp',
+    '/images/imam81.webp',
+    '/images/imam110.webp',
   ];
 
   return (
