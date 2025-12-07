@@ -1,66 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { FaMusic, FaVolumeMute, FaEnvelope } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaEnvelopeOpen } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
 
-import {
-  Cover,
-  Couple,
-  Gift,
-  Event,
-  Introduction,
-  Quotes,
-  Thanks,
-  RSVP,
-} from '@/templates/gold/elegan/elegan-1/sections';
-
-import { Invitation } from '@/types/interface';
-
-export interface Props {
-  data: Invitation;
+interface CoverPageProps {
+  guestName?: string;
+  isOpen: boolean;
+  onOpen: () => void;
+  bridePhoto?: string;
+  weddingDate?: string;
 }
 
-export default function GlassesDesign({ data }: Props) {
-  const [isCoverOpen, setIsCoverOpen] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [showRSVP, setShowRSVP] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [guestName, setGuestName] = useState<string>('');
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const name = params.get('to');
-    if (name) setGuestName(decodeURIComponent(name));
-  }, []);
-
-  const requestFullscreen = () => {
-    const elem = document.documentElement;
-    if (elem.requestFullscreen) elem.requestFullscreen();
-    else if ((elem as any).webkitRequestFullscreen)
-      (elem as any).webkitRequestFullscreen();
-    else if ((elem as any).mozRequestFullScreen)
-      (elem as any).mozRequestFullScreen();
-    else if ((elem as any).msRequestFullscreen)
-      (elem as any).msRequestFullscreen();
-  };
-
-  const handleOpenInvitation = () => {
-    setIsCoverOpen(true);
-    requestFullscreen();
-    setTimeout(() => toggleMusic(), 500);
-  };
-
-  const toggleMusic = () => {
-    setIsPlaying((prev) => !prev);
-  };
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (isPlaying) audio.play().catch(() => {});
-    else audio.pause();
-  }, [isPlaying]);
-
-  const [currentImage, setCurrentImage] = useState(0);
-
+export default function Cover({
+  guestName,
+  isOpen,
+  onOpen,
+  bridePhoto,
+}: CoverPageProps) {
   const images = [
     '/images/imam22.webp',
     '/images/imam39.webp',
@@ -68,88 +23,109 @@ export default function GlassesDesign({ data }: Props) {
     '/images/imam73.webp',
   ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 6000); // Lebih lama untuk animasi lebih smooth
+  const [loadedCount, setLoadedCount] = useState(0);
+  const totalImages = images.length;
 
-    return () => clearInterval(interval);
-  }, [images.length]);
+  // Prefetch images
+  useEffect(() => {
+    images.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        setLoadedCount((prev) => prev + 1);
+      };
+    });
+  }, []);
+
+  const progress = Math.round((loadedCount / totalImages) * 100);
 
   return (
-    <div className='flex justify-center min-h-screen'>
-      {/* Mobile Frame */}
-      <div className='lg:w-[390px] w-full min-h-screen shadow-lg relative overflow-hidden'>
-        {/* Cover dengan animasi scroll ke atas */}
-        <div
-          className={`absolute inset-0 z-50 transition-transform duration-1000 ease-in-out ${
-            isCoverOpen ? '-translate-y-full' : 'translate-y-0'
-          }`}
+    <AnimatePresence>
+      {!isOpen && (
+        <motion.div
+          className='fixed inset-0 flex items-center justify-center overflow-hidden'
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 1.05 }}
+          transition={{ duration: 0.8 }}
         >
-          <Cover
-            isOpen={isCoverOpen}
-            onOpen={handleOpenInvitation}
-            guestName={guestName}
-          />
-        </div>
+          {/* Background */}
+          <div className='absolute inset-0'>
+            <img
+              src={bridePhoto || '/images/imam73.webp'}
+              alt='Background'
+              className='w-full h-full object-cover brightness-75 scale-105 animate-slow-zoom'
+            />
+            <div className='absolute -bottom-1 left-1/2 -translate-x-1/2 w-[110%] h-1/3 bg-gradient-to-t from-black via-black/80 to-transparent'></div>
+          </div>
 
-        {/* Main Content */}
-        <div className='relative'>
-          {isCoverOpen && (
-            <>
-              {/* Fixed Background dengan animasi smooth */}
-              {images.map((img, index) => (
-                <div
-                  key={index}
-                  className={`fixed inset-0 lg:left-[calc(50%-195px)] lg:right-[calc(50%-195px)] transition-opacity duration-[2000ms] ease-in-out ${
-                    currentImage === index ? 'opacity-100' : 'opacity-0'
-                  }`}
+          {/* Content */}
+          <div className='relative z-10 flex flex-col items-center justify-between h-screen pb-10 px-8'>
+            {/* Logo */}
+            <div className='text-center text-white pt-5 pb-50'>
+              <h1 className='flex items-center justify-center'>
+                <span className='text-9xl font-madelyn leading-none'>I</span>
+                <span className='text-6xl font-rumble-brave leading-none'>
+                  E
+                </span>
+              </h1>
+            </div>
+
+            {/* Guest + Button */}
+            <motion.div
+              className='text-center text-white pt-40'
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+            >
+              {/* Guest Name */}
+              {guestName && (
+                <motion.div
+                  className='mb-8'
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1, delay: 1 }}
                 >
-                  <img
-                    src={img}
-                    alt={`Background ${index + 1}`}
-                    className={`w-full h-full object-cover brightness-60 transition-transform duration-[6000ms] ease-linear ${
-                      currentImage === index ? 'scale-110' : 'scale-100'
-                    }`}
-                  />
-                  <div className='absolute inset-0 transition-opacity duration-[2000ms]'></div>
-                </div>
-              ))}
+                  <p className='text-sm italic text-white'>Kepada tamu Yth.</p>
+                  <p className='text-sm italic text-white'>
+                    Bapak/Ibu/Saudara/i
+                  </p>
+                  <p className='text-lg font-semibold text-white mt-1 drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'>
+                    {guestName}
+                  </p>
+                </motion.div>
+              )}
 
-              {/* Music Button */}
-              <button
-                onClick={toggleMusic}
-                className={`fixed bottom-6 right-6 lg:right-110 z-[100] w-10 h-10 border border-white  rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 ${
-                  isPlaying
-                    ? 'bg-transparent hover:bg-green-600'
-                    : 'bg-gray-400 hover:bg-gray-500'
-                }`}
-                aria-label='Toggle Music'
+              {/* Button Buka */}
+              <motion.button
+                onClick={onOpen}
+                className='relative px-6 py-3 border border-white text-white rounded-full font-sm overflow-hidden group'
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                {isPlaying ? (
-                  <FaMusic className='text-md animate-pulse text-white' />
-                ) : (
-                  <FaVolumeMute className='text-md text-white' />
-                )}
-              </button>
+                <div className='absolute inset-0 bg-white/10 backdrop-blur-md -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out rounded-full'></div>
+                <span className='relative z-10 flex items-center gap-2'>
+                  <FaEnvelopeOpen className='text-sm' />
+                  Buka Undangan
+                </span>
+              </motion.button>
+            </motion.div>
 
-              {/* Main Sections */}
-              <main className='relative z-10 animate-fade-in'>
-                <Introduction data={data} />
-                <Quotes />
-                <Couple data={data.invitationDataUser} />
-                <Event data={data.invitationEvent} />
-                <Gift data={data.invitationGift} />
-                <Thanks data={data.invitationDataUser} />
-                <RSVP />
-              </main>
-            </>
-          )}
-        </div>
+            {/* Spacer */}
+            <div className='h-20'></div>
+          </div>
 
-        {/* Audio Player */}
-        <audio ref={audioRef} src='/audio/wedding-music.mp3' loop />
-      </div>
-    </div>
+          {/* LOADER */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: loadedCount < totalImages ? 1 : 0 }}
+            transition={{ duration: 0.5 }}
+            className='absolute bottom-10 flex flex-col items-center text-white pointer-events-none'
+          >
+            <div className='w-10 h-10 border-2 border-white/40 border-t-white rounded-full animate-spin'></div>
+            <p className='text-xs mt-2'>Memuat foto... {progress}%</p>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
