@@ -80,54 +80,106 @@ export const dummyInvitationEvents: InvitationEvent[] = [
     createdAt: '2025-01-01T10:00:00Z',
     updatedAt: '2025-01-01T10:00:00Z',
   },
+  {
+    eventId: 'event-003',
+    invitationId: 'invite-001',
+    eventType: 'RESEPSI',
+    location: 'Hotel Mulia Ballroom',
+    locationDetail: 'Jl. Asia Afrika No.8, Jakarta',
+    mapsUrl: 'https://maps.google.com/?q=Hotel+Mulia',
+    startTime: '2025-03-15T13:00:00Z',
+    endTime: '2025-03-15T16:00:00Z',
+    createdAt: '2025-01-01T10:00:00Z',
+    updatedAt: '2025-01-01T10:00:00Z',
+  },
 ];
 
 // ========== GIFT BANK & WALLET ==========
-export const dummyGiftBank: InvitationGiftBank = {
-  giftBankId: 'bank-001',
-  giftId: 'gift-001',
-  account: [
-    {
-      bank_name: 'BCA',
-      number: '1234567890',
-      nama: 'Siti Aisyah',
-    },
-    {
-      bank_name: 'BRI',
-      number: '0987654321',
-      nama: 'Andi Wijaya',
-    },
-  ],
-  owner: 'BRIDE',
-  createdAt: '2025-01-01T10:00:00Z',
-  updatedAt: '2025-01-01T10:00:00Z',
-};
+export const dummyGiftBanks: InvitationGiftBank[] = [
+  {
+    giftBankId: 'bank-001',
+    giftId: 'gift-001',
+    account: [
+      {
+        bank_name: 'BCA',
+        number: '1234567890',
+        nama: 'Siti Aisyah',
+      },
+      {
+        bank_name: 'Mandiri',
+        number: '1122334455',
+        nama: 'Siti Aisyah',
+      },
+    ],
+    owner: 'BRIDE',
+    createdAt: '2025-01-01T10:00:00Z',
+    updatedAt: '2025-01-01T10:00:00Z',
+  },
+  {
+    giftBankId: 'bank-002',
+    giftId: 'gift-001',
+    account: [
+      {
+        bank_name: 'BRI',
+        number: '0987654321',
+        nama: 'Andi Wijaya',
+      },
+      {
+        bank_name: 'BNI',
+        number: '5566778899',
+        nama: 'Andi Wijaya',
+      },
+    ],
+    owner: 'GROOM',
+    createdAt: '2025-01-01T10:00:00Z',
+    updatedAt: '2025-01-01T10:00:00Z',
+  },
+];
 
-export const dummyGiftWallet: InvitationGiftWallet = {
-  giftWalletId: 'wallet-001',
-  giftId: 'gift-001',
-  address: [
-    {
-      network: 'Ethereum',
-      walletAddress: '0xABCDEF123456789',
-    },
-    {
-      network: 'Solana',
-      walletAddress: '4ghjkYvTf34h98wQ...',
-    },
-  ],
-  owner: 'GROOM',
-  createdAt: '2025-01-01T10:00:00Z',
-  updatedAt: '2025-01-01T10:00:00Z',
-};
-
+// ========== GIFT WALLET ==========
+export const dummyGiftWallets: InvitationGiftWallet[] = [
+  {
+    giftWalletId: 'wallet-001',
+    giftId: 'gift-001',
+    address: [
+      {
+        network: 'Ethereum',
+        walletAddress: '0xABCDEF123456789',
+      },
+      {
+        network: 'Polygon',
+        walletAddress: '0x9876543210FEDCBA',
+      },
+    ],
+    owner: 'BRIDE',
+    createdAt: '2025-01-01T10:00:00Z',
+    updatedAt: '2025-01-01T10:00:00Z',
+  },
+  {
+    giftWalletId: 'wallet-002',
+    giftId: 'gift-001',
+    address: [
+      {
+        network: 'Solana',
+        walletAddress: '4ghjkYvTf34h98wQ...',
+      },
+      {
+        network: 'Bitcoin',
+        walletAddress: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+      },
+    ],
+    owner: 'GROOM',
+    createdAt: '2025-01-01T10:00:00Z',
+    updatedAt: '2025-01-01T10:00:00Z',
+  },
+];
 // ========== INVITATION GIFT ==========
 export const dummyInvitationGift: InvitationGift = {
   giftId: 'gift-001',
   invitationId: 'invite-001',
   address: 'Jl. Mawar No.8, Jakarta Selatan',
-  giftBank: dummyGiftBank,
-  giftWallet: dummyGiftWallet,
+  giftBank: dummyGiftBanks,
+  giftWallet: dummyGiftWallets,
   createdAt: '2025-01-01T10:00:00Z',
   updatedAt: '2025-01-01T10:00:00Z',
 };

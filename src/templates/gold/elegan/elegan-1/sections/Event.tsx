@@ -37,12 +37,11 @@ export default function Event({ data }: Props) {
       </div>
 
       {/* Events Grid */}
-      <div className='max-w-4xl backdrop-blur-sm mx-auto space-y-10 border-2 border-white py-20 rounded-t-full'>
-        <div className=''>
+      <div className='max-w-4xl rounded-t-full mx-auto space-y-10'>
           {data.map((event, index) => (
             <div
               key={event.eventId || index}
-              className='group relative  transition-all duration-300 overflow-hidden'
+              className='group relative  transition-all duration-300 overflow-hidden backdrop-blur-sm  border-2 border-white py-10 rounded-t-full'
             >
               {/* Content */}
               <div className=' p-5 space-y-4'>
@@ -117,7 +116,6 @@ export default function Event({ data }: Props) {
             </div>
           ))}
         </div>
-      </div>
     </div>
   );
 }

@@ -146,8 +146,8 @@ export interface InvitationGift {
   giftId: string;
   invitationId: string;
   address?: string;
-  giftBank: InvitationGiftBank;
-  giftWallet: InvitationGiftWallet
+  giftBank: InvitationGiftBank[];
+  giftWallet: InvitationGiftWallet[]
   createdAt: string;
   updatedAt: string;
 }

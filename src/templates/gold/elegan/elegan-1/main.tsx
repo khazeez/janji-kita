@@ -140,7 +140,7 @@ export default function GlassesDesign({ data }: Props) {
                 <Couple data={data.invitationDataUser} />
                 <Event data={data.invitationEvent} />
                 <Gift data={data.invitationGift} />
-                <Thanks />
+                <Thanks data={data.invitationDataUser} />
                 <RSVP />
               </main>
             </>
