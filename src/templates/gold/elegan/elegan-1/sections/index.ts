@@ -6,3 +6,4 @@ export { default as Introduction } from './Introduction';
 export { default as Quotes } from './Quotes';
 export { default as Thanks } from './Thanks';
 export { default as RSVP} from './RSVP';
+export { default as Gallery } from './Gallery';

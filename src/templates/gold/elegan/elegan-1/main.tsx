@@ -10,6 +10,7 @@ import {
   Quotes,
   Thanks,
   RSVP,
+  Gallery,
 } from '@/templates/gold/elegan/elegan-1/sections';
 
 import { Invitation } from '@/types/interface';
@@ -138,6 +139,7 @@ export default function GlassesDesign({ data }: Props) {
                 <Introduction data={data} />
                 <Quotes />
                 <Couple data={data.invitationDataUser} />
+                <Gallery />
                 <Event data={data.invitationEvent} />
                 <Gift data={data.invitationGift} />
                 <Thanks data={data.invitationDataUser} />
