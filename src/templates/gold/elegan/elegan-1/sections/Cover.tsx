@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaEnvelopeOpen } from 'react-icons/fa';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface CoverPageProps {
   guestName?: string;
@@ -16,12 +16,28 @@ export default function Cover({
   onOpen,
   bridePhoto,
 }: CoverPageProps) {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+  const images = [
+    '/images/imam22.webp',
+    '/images/imam39.webp',
+    '/images/imam53.webp',
+    '/images/imam73.webp',
+  ];
+
+  const [loadedCount, setLoadedCount] = useState(0);
+  const totalImages = images.length;
+
+  // Prefetch images without blocking UI
+  useEffect(() => {
+    images.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        setLoadedCount((prev) => prev + 1);
+      };
+    });
+  }, []);
+
+  const progress = Math.round((loadedCount / totalImages) * 100);
 
   return (
     <AnimatePresence>
@@ -42,9 +58,9 @@ export default function Cover({
             <div className='absolute -bottom-1 left-1/2 -translate-x-1/2 w-[110%] h-1/3 bg-gradient-to-t from-black via-black/80 to-transparent'></div>
           </div>
 
-          {/* Container dengan flex column untuk spacing yang baik */}
+          {/* ✨ Main Container */}
           <div className='relative z-10 flex flex-col items-center justify-between h-screen pb-10 px-8'>
-            {/** Logo */}
+            {/* Logo */}
             <div className='text-center text-white pt-5 pb-50'>
               <h1 className='flex items-center justify-center'>
                 <span className='text-9xl font-madelyn leading-none'>I</span>
@@ -54,14 +70,14 @@ export default function Cover({
               </h1>
             </div>
 
-            {/* ✨ Konten Utama */}
+            {/* ✨ Main Content */}
             <motion.div
               className='text-center text-white pt-40'
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
             >
-              {/* 🎀 Nama Tamu */}
+              {/* Guest Name */}
               {guestName && (
                 <motion.div
                   className='mb-8'
@@ -79,7 +95,7 @@ export default function Cover({
                 </motion.div>
               )}
 
-              {/* 🌿 Tombol Buka */}
+              {/* Buka Button */}
               <motion.button
                 onClick={onOpen}
                 className='relative px-6 py-3 border border-white text-white rounded-full font-sm overflow-hidden group'
@@ -94,9 +110,25 @@ export default function Cover({
               </motion.button>
             </motion.div>
 
-            {/* Spacer untuk menjaga balance */}
+            {/* Spacer */}
             <div className='h-20'></div>
           </div>
+
+          {/* 🌙 LOADER Prefetch (tidak ganggu animasi cover) */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: loadedCount < totalImages ? 1 : 0 }}
+            transition={{ duration: 0.5 }}
+            className='absolute bottom-10 flex flex-col items-center text-white pointer-events-none'
+          >
+            {/* Spinner */}
+            <div className='w-10 h-10 border-2 border-white/40 border-t-white rounded-full animate-spin'></div>
+
+            {/* Progress */}
+            <p className='text-xs mt-2 tracking-wide'>
+              Memuat foto... {progress}%
+            </p>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
