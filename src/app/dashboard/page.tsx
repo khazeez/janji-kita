@@ -158,7 +158,7 @@ export default function Dashboard() {
 
       {/* Sidebar Desktop */}
       <aside
-        className={`hidden md:flex md:flex-col bg-gray-800 border-r border-gray-700 fixed left-0 top-0 h-screen transition-all duration-300 ${
+        className={`hidden md:flex md:flex-col bg-gray-800 border-r border-gray-700 fixed left-0 top-0 h-screen transition-all duration-300 overflow-hidden ${
           sidebarCollapsed ? 'w-20' : 'w-64'
         }`}
       >

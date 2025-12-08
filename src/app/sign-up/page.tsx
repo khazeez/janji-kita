@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
-import LoginPopup from '@/app/sign-in/page';
-import Image from 'next/image';
+import Link from 'next/link';
 
 interface FormErrors {
   name?: string;
@@ -11,7 +10,6 @@ interface FormErrors {
 }
 
 export default function SignUp() {
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -24,8 +22,8 @@ export default function SignUp() {
     confirmPassword: '',
   });
 
-  const openLoginPopup = () => setShowLoginPopup(true);
-  const closeLoginPopup = () => setShowLoginPopup(false);
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -580,12 +578,12 @@ export default function SignUp() {
             {/* Footer */}
             <p className='text-center text-gray-400 text-xs md:text-sm mt-6 md:mt-8'>
               Sudah punya akun?{' '}
-              <button
-                onClick={openLoginPopup}
+              <Link
+                href='/sign-in'
                 className='text-pink-500 hover:text-pink-400 font-semibold transition-colors'
               >
                 Masuk
-              </button>
+              </Link>
             </p>
 
             {/* Terms */}

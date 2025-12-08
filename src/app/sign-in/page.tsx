@@ -122,7 +122,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='min-h-screen flex items-center justify-center  p-4'>
+    <div className='min-h-screen flex items-center justify-center  p-4 overflow-hidden'>
       <div className='relative bg-white rounded-2xl md:rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100 max-h-[95vh] overflow-y-auto'>
         {/* Header */}
         <div className='flex items-center justify-between p-4 md:p-6 border-b border-gray-200'>

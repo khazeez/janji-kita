@@ -165,7 +165,7 @@ export default function PaymentStatus() {
         <h2 className='text-xl md:text-2xl font-bold  mt-2 mb-3 md:mb-6 text-white'>
           Status Pembayaran
         </h2>
-        <div className='flex gap-2 mb-6 border-b border-gray-100 top-0 bg-gray-900 z-10 justify-between'>
+        <div className='flex gap-2 mb-6 border-b border-gray-100 top-0 bg-gray-900 z-10 sm:justify-between md:justify-start'>
           <button
             onClick={() => setActiveTab('inprogress')}
             className={` px-10 py-3 text-sm md:text-base font-medium transition-colors relative ${
