@@ -1,25 +1,39 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import dummyWeddingData from '@/data/dummyData';
-import { dummyInvitation } from '@/data/dummy2';
+import { getDataInvitationUser } from '@/queries';
 import NetflixDesign from '@/templates/gold/special';
 import GlassesDesign from '@/templates/gold/elegan/elegan-1/main';
+import { data } from 'motion/react-client';
 
 export default function Slug() {
   const params = useParams();
 
-  // Pastikan slug selalu berupa string (bukan array)
   const slugParam = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
   const slug = slugParam?.toString().toLowerCase();
 
-  const dummySlug = dummyInvitation.invitationUrl?.toLowerCase();
+  const [dataUser, setDataUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Debug
-  console.log('Current slug:', slug);
-  console.log('Expected slug:', dummySlug);
+  useEffect(() => {
+    if (!slug) return;
 
-  if (!slug) {
+    const fetchData = async () => {
+      try {
+        const dataInv = await getDataInvitationUser(slug);
+        setDataUser(dataInv);
+      } catch (err) {
+        setDataUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [slug]);
+
+  if (loading) {
     return (
       <div className='min-h-screen bg-black flex items-center justify-center'>
         <h1 className='text-white text-2xl'>Loading...</h1>
@@ -27,7 +41,9 @@ export default function Slug() {
     );
   }
 
-  if (slug !== dummySlug) {
+  // Jika tidak ada data (slug salah)
+  if (!dataUser) {
+    console.log("INIIIIIIII",dataUser)
     return (
       <div className='min-h-screen bg-black flex items-center justify-center'>
         <div className='text-center'>
@@ -39,13 +55,19 @@ export default function Slug() {
     );
   }
 
-  switch (dummyInvitation.productId) {
+  // Ambil nama produk dari relasi Supabase
+  const productName = dataUser?.INVITATION_PRODUCT_ID_fkey?.PRODUCT_NAME;
+
+  switch (productName) {
     case 'Inkjlsd':
-      return <NetflixDesign data={dummyWeddingData} />;
-      break;
+      return <NetflixDesign data={dataUser} />;
     case 'prod-001':
-      return <GlassesDesign data={dummyInvitation} />;
+      return <GlassesDesign data={dataUser} />;
     default:
-      break;
+      return (
+        <div className='min-h-screen bg-black flex items-center justify-center'>
+          <h1 className='text-white text-2xl'>Invalid Product</h1>
+        </div>
+      );
   }
 }
