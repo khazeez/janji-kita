@@ -2,9 +2,11 @@ export interface BrideGroomData {
   brideName: string;
   brideNickName: string
   brideParents: string;
+  groomInstagram: string;
   groomName: string;
   groomNickName: string
   groomParents: string;
+  brideInstagram: string;
 }
 
 export interface BankAccount {
@@ -38,14 +40,27 @@ export interface LinkData {
   link: string;
 }
 
-export interface VenueData {
+export type ResepsiEvent = {
+  venue: string;
+  address: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  mapsUrl: string;
+  description: string; // ← Keterangan tambahan
+};
+
+export type VenueData = {
+  // Akad
   akadVenue: string;
   akadAddress: string;
-  akadDate: string;
-  akadTime: string;
-  hasResepsi: boolean;
-  resepsiVenue: string;
-  resepsiAddress: string;
-  resepsiDate: string;
-  resepsiTime: string;
+  akadStartDate: string;
+  akadEndDate: string;
+  akadStartTime: string;
+  akadEndTime: string;
+  akadMapsUrl: string; // ← Link Google Maps
+  
+  // Resepsi (optional, multiple events)
+  resepsiEvents?: ResepsiEvent[];
 };

@@ -55,6 +55,18 @@ export default function BrideGroomDataInput({ data, onChange }: BrideGroomInputP
                 placeholder='Contoh: Bapak Budi dan Ibu Sari'
               />
             </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-300 mb-2'>
+                Instagram (optional)
+              </label>
+              <input
+                type='text'
+                value={data.groomInstagram}
+                onChange={(e) => handleChange('groomInstagram', e.target.value)}
+                className='w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-pink-500 focus:outline-none'
+                placeholder='Contoh: @rizkimuhammad'
+              />
+            </div>
           </div>
         </div>
         <div className='bg-gray-800 rounded-xl p-6 border border-gray-700'>
@@ -96,6 +108,18 @@ export default function BrideGroomDataInput({ data, onChange }: BrideGroomInputP
                 onChange={(e) => handleChange('brideParents', e.target.value)}
                 className='w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-pink-500 focus:outline-none'
                 placeholder='Contoh: Bapak Ahmad dan Ibu Fatimah'
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-300 mb-2'>
+                Instagram (optional)
+              </label>
+              <input
+                type='text'
+                value={data.brideInstagram}
+                onChange={(e) => handleChange('brideInstagram', e.target.value)}
+                className='w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-pink-500 focus:outline-none'
+                placeholder='Contoh: @sitiaisyah'
               />
             </div>
           </div>

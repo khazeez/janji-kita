@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { ArrowLeft, CheckCircle, Home, CreditCard } from 'lucide-react';
 import BrideGroomDataInput from '@/components/layout/form-layout/bridegroomDataInput';
 import LinkDataInput from '@/components/layout/form-layout/linkDataInput';
@@ -7,7 +7,7 @@ import GiftDataInput from '@/components/layout/form-layout/giftDataInput';
 import VenueDataInput from '@/components/layout/form-layout/venueDataInput';
 import ConfirmationScreen from '@/components/layout/form-layout/confirmationScreen';
 import ResultScreenSuccsess from '@/components/layout/form-layout/result';
-import { BankAccount, Wallet } from '@/types/form';
+import { BankAccount, Wallet, ResepsiEvent } from '@/types/form';
 
 export default function Form() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -18,9 +18,11 @@ export default function Form() {
     brideName: '',
     brideNickName: '',
     brideParents: '',
+    brideInstagram: '',
     groomName: '',
     groomNickName: '',
     groomParents: '',
+    groomInstagram: ''
   });
 
   const [giftData, setGiftData] = useState({
@@ -32,13 +34,12 @@ export default function Form() {
   const [venueData, setVenueData] = useState({
     akadVenue: '',
     akadAddress: '',
-    akadDate: '',
-    akadTime: '',
-    hasResepsi: false,
-    resepsiVenue: '',
-    resepsiAddress: '',
-    resepsiDate: '',
-    resepsiTime: '',
+    akadStartDate: '',
+    akadEndDate: '',
+    akadStartTime: '',
+    akadEndTime: '',
+    akadMapsUrl: '',
+    resepsiEvents: [] as ResepsiEvent[]
   });
 
   const [linkData, setLinkData] = useState({
@@ -60,18 +61,28 @@ export default function Form() {
         const akadValid =
           venueData.akadVenue.trim() !== '' &&
           venueData.akadAddress.trim() !== '' &&
-          venueData.akadDate.trim() !== '' &&
-          venueData.akadTime.trim() !== '';
+          venueData.akadMapsUrl.trim() !== '' &&
+          venueData.akadStartDate.trim() !== '' &&
+          venueData.akadStartTime.trim() !== '' &&
+          venueData.akadEndDate.trim() !== '' &&
+          venueData.akadEndTime.trim() !== '';
 
-        if (!venueData.hasResepsi) {
+        // Jika tidak ada resepsi, cukup akad valid
+        if (!venueData.resepsiEvents || venueData.resepsiEvents.length === 0) {
           return akadValid;
         }
 
-        const resepsiValid =
-          venueData.resepsiVenue.trim() !== '' &&
-          venueData.resepsiAddress.trim() !== '' &&
-          venueData.resepsiDate.trim() !== '' &&
-          venueData.resepsiTime.trim() !== '';
+        // Jika ada resepsi, semua resepsi harus valid
+        const resepsiValid = venueData.resepsiEvents.every(resepsi => 
+          resepsi.description.trim() !== '' &&
+          resepsi.venue.trim() !== '' &&
+          resepsi.address.trim() !== '' &&
+          resepsi.mapsUrl.trim() !== '' &&
+          resepsi.startDate.trim() !== '' &&
+          resepsi.startTime.trim() !== '' &&
+          resepsi.endDate.trim() !== '' &&
+          resepsi.endTime.trim() !== ''
+        );
 
         return akadValid && resepsiValid;
 
@@ -114,6 +125,25 @@ export default function Form() {
     // Tampilkan modal success
     setShowSuccessModal(true);
   };
+
+  // Handle Enter key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey && currentStep < 6) {
+        e.preventDefault();
+        if (isStepValid) {
+          if (currentStep === 5) {
+            handleSubmit();
+          } else {
+            handleNext();
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentStep, isStepValid]);
 
   const getStepTitle = () => {
     const titles: Record<number, string> = {
