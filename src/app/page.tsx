@@ -6,13 +6,13 @@ import Services from "@/components/layout/service";
 import Product from "@/components/layout/product";
 import FAQ from "@/components/layout/faq";
 import Footer from "@/components/layout/footer";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+// import { SpeedInsights } from "@vercel/speed-insights/next"
 
 
 export default function Home() {
   return (
     <>
-      <SpeedInsights />
+      {/* <SpeedInsights /> */}
       {/* <Globe /> */}
       <LightRays
         raysOrigin='top-center'
