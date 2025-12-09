@@ -35,7 +35,10 @@ export default function Slug() {
 
   if (loading) {
     return (
-      <Loading />
+      <>
+      {/* <Loading /> */}
+      <h1>Loading...</h1>
+      </>
     );
   }
 
