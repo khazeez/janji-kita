@@ -120,7 +120,7 @@ export async function getDataInvitationUser() {
       )
     `
     )
-    .eq('INVITATION_URL', 'ana-aziz')
+    .eq('INVITATION_URL', 'aladin-jasmine')
     .eq('IS_DELETED', false)
     .single();
 
