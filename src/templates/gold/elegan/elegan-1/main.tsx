@@ -120,7 +120,7 @@ export default function GlassesDesign({ data }: Props) {
               {/* Music Button */}
               <button
                 onClick={toggleMusic}
-                className={`fixed bottom-6 right-6 lg:right-110 z-[100] w-10 h-10 border border-white  rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 ${
+                className={`fixed bottom-38 right-5 lg:right-110 z-[90] w-10 h-10 border border-white  rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 ${
                   isPlaying
                     ? 'bg-transparent hover:bg-green-600'
                     : 'bg-gray-400 hover:bg-gray-500'
@@ -143,7 +143,7 @@ export default function GlassesDesign({ data }: Props) {
                 <Event data={data.invitationEvent} />
                 <Gift data={data.invitationGift} />
                 <Thanks data={data.invitationDataUser} />
-                <RSVP />
+                <RSVP invitationId={data.invitationId} />
               </main>
             </>
           )}

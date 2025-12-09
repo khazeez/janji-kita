@@ -1,1 +1,7 @@
-export {getSlug, getProductInvitation, getDataInvitationUser} from './invitations';
+export {
+  getSlug,
+  getProductInvitation,
+  getDataInvitationUser,
+  getGuestBook,
+  insertMessages
+} from './invitations';

@@ -1,23 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, MessageCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getGuestBook, insertMessages } from '@/queries';
 import { supabase } from '@/lib/supabaseClient';
+import { GuestBook } from '@/types/interface';
 
-interface Message {
-  id: string;
-  name: string;
-  message: string;
-  created_at: string;
+export interface Props {
+  invitationId: string;
 }
 
-const RSVPSection: React.FC = () => {
+export default function RSVP({ invitationId }: Props) {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<GuestBook[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [hasOpenedOnce, setHasOpenedOnce] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputAreaRef = useRef<HTMLDivElement>(null);
+
+  // ============================================
+  // HELPER FUNCTIONS
+  // ============================================
 
   const getAvatarColor = (name: string) => {
     const colors = [
@@ -57,14 +61,12 @@ const RSVPSection: React.FC = () => {
     return colors[hash % colors.length];
   };
 
-  // Format tanggal seperti WhatsApp
   const formatMessageDate = (dateString: string) => {
     const messageDate = new Date(dateString);
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
-    // Reset jam ke 00:00 untuk perbandingan tanggal
     const resetTime = (date: Date) => {
       const d = new Date(date);
       d.setHours(0, 0, 0, 0);
@@ -88,12 +90,11 @@ const RSVPSection: React.FC = () => {
     }
   };
 
-  // Group messages by date
-  const groupMessagesByDate = (messages: Message[]) => {
-    const groups: { [key: string]: Message[] } = {};
+  const groupMessagesByDate = (messages: GuestBook[]) => {
+    const groups: { [key: string]: GuestBook[] } = {};
 
     messages.forEach((msg) => {
-      const dateKey = formatMessageDate(msg.created_at);
+      const dateKey = formatMessageDate(msg.createdAt);
       if (!groups[dateKey]) {
         groups[dateKey] = [];
       }
@@ -103,19 +104,34 @@ const RSVPSection: React.FC = () => {
     return groups;
   };
 
+  // ============================================
+  // FETCH MESSAGES
+  // ============================================
+
   const fetchMessages = async () => {
-    const { data, error } = await supabase
-      .from('RSVP')
-      .select('*')
-      .order('created_at', { ascending: true });
-    if (error) return console.error('❌ Error fetching messages:', error);
-    setMessages(data || []);
+    try {
+      const result = await getGuestBook(invitationId);
+
+      if (result.success && result.data) {
+        setMessages(result.data);
+      } else {
+        console.error('❌ Error fetching messages:', result.error);
+      }
+    } catch (err) {
+      console.error('❌ Unexpected error:', err);
+    }
   };
+
+  // ============================================
+  // EFFECTS
+  // ============================================
 
   // Fetch messages saat komponen pertama kali dimuat
   useEffect(() => {
-    fetchMessages();
-  }, []);
+    if (invitationId) {
+      fetchMessages();
+    }
+  }, [invitationId]);
 
   // Auto scroll ke bawah saat ada pesan baru
   useEffect(() => {
@@ -124,18 +140,24 @@ const RSVPSection: React.FC = () => {
     }
   }, [messages, isOpen]);
 
+  // Realtime subscription untuk pesan baru
   useEffect(() => {
+    if (!invitationId) return;
+
     const channel = supabase
-      .channel('rsvp-realtime')
+      .channel(`guest-book-${invitationId}`)
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'RSVP' },
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'GUEST_BOOK',
+          filter: `INVITATION_ID=eq.${invitationId}`,
+        },
         (payload) => {
-          const newMsg = payload.new as Message;
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === newMsg.id)) return prev;
-            return [...prev, newMsg];
-          });
+          console.log('📨 New message received:', payload);
+          // Refresh messages saat ada insert baru
+          fetchMessages();
         }
       )
       .subscribe();
@@ -143,33 +165,13 @@ const RSVPSection: React.FC = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
-
-  const handleSubmit = async () => {
-    if (!name.trim() || !message.trim()) return;
-    const { error } = await supabase.from('RSVP').insert([{ name, message }]);
-    if (error) {
-      console.error('❌ Error sending message:', error);
-      alert('Gagal mengirim pesan. Pastikan policy INSERT diaktifkan.');
-      return;
-    }
-    fetchMessages();
-    setMessage('');
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  };
+  }, [invitationId]);
 
   // Handle keyboard open/close untuk mobile
   useEffect(() => {
     if (!isOpen) return;
 
     const handleFocus = () => {
-      // Scroll ke input area saat keyboard muncul
       setTimeout(() => {
         inputAreaRef.current?.scrollIntoView({
           behavior: 'smooth',
@@ -190,6 +192,56 @@ const RSVPSection: React.FC = () => {
     };
   }, [isOpen]);
 
+  // ============================================
+  // HANDLE SUBMIT
+  // ============================================
+
+  const handleSubmit = async () => {
+    if (!name.trim() || !message.trim()) return;
+    if (isLoading) return;
+
+    setIsLoading(true);
+
+    try {
+      const result = await insertMessages({
+        invitationId,
+        guestName: name.trim(),
+        attendanceStatus: 'ATTENDING',
+        guestCount: 1,
+        message: message.trim(),
+      });
+
+      if (result.success) {
+        console.log('✅ Message sent successfully');
+
+        // Clear input
+        setMessage('');
+
+        // Refresh messages
+        await fetchMessages();
+      } else {
+        console.error('❌ Error sending message:', result.error);
+        alert(`Gagal mengirim pesan: ${result.error}`);
+      }
+    } catch (err) {
+      console.error('❌ Unexpected error:', err);
+      alert('Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  // ============================================
+  // RENDER
+  // ============================================
+
   const groupedMessages = groupMessagesByDate(messages);
 
   return (
@@ -200,15 +252,16 @@ const RSVPSection: React.FC = () => {
           setIsOpen(true);
           setHasOpenedOnce(true);
         }}
-        className='fixed top-6 lg:right-110 right-6  z-[100] group'
+        className='fixed top-6 lg:right-110 right-6 z-[100] group'
+        aria-label='Buka doa dan ucapan'
       >
         <div className='relative'>
-          <div className='absolute -inset-1 '></div>
+          <div className='absolute -inset-1'></div>
           <div className='relative bg-transparent border border-white p-2 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110'>
             <MessageCircle className='w-6 h-6 text-white' strokeWidth={2} />
             {messages.length > 0 && !hasOpenedOnce && (
               <div className='absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold'>
-                {messages.length}
+                {messages.length > 99 ? '99+' : messages.length}
               </div>
             )}
           </div>
@@ -251,6 +304,7 @@ const RSVPSection: React.FC = () => {
                 <button
                   onClick={() => setIsOpen(false)}
                   className='w-9 h-9 hover:bg-white/10 rounded-full flex items-center justify-center transition-colors'
+                  aria-label='Tutup'
                 >
                   <X className='w-5 h-5 text-white' />
                 </button>
@@ -293,7 +347,7 @@ const RSVPSection: React.FC = () => {
                         {/* Messages for this date */}
                         {msgs.map((msg) => (
                           <motion.div
-                            key={msg.id}
+                            key={msg.guestId}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
@@ -301,33 +355,34 @@ const RSVPSection: React.FC = () => {
                           >
                             <div
                               className={`w-8 h-8 rounded-full bg-gradient-to-br ${getAvatarColor(
-                                msg.name
+                                msg.guestName
                               )} flex items-center justify-center text-white font-semibold text-sm shadow-md flex-shrink-0`}
                             >
-                              {msg.name.charAt(0).toUpperCase()}
+                              {msg.guestName.charAt(0).toUpperCase()}
                             </div>
                             <div className='flex-1 max-w-[80%]'>
                               <div className='bg-white rounded-lg rounded-tl-none shadow-sm'>
                                 <div className='px-3 pt-2 pb-1'>
                                   <p
                                     className={`font-semibold text-sm mb-1 ${getNameColor(
-                                      msg.name
+                                      msg.guestName
                                     )}`}
                                   >
-                                    {msg.name}
+                                    {msg.guestName}
                                   </p>
                                   <p className='text-gray-800 text-sm leading-relaxed break-words'>
-                                    {msg.message}
+                                    {msg.message || '-'}
                                   </p>
                                 </div>
                                 <div className='px-3 pb-1.5 flex justify-end'>
                                   <p className='text-[11px] text-gray-500'>
-                                    {new Date(
-                                      msg.created_at
-                                    ).toLocaleTimeString('id-ID', {
-                                      hour: '2-digit',
-                                      minute: '2-digit',
-                                    })}
+                                    {new Date(msg.createdAt).toLocaleTimeString(
+                                      'id-ID',
+                                      {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                      }
+                                    )}
                                   </p>
                                 </div>
                               </div>
@@ -353,7 +408,8 @@ const RSVPSection: React.FC = () => {
                     onChange={(e) => setName(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder='Nama kamu...'
-                    className='w-full px-4 py-2.5 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#075E54] text-sm shadow-sm'
+                    disabled={isLoading}
+                    className='w-full px-4 py-2.5 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#075E54] text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed'
                   />
                   <div className='flex gap-2 items-end'>
                     <textarea
@@ -362,25 +418,31 @@ const RSVPSection: React.FC = () => {
                       onKeyPress={handleKeyPress}
                       placeholder='Tulis pesan...'
                       rows={1}
-                      className='flex-1 px-4 py-2.5 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#075E54] resize-none text-sm shadow-sm max-h-32'
+                      disabled={isLoading}
+                      className='flex-1 px-4 py-2.5 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#075E54] resize-none text-sm shadow-sm max-h-32 disabled:opacity-50 disabled:cursor-not-allowed'
                       style={{ minHeight: '44px' }}
                     />
                     <button
                       onClick={handleSubmit}
-                      disabled={!name.trim() || !message.trim()}
+                      disabled={!name.trim() || !message.trim() || isLoading}
                       className={`w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-md flex-shrink-0 ${
-                        name.trim() && message.trim()
+                        name.trim() && message.trim() && !isLoading
                           ? 'bg-[#25D366] hover:bg-[#20BD5A]'
                           : 'bg-gray-300 cursor-not-allowed'
                       }`}
+                      aria-label='Kirim pesan'
                     >
-                      <Send
-                        className={`w-5 h-5 ${
-                          name.trim() && message.trim()
-                            ? 'text-white'
-                            : 'text-gray-500'
-                        }`}
-                      />
+                      {isLoading ? (
+                        <div className='w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin' />
+                      ) : (
+                        <Send
+                          className={`w-5 h-5 ${
+                            name.trim() && message.trim()
+                              ? 'text-white'
+                              : 'text-gray-500'
+                          }`}
+                        />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -391,6 +453,4 @@ const RSVPSection: React.FC = () => {
       </AnimatePresence>
     </>
   );
-};
-
-export default RSVPSection;
+}

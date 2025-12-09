@@ -75,18 +75,18 @@ export default function Gift({ data }: Props) {
       label: 'Rekening',
       icon: CreditCard,
       show:
-        data.giftBank &&
-        Array.isArray(data.giftBank) &&
-        data.giftBank.length > 0,
+        data.invitationGiftBank &&
+        Array.isArray(data.invitationGiftBank) &&
+        data.invitationGiftBank.length > 0,
     },
     {
       id: 'wallet' as const,
       label: 'Wallet',
       icon: Wallet,
       show:
-        data.giftWallet &&
-        Array.isArray(data.giftWallet) &&
-        data.giftWallet.length > 0,
+        data.invitatioiGiftWallet &&
+        Array.isArray(data.invitatioiGiftWallet) &&
+        data.invitatioiGiftWallet.length > 0,
     },
   ].filter((tab) => tab.show);
 
@@ -149,10 +149,10 @@ export default function Gift({ data }: Props) {
 
           {/* Rekening Bank Tab */}
           {activeTab === 'bank' &&
-            data.giftBank &&
-            Array.isArray(data.giftBank) && (
+            data.invitationGiftBank &&
+            Array.isArray(data.invitationGiftBank) && (
               <div className='animate-fadeIn space-y-5'>
-                {data.giftBank.map((bank, bankIndex) => {
+                {data.invitationGiftBank.map((bank, bankIndex) => {
                   const bankKey = `bank-${bankIndex}`;
                   const selectedIndex = selectedBank[bankKey] ?? null;
                   const isDropdownOpen = dropdownOpen[bankKey] || false;
@@ -164,9 +164,9 @@ export default function Gift({ data }: Props) {
                           <CreditCard className='w-5 h-5 text-white' />
                         </div>
                         <h3 className='text-base font-bold text-white font-brown-sugar tracking-wider'>
-                          {bank.owner === 'BRIDE'
-                            ? 'Mempelai Wanita'
-                            : 'Mempelai Pria'}
+                          {bank.owner === 'GROOM'
+                            ? 'Mempelai Pria'
+                            : 'Mempelai Wanita'}
                         </h3>
                       </div>
 
@@ -220,10 +220,10 @@ export default function Gift({ data }: Props) {
                                   }`}
                                 >
                                   <p className='text-white font-medium'>
-                                    {acc.bank_name}
+                                    {acc.bank}
                                   </p>
                                   <p className='text-white/60 text-xs mt-1'>
-                                    {acc.nama}
+                                    {acc.accounName}
                                   </p>
                                 </button>
                               ))}
@@ -240,7 +240,7 @@ export default function Gift({ data }: Props) {
                                   Bank
                                 </p>
                                 <p className='text-white font-semibold text-base'>
-                                  {bank.account[selectedIndex].bank_name}
+                                  {bank.account[selectedIndex].bank}
                                 </p>
                               </div>
 
@@ -250,12 +250,13 @@ export default function Gift({ data }: Props) {
                                 </p>
                                 <div className='flex items-center gap-2 bg-black/20 rounded-lg p-3'>
                                   <p className='text-white font-mono text-sm flex-1'>
-                                    {bank.account[selectedIndex].number}
+                                    {bank.account[selectedIndex].accountNumber}
                                   </p>
                                   <button
                                     onClick={() =>
                                       copyToClipboard(
-                                        bank.account[selectedIndex].number,
+                                        bank.account[selectedIndex]
+                                          .accountNumber,
                                         `bank-${bankIndex}-${selectedIndex}`
                                       )
                                     }
@@ -277,7 +278,7 @@ export default function Gift({ data }: Props) {
                                   Atas Nama
                                 </p>
                                 <p className='text-white font-medium text-sm'>
-                                  {bank.account[selectedIndex].nama}
+                                  {bank.account[selectedIndex].accounName}
                                 </p>
                               </div>
                             </div>
@@ -291,10 +292,10 @@ export default function Gift({ data }: Props) {
 
           {/* Crypto Wallet Tab */}
           {activeTab === 'wallet' &&
-            data.giftWallet &&
-            Array.isArray(data.giftWallet) && (
+            data.invitatioiGiftWallet &&
+            Array.isArray(data.invitatioiGiftWallet) && (
               <div className='animate-fadeIn space-y-5'>
-                {data.giftWallet.map((wallet, walletIndex) => {
+                {data.invitatioiGiftWallet.map((wallet, walletIndex) => {
                   const walletKey = `wallet-${walletIndex}`;
                   const selectedIndex = selectedWallet[walletKey] ?? null;
                   const isDropdownOpen = dropdownOpen[walletKey] || false;

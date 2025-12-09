@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { getDataInvitationUser } from '@/queries';
+import { getDataInvitationUser, getProductInvitation } from '@/queries';
 import NetflixDesign from '@/templates/gold/special';
 import GlassesDesign from '@/templates/gold/elegan/elegan-1/main';
-import { data } from 'motion/react-client';
 
 export default function Slug() {
   const params = useParams();
@@ -21,7 +20,7 @@ export default function Slug() {
 
     const fetchData = async () => {
       try {
-        const dataInv = await getDataInvitationUser(slug);
+        const dataInv = await getDataInvitationUser();
         setDataUser(dataInv);
       } catch (err) {
         setDataUser(null);
@@ -53,20 +52,23 @@ export default function Slug() {
         </div>
       </div>
     );
+  } else {
+    console.log('INIIIIIIII', dataUser);
   }
 
   // Ambil nama produk dari relasi Supabase
-  const productName = dataUser?.INVITATION_PRODUCT_ID_fkey?.PRODUCT_NAME;
+  const productName = dataUser.product.productName;
+  console.log('INIIII YAAA',productName);
 
   switch (productName) {
     case 'Inkjlsd':
       return <NetflixDesign data={dataUser} />;
-    case 'prod-001':
+    case 'Glasses':
       return <GlassesDesign data={dataUser} />;
     default:
       return (
         <div className='min-h-screen bg-black flex items-center justify-center'>
-          <h1 className='text-white text-2xl'>Invalid Product</h1>
+          <h1 className='text-white text-2xl'>Invalid Product </h1>
         </div>
       );
   }

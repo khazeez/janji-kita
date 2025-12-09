@@ -91,6 +91,7 @@ export interface Invitation {
   invitationDataUser: InvitationDataUser;
   invitationEvent: InvitationEvent[];
   invitationGift: InvitationGift;
+  guestBook: GuestBook[];
   publishedAt?: string;
   expiredAt?: string;
   viewCount: number;
@@ -146,8 +147,8 @@ export interface InvitationGift {
   giftId: string;
   invitationId: string;
   address?: string;
-  giftBank: InvitationGiftBank[];
-  giftWallet: InvitationGiftWallet[]
+  invitationGiftBank: InvitationGiftBank[];
+  invitatioiGiftWallet: InvitationGiftWallet[]
   createdAt: string;
   updatedAt: string;
 }
