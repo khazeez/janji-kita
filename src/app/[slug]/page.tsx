@@ -36,15 +36,17 @@ export default function Slug() {
   if (loading) {
     return (
       <>
-      {/* <Loading /> */}
-      <h1 className='text-white text-3xl'>Loading...</h1>
+        {/* <Loading /> */}
+        <div className="flex items-center justify-center min-h-screen bg-black">
+          <h1 className="text-white text-2xl text-center">Loading...</h1>
+        </div>
       </>
     );
   }
 
   // Jika tidak ada data (slug salah)
   if (!dataUser) {
-    console.log("INIIIIIIII",dataUser)
+    console.log("INIIIIIIII", dataUser)
     return (
       <div className='min-h-screen bg-black flex items-center justify-center'>
         <div className='text-center'>
@@ -60,7 +62,7 @@ export default function Slug() {
 
   // Ambil nama produk dari relasi Supabase
   const productName = dataUser.product.productName;
-  console.log('INIIII YAAA',productName);
+  console.log('INIIII YAAA', productName);
 
   switch (productName) {
     case 'Inkjlsd':

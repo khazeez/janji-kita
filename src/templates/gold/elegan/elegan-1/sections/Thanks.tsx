@@ -12,7 +12,7 @@ export default function Thanks({data}: Props) {
           <div className='flex flex-col items-center text-white'>
             <p className='text-sm tracking-widest'>THE WEDDING OF</p>
 
-            <h1 className='text-5xl font-brown-sugar px-10'>
+            <h1 className='text-5xl text-center font-brown-sugar px-10'>
               {data.groomNickName} & {data.brideNickName}
             </h1>
           </div>
