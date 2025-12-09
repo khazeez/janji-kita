@@ -1,19 +1,22 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Search, X, ArrowLeft, ExternalLink, Check, ChevronDown } from 'lucide-react';
+import { getProductInvitation } from '@/queries/invitations';
+import { Product } from '@/types/interface'
 
 interface CatalogueItem {
-  id: number;
-  name: string;
-  price: string;
-  segment: 'Platinum' | 'Gold' | 'Silver' | 'Bronze';
-  theme: string;
-  productType: 'Web' | 'Video' | 'Filter IG/TikTok';
-  image: string;
-  description: string;
-  features: string[];
-  previewUrl: string;
+  id: number,
+    name: string;
+    price: string;
+    segment: string;
+    theme: string;
+    productType: string;
+    image: string
+    description: string
+    features: string[]
+    previewUrl: string
 }
+
 
 const catalogues: CatalogueItem[] = [
   {
@@ -261,11 +264,10 @@ export default function Catalogue() {
                       <div className='grid grid-cols-2 gap-3'>
                         <button
                           onClick={() => setWithPhoto(false)}
-                          className={`relative p-3 sm:p-4 rounded-lg border-2 transition-all ${
-                            !withPhoto
-                              ? 'border-pink-500 bg-pink-500/10'
-                              : 'border-gray-600 bg-gray-700/30 hover:border-gray-500'
-                          }`}
+                          className={`relative p-3 sm:p-4 rounded-lg border-2 transition-all ${!withPhoto
+                            ? 'border-pink-500 bg-pink-500/10'
+                            : 'border-gray-600 bg-gray-700/30 hover:border-gray-500'
+                            }`}
                         >
                           {!withPhoto && (
                             <div className='absolute -top-2 -right-2 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center'>
@@ -284,11 +286,10 @@ export default function Catalogue() {
 
                         <button
                           onClick={() => setWithPhoto(true)}
-                          className={`relative p-3 sm:p-4 rounded-lg border-2 transition-all ${
-                            withPhoto
-                              ? 'border-pink-500 bg-pink-500/10'
-                              : 'border-gray-600 bg-gray-700/30 hover:border-gray-500'
-                          }`}
+                          className={`relative p-3 sm:p-4 rounded-lg border-2 transition-all ${withPhoto
+                            ? 'border-pink-500 bg-pink-500/10'
+                            : 'border-gray-600 bg-gray-700/30 hover:border-gray-500'
+                            }`}
                         >
                           {withPhoto && (
                             <div className='absolute -top-2 -right-2 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center'>
@@ -410,9 +411,8 @@ export default function Catalogue() {
                         setSelectedProductType(type);
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full px-4 py-3 text-left text-sm hover:bg-gray-700 transition-colors ${
-                        selectedProductType === type ? 'bg-pink-600 text-white' : 'text-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 text-left text-sm hover:bg-gray-700 transition-colors ${selectedProductType === type ? 'bg-pink-600 text-white' : 'text-gray-300'
+                        }`}
                     >
                       {type}
                     </button>
@@ -428,11 +428,10 @@ export default function Catalogue() {
               <button
                 key={segment}
                 onClick={() => setSelectedSegment(segment)}
-                className={`px-4 py-2 sm:px-6 sm:py-2.5 rounded-full font-medium text-xs sm:text-sm transition-all duration-300 ${
-                  selectedSegment === segment
-                    ? 'bg-gradient-to-r from-pink-600 to-pink-500 text-white shadow-lg shadow-pink-500/30'
-                    : 'bg-gray-800/60 text-gray-300 hover:bg-gray-700/80 border border-gray-700/50'
-                }`}
+                className={`px-4 py-2 sm:px-6 sm:py-2.5 rounded-full font-medium text-xs sm:text-sm transition-all duration-300 ${selectedSegment === segment
+                  ? 'bg-gradient-to-r from-pink-600 to-pink-500 text-white shadow-lg shadow-pink-500/30'
+                  : 'bg-gray-800/60 text-gray-300 hover:bg-gray-700/80 border border-gray-700/50'
+                  }`}
               >
                 {segment}
               </button>

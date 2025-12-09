@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { getDataInvitationUser, getProductInvitation } from '@/queries';
+import Loading from '@/components/ui/Loading'
 import NetflixDesign from '@/templates/gold/special';
 import GlassesDesign from '@/templates/gold/elegan/elegan-1/main';
 
@@ -20,7 +21,7 @@ export default function Slug() {
 
     const fetchData = async () => {
       try {
-        const dataInv = await getDataInvitationUser();
+        const dataInv = await getDataInvitationUser(slug);
         setDataUser(dataInv);
       } catch (err) {
         setDataUser(null);
@@ -34,9 +35,7 @@ export default function Slug() {
 
   if (loading) {
     return (
-      <div className='min-h-screen bg-black flex items-center justify-center'>
-        <h1 className='text-white text-2xl'>Loading...</h1>
-      </div>
+      <Loading />
     );
   }
 

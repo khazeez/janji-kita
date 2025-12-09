@@ -33,7 +33,7 @@ export async function getSlug() {
 }
 
 //function untuk mengambil data invitation user
-export async function getDataInvitationUser() {
+export async function getDataInvitationUser(slug: string) {
   const { data, error } = await supabase
     .from('INVITATION')
     .select(
@@ -120,7 +120,7 @@ export async function getDataInvitationUser() {
       )
     `
     )
-    .eq('INVITATION_URL', 'aladin-jasmine')
+    .eq('INVITATION_URL', slug)
     .eq('IS_DELETED', false)
     .single();
 
