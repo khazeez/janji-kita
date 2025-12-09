@@ -37,7 +37,7 @@ export default function Slug() {
     return (
       <>
       {/* <Loading /> */}
-      <h1>Loading...</h1>
+      <h1 className='text-white text-3xl'>Loading...</h1>
       </>
     );
   }
