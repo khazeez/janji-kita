@@ -26,7 +26,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
 
   const baseUrl = 'https://janjikita.art';
   const invitationLink =
-    slug && guestName ? `${baseUrl}/${slug}?nama=${encodeURIComponent(guestName)}` : '';
+    slug && guestName ? `${baseUrl}/${slug}?to=${encodeURIComponent(guestName)}` : '';
 
   const invitationMessage = customMessage
     .replace('{nama}', guestName || '{nama}')
