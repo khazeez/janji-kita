@@ -6,7 +6,7 @@ interface SplashScreenProps {
 
 const SplashScreen = ({ onComplete }: SplashScreenProps) => {
   const texts = [
-    'Assalamualaikum....',
+    'السلام عليكم ورحمة الله وبركاته',
     'Dengan penuh hormat, kami ingin menghadirkanmu dalam kebahagiaan kami',
   ];
 
