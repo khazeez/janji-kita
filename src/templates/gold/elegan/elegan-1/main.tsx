@@ -192,7 +192,7 @@ export default function GlassesDesign({ data }: Props) {
         )}
 
         {/* Pemutar Audio */}
-        {/* <audio ref={audioRef} src='/audio/anugerah-terindah.mp3' loop /> */}
+        <audio ref={audioRef} src='/audio/anugerah-terindah.mp3' loop />
       </div>
     </div>
   );
