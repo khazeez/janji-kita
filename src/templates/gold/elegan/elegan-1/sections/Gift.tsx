@@ -84,9 +84,9 @@ export default function Gift({ data }: Props) {
       label: 'Wallet',
       icon: Wallet,
       show:
-        data.invitatioiGiftWallet &&
-        Array.isArray(data.invitatioiGiftWallet) &&
-        data.invitatioiGiftWallet.length > 0,
+        data.invitationGiftWallet &&
+        Array.isArray(data.invitationGiftWallet) &&
+        data.invitationGiftWallet.length > 0,
     },
   ].filter((tab) => tab.show);
 
@@ -111,11 +111,10 @@ export default function Gift({ data }: Props) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                  activeTab === tab.id
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${activeTab === tab.id
                     ? 'bg-white text-gray-800 shadow-lg'
                     : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
-                }`}
+                  }`}
               >
                 <Icon className='w-4 h-4' />
                 <span>{tab.label}</span>
@@ -191,9 +190,8 @@ export default function Gift({ data }: Props) {
                               </span>
                             </div>
                             <ChevronDown
-                              className={`w-4 h-4 text-white transition-transform duration-300 ${
-                                isDropdownOpen ? 'rotate-180' : ''
-                              }`}
+                              className={`w-4 h-4 text-white transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''
+                                }`}
                             />
                           </button>
 
@@ -213,11 +211,10 @@ export default function Gift({ data }: Props) {
                                       [bankKey]: false,
                                     });
                                   }}
-                                  className={`w-full p-3 text-left text-sm hover:bg-white/10 transition-all duration-200 ${
-                                    selectedIndex === accIndex
+                                  className={`w-full p-3 text-left text-sm hover:bg-white/10 transition-all duration-200 ${selectedIndex === accIndex
                                       ? 'bg-white/10'
                                       : ''
-                                  }`}
+                                    }`}
                                 >
                                   <p className='text-white font-medium'>
                                     {acc.bank}
@@ -264,7 +261,7 @@ export default function Gift({ data }: Props) {
                                     title='Copy nomor rekening'
                                   >
                                     {copiedText ===
-                                    `bank-${bankIndex}-${selectedIndex}` ? (
+                                      `bank-${bankIndex}-${selectedIndex}` ? (
                                       <Check className='w-4 h-4 text-green-400' />
                                     ) : (
                                       <Copy className='w-4 h-4 text-white' />
@@ -292,10 +289,10 @@ export default function Gift({ data }: Props) {
 
           {/* Crypto Wallet Tab */}
           {activeTab === 'wallet' &&
-            data.invitatioiGiftWallet &&
-            Array.isArray(data.invitatioiGiftWallet) && (
+            data.invitationGiftWallet &&
+            Array.isArray(data.invitationGiftWallet) && (
               <div className='animate-fadeIn space-y-5'>
-                {data.invitatioiGiftWallet.map((wallet, walletIndex) => {
+                {data.invitationGiftWallet.map((wallet, walletIndex) => {
                   const walletKey = `wallet-${walletIndex}`;
                   const selectedIndex = selectedWallet[walletKey] ?? null;
                   const isDropdownOpen = dropdownOpen[walletKey] || false;
@@ -329,9 +326,8 @@ export default function Gift({ data }: Props) {
                               </span>
                             </div>
                             <ChevronDown
-                              className={`w-4 h-4 text-white transition-transform duration-300 ${
-                                isDropdownOpen ? 'rotate-180' : ''
-                              }`}
+                              className={`w-4 h-4 text-white transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''
+                                }`}
                             />
                           </button>
 
@@ -348,11 +344,10 @@ export default function Gift({ data }: Props) {
                                     });
                                     toggleDropdown(walletKey);
                                   }}
-                                  className={`w-full p-3 text-left text-sm hover:bg-white/10 transition-all duration-200 ${
-                                    selectedIndex === addrIndex
+                                  className={`w-full p-3 text-left text-sm hover:bg-white/10 transition-all duration-200 ${selectedIndex === addrIndex
                                       ? 'bg-white/10'
                                       : ''
-                                  }`}
+                                    }`}
                                 >
                                   <p className='text-white font-medium'>
                                     {addr.network}
@@ -386,7 +381,7 @@ export default function Gift({ data }: Props) {
                                   title='Copy wallet address'
                                 >
                                   {copiedText ===
-                                  `wallet-${walletIndex}-${selectedIndex}` ? (
+                                    `wallet-${walletIndex}-${selectedIndex}` ? (
                                     <Check className='w-4 h-4 text-green-400' />
                                   ) : (
                                     <Copy className='w-4 h-4 text-white' />

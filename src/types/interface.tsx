@@ -37,12 +37,12 @@ export interface Product {
   productName: string;
   coverImage: string;
   segmentation:
-    | 'adat'
-    | 'modern'
-    | 'klasik'
-    | 'rustic'
-    | 'minimalis'
-    | 'elegant';
+  | 'adat'
+  | 'modern'
+  | 'klasik'
+  | 'rustic'
+  | 'minimalis'
+  | 'elegant';
   tier: 'bronze' | 'silver' | 'gold' | 'platinum';
   basePriceNoPhoto: number;
   basePriceWithPhoto?: number;
@@ -83,11 +83,11 @@ export interface Invitation {
   productId: string;
   invitationUrl: string;
   invitationStatus:
-    | 'DRAFT'
-    | 'IN-PROGRESS'
-    | 'COMPLETED'
-    | 'PUBLISHED'
-    | 'EXPIRED';
+  | 'DRAFT'
+  | 'IN-PROGRESS'
+  | 'COMPLETED'
+  | 'PUBLISHED'
+  | 'EXPIRED';
   invitationDataUser: InvitationDataUser;
   invitationEvent: InvitationEvent[];
   invitationGift: InvitationGift;
@@ -148,7 +148,7 @@ export interface InvitationGift {
   invitationId: string;
   address?: string;
   invitationGiftBank: InvitationGiftBank[];
-  invitatioiGiftWallet: InvitationGiftWallet[]
+  invitationGiftWallet: InvitationGiftWallet[]
   createdAt: string;
   updatedAt: string;
 }
@@ -185,12 +185,12 @@ export interface Transaction {
 
   // Payment
   paymentStatus:
-    | 'PENDING'
-    | 'PROCESSING'
-    | 'PAID'
-    | 'FAILED'
-    | 'CANCELLED'
-    | 'REFUNDED';
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'PAID'
+  | 'FAILED'
+  | 'CANCELLED'
+  | 'REFUNDED';
   paymentMethod: 'BANK_TRANSFER' | 'E_WALLET' | 'CREDIT_CARD' | 'QRIS';
   paymentProofUrl?: string;
   paymentGatewayRef?: string;
