@@ -1,5 +1,5 @@
 import { InvitationDataUser } from '@/types/interface';
-import { Instagram, Twitter, Linkedin, Github, Youtube, Facebook, NetworkIcon, MessageCircle } from 'lucide-react';
+import { Instagram, Globe, ChartNetwork, MessageCircle } from 'lucide-react';
 
 export interface Props {
   data: InvitationDataUser;
@@ -15,20 +15,20 @@ export default function Thanks({ data }: Props) {
     },
     {
       name: 'Web',
-      icon: NetworkIcon,
+      icon: Globe,
       href: 'https://janjikita.art',
       color: 'hover:text-red-400',
     },
     {
       name: 'Whatsapp',
       icon: MessageCircle,
-      href: '#https://wa.me/6282123436617?text=Halo,%20saya%20tertarik%20dengan%20undanganmu',
+      href: 'https://wa.me/6282123436617?text=Halo,%20saya%20tertarik%20dengan%20undanganmu',
       color: 'hover:text-blue-300',
     },
   ];
   return (
     <>
-      <div className='flex flex-col items-center py-30 mt-70'>
+      <div className='flex flex-col items-center py-30 mt-30'>
         <div className='thanks p-3 mt-30'>
           <div className='flex flex-col items-center text-white'>
             <p className='text-sm tracking-widest'>THE WEDDING OF</p>
