@@ -23,6 +23,30 @@ export default function RSVP({ invitationId }: Props) {
   // HELPER FUNCTIONS
   // ============================================
 
+  const getNameFromURL = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const toParam = urlParams.get('to');
+
+    if (toParam) {
+      // Replace + or %20 with space and capitalize each word
+      return toParam
+        .replace(/\+/g, ' ')
+        .split(' ')
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(' ');
+    }
+    return '';
+  };
+
+  useEffect(() => {
+    const nameFromURL = getNameFromURL();
+    if (nameFromURL) {
+      setName(nameFromURL);
+    }
+  }, []);
+
   const getAvatarColor = (name: string) => {
     const colors = [
       'from-emerald-400 to-emerald-600',
@@ -197,7 +221,10 @@ export default function RSVP({ invitationId }: Props) {
   // ============================================
 
   const handleSubmit = async () => {
-    if (!name.trim() || !message.trim()) return;
+    // Get name from URL parameter
+    const guestName = getNameFromURL();
+
+    if (!guestName.trim() || !message.trim()) return;
     if (isLoading) return;
 
     setIsLoading(true);
@@ -205,7 +232,7 @@ export default function RSVP({ invitationId }: Props) {
     try {
       const result = await insertMessages({
         invitationId,
-        guestName: name.trim(),
+        guestName: guestName.trim(),
         attendanceStatus: 'ATTENDING',
         guestCount: 1,
         message: message.trim(),
@@ -402,7 +429,7 @@ export default function RSVP({ invitationId }: Props) {
                 className='bg-[#F0F0F0] border-t border-gray-300 p-3 flex-shrink-0'
               >
                 <div className='space-y-2'>
-                  <input
+                  {/* <input
                     type='text'
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -410,7 +437,7 @@ export default function RSVP({ invitationId }: Props) {
                     placeholder='Nama kamu...'
                     disabled={isLoading}
                     className='w-full px-4 py-2.5 bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#075E54] text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed'
-                  />
+                  /> */}
                   <div className='flex gap-2 items-end'>
                     <textarea
                       value={message}

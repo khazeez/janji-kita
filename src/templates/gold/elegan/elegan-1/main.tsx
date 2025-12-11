@@ -19,21 +19,22 @@ export interface Props {
 }
 
 export default function GlassesDesign({ data }: Props) {
-  const [isCoverOpen, setIsCoverOpen] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [showCover, setShowCover] = useState(true);
   const [showSplash, setShowSplash] = useState(false);
+  const [showMain, setShowMain] = useState(false);
+  const [isSplashRollingUp, setIsSplashRollingUp] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [guestName, setGuestName] = useState<string>('');
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [currentImage, setCurrentImage] = useState(0);
 
-  // 🔹 Ambil nama tamu dari URL
+  // Ambil nama tamu dari query parameter
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const name = params.get('to');
     if (name) setGuestName(decodeURIComponent(name));
   }, []);
 
-  // 🔹 Fungsi untuk fullscreen
+  // Fungsi untuk masuk ke fullscreen
   const requestFullscreen = () => {
     const elem = document.documentElement;
     if (elem.requestFullscreen) elem.requestFullscreen();
@@ -45,32 +46,57 @@ export default function GlassesDesign({ data }: Props) {
       (elem as any).msRequestFullscreen();
   };
 
-  // 🔹 Ketika tombol buka undangan diklik
+  // Fungsi saat undangan dibuka (dari cover)
   const handleOpenInvitation = () => {
-    setShowSplash(true); // tampilkan splash
-    requestFullscreen();
+    console.log('Button clicked, hiding cover...');
+    setShowCover(false);
 
+    // Delay sedikit lalu tampilkan splash dan main content
     setTimeout(() => {
-      setShowSplash(false); // hilangkan splash setelah 3 detik
-      setIsCoverOpen(true); // buka halaman undangan
-      setTimeout(() => toggleMusic(), 500); // nyalakan musik sedikit setelahnya
-    }, 3000);
+      console.log('Showing splash screen and preparing main content...');
+      setShowMain(true); // Main content sudah di-render di belakang splash
+      setShowSplash(true);
+      requestFullscreen();
+    }, 100);
   };
 
-  // 🔹 Toggle musik
+  // Fungsi saat splash screen selesai - mulai animasi roll up
+  const handleSplashComplete = () => {
+    console.log('Splash complete, rolling up...');
+    setIsSplashRollingUp(true);
+
+    // Setelah animasi roll up selesai (1.2 detik), hapus splash screen
+    setTimeout(() => {
+      setShowSplash(false);
+      console.log('Splash removed, main content fully visible');
+
+      // Nyalakan musik
+      setTimeout(() => {
+        console.log('Starting music...');
+        toggleMusic();
+      }, 300);
+    }, 1200);
+  };
+
+  // Toggle music
   const toggleMusic = () => {
     setIsPlaying((prev) => !prev);
   };
 
-  // 🔹 Play / pause musik
+  // Play / Pause music
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (isPlaying) audio.play().catch(() => {});
-    else audio.pause();
+
+    if (isPlaying) {
+      audio.play().catch(() => {});
+    } else {
+      audio.pause();
+    }
   }, [isPlaying]);
 
-  // 🔹 Background slideshow
+  // Background slideshow
+  const [currentImage, setCurrentImage] = useState(0);
   const images = [
     '/images/imam81.webp',
     '/images/imam22.webp',
@@ -79,37 +105,33 @@ export default function GlassesDesign({ data }: Props) {
   ];
 
   useEffect(() => {
+    if (!showMain) return;
+
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % images.length);
     }, 6000);
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, [showMain, images.length]);
 
   return (
     <div className='flex justify-center min-h-screen'>
+      {/* Cover - Full screen tanpa batasan width */}
+      {showCover && (
+        <div className='absolute inset-0 z-50'>
+          <Cover
+            isOpen={false}
+            onOpen={handleOpenInvitation}
+            guestName={guestName}
+          />
+        </div>
+      )}
+
+      {/* Mobile Frame */}
       <div className='lg:w-[390px] w-full min-h-screen shadow-lg relative overflow-hidden'>
-        {/* 🔹 Splash Screen (muncul saat loading awal / setelah klik buka undangan) */}
-        {showSplash && (
-          <div className='absolute inset-0 z-[100] bg-black flex items-center justify-center'>
-            <SplashScreen />
-          </div>
-        )}
-
-        {/* 🔹 Cover Undangan */}
-        {!isCoverOpen && !showSplash && (
-          <div className='absolute inset-0 z-50'>
-            <Cover
-              isOpen={isCoverOpen}
-              onOpen={handleOpenInvitation}
-              guestName={guestName}
-            />
-          </div>
-        )}
-
-        {/* 🔹 Main Content */}
-        {isCoverOpen && (
-          <>
-            {/* Fixed Background */}
+        {/* 3. Main Content - Di-render di belakang splash */}
+        {showMain && (
+          <div className='relative'>
+            {/* Background Gambar dengan animasi smooth */}
             {images.map((img, index) => (
               <div
                 key={index}
@@ -144,7 +166,7 @@ export default function GlassesDesign({ data }: Props) {
               )}
             </button>
 
-            {/* Konten Utama */}
+            {/* Bagian Utama Undangan */}
             <main className='relative z-10 animate-fade-in'>
               <Introduction data={data} />
               <Quotes />
@@ -155,11 +177,27 @@ export default function GlassesDesign({ data }: Props) {
               <Thanks data={data.invitationDataUser} />
               <RSVP invitationId={data.invitationId} />
             </main>
-          </>
+          </div>
         )}
 
-        {/* Audio Player */}
-        <audio ref={audioRef} src='/audio/wedding-music.mp3' loop />
+        {/* 2. Splash Screen - Tampil di atas main content dengan animasi roll up */}
+        {showSplash && (
+          <div
+            className={`fixed inset-0 z-[100] lg:left-[calc(50%-195px)] lg:right-[calc(50%-195px)] transition-all duration-[1200ms] ease-in-out ${
+              isSplashRollingUp
+                ? 'scale-y-0 -translate-y-full opacity-0'
+                : 'scale-y-100 translate-y-0 opacity-100'
+            }`}
+            style={{
+              transformOrigin: 'bottom center',
+            }}
+          >
+            <SplashScreen onComplete={handleSplashComplete} />
+          </div>
+        )}
+
+        {/* Pemutar Audio */}
+        {/* <audio ref={audioRef} src='/audio/wedding-music.mp3' loop /> */}
       </div>
     </div>
   );

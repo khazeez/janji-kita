@@ -36,10 +36,10 @@ export default function Slug() {
   if (loading) {
     return (
       <>
-        {/* <Loading /> */}
-        <div className="flex items-center justify-center min-h-screen bg-black">
+        <Loading />
+        {/* <div className="flex items-center justify-center min-h-screen bg-black">
           <h1 className="text-white text-2xl text-center">Loading...</h1>
-        </div>
+        </div> */}
       </>
     );
   }
