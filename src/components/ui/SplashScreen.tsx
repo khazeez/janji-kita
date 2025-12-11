@@ -18,7 +18,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
   const [isSliding, setIsSliding] = useState(false);
 
   useEffect(() => {
-    const typingSpeed = 40; // Dipercepat dari 80 ke 40
+    const typingSpeed = 80;
     const fullText = texts[currentLine];
 
     if (currentChar <= fullText.length) {
@@ -28,48 +28,42 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
       }, typingSpeed);
       return () => clearTimeout(timer);
     } else {
-      // selesai mengetik satu baris
       const timer = setTimeout(() => {
         setShowCursor(false);
 
         if (currentLine === 0) {
-          // Teks pertama tampil 1 detik, lalu fade (dipercepat dari 2 detik)
           const fadeTimer = setTimeout(() => {
             setIsFadingOut(true);
 
-            // lanjut ke teks kedua setelah fade 0.5s (dipercepat dari 0.8s)
             const nextLineTimer = setTimeout(() => {
               setIsFadingOut(false);
               setCurrentLine(1);
               setCurrentChar(0);
               setDisplayText('');
               setShowCursor(true);
-            }, 500);
+            }, 800);
             return () => clearTimeout(nextLineTimer);
           }, 1000);
           return () => clearTimeout(fadeTimer);
         } else {
-          // Teks kedua tampil 1.5 detik, fade + slide (dipercepat dari 3 detik)
           const finalFadeTimer = setTimeout(() => {
             setIsFadingOut(true);
 
-            // Setelah fade, mulai slide
             const slideTimer = setTimeout(() => {
               setIsSliding(true);
 
-              // Setelah slide selesai, panggil onComplete
               const completeTimer = setTimeout(() => {
                 if (onComplete) onComplete();
               }, 1000);
 
               return () => clearTimeout(completeTimer);
-            }, 500);
+            }, 800);
 
             return () => clearTimeout(slideTimer);
           }, 1500);
           return () => clearTimeout(finalFadeTimer);
         }
-      }, 300); // Dipercepat dari 500
+      }, 500);
 
       return () => clearTimeout(timer);
     }
@@ -78,7 +72,7 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
   return (
     <div
       className={`
-        min-h-screen bg-black flex items-center justify-center text-[#f0f0f0] font-serif
+        min-h-screen bg-black flex items-center justify-center text-[#f0f0f0]
         transition-all duration-[1200ms] ease-in-out origin-bottom
         ${
           isSliding
@@ -90,12 +84,12 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
         transformOrigin: 'bottom center',
       }}
     >
-      <div className='text-center p-10 max-w-3xl'>
+      <div className='text-center p-10 max-w-[400px]'>
         <div
           className={`
             text-sm leading-relaxed italic min-h-[1.5em] mb-8
             transition-opacity duration-[500ms]
-            ${isFadingOut ? 'opacity-0' : 'opacity-100'}
+            ${isFadingOut ? 'opacity-100' : 'opacity-100'}
           `}
         >
           {displayText}
@@ -106,6 +100,12 @@ const SplashScreen = ({ onComplete }: SplashScreenProps) => {
       </div>
 
       <style jsx>{`
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
+
+        * {
+          font-family: 'Courier Prime', 'Courier New', Courier, monospace;
+        }
+
         @keyframes blink {
           0%,
           50% {

@@ -50,6 +50,7 @@ export default function GlassesDesign({ data }: Props) {
   const handleOpenInvitation = () => {
     console.log('Button clicked, hiding cover...');
     setShowCover(false);
+    setIsPlaying(true);
 
     // Delay sedikit lalu tampilkan splash dan main content
     setTimeout(() => {
@@ -69,12 +70,6 @@ export default function GlassesDesign({ data }: Props) {
     setTimeout(() => {
       setShowSplash(false);
       console.log('Splash removed, main content fully visible');
-
-      // Nyalakan musik
-      setTimeout(() => {
-        console.log('Starting music...');
-        toggleMusic();
-      }, 300);
     }, 1200);
   };
 
@@ -197,7 +192,7 @@ export default function GlassesDesign({ data }: Props) {
         )}
 
         {/* Pemutar Audio */}
-        {/* <audio ref={audioRef} src='/audio/wedding-music.mp3' loop /> */}
+        {/* <audio ref={audioRef} src='/audio/anugerah-terindah.mp3' loop /> */}
       </div>
     </div>
   );
