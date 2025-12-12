@@ -26,7 +26,7 @@ export default function Cover({
   const [loadedCount, setLoadedCount] = useState(0);
   const totalImages = images.length;
 
-  // Prefetch images without blocking UI
+  // Prefetch images
   useEffect(() => {
     images.forEach((src) => {
       const img = new Image();
@@ -38,6 +38,7 @@ export default function Cover({
   }, []);
 
   const progress = Math.round((loadedCount / totalImages) * 100);
+  const isLoaded = progress === 100;
 
   return (
     <AnimatePresence>
@@ -61,7 +62,7 @@ export default function Cover({
           {/* ✨ Main Container */}
           <div className='relative z-10 flex flex-col items-center justify-between h-screen pb-10 px-8'>
             {/* Logo */}
-            <div className='text-center text-white pt-5 pb-50'>
+            <div className='text-center text-white pt-5'>
               <h1 className='flex items-center justify-center'>
                 <span className='text-9xl font-madelyn leading-none'>I</span>
                 <span className='text-6xl font-rumble-brave leading-none'>
@@ -97,38 +98,26 @@ export default function Cover({
 
               {/* Buka Button */}
               <motion.button
-                onClick={onOpen}
-                className='relative px-6 py-3 border border-white text-white rounded-full font-sm overflow-hidden group'
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                onClick={isLoaded ? onOpen : undefined}
+                disabled={!isLoaded}
+                className={`relative px-6 py-3 border border-white text-white rounded-full font-sm overflow-hidden group transition-all ${
+                  isLoaded
+                    ? 'opacity-100 cursor-pointer'
+                    : 'opacity-60 cursor-not-allowed'
+                }`}
+                whileHover={isLoaded ? { scale: 1.05 } : {}}
+                whileTap={isLoaded ? { scale: 0.95 } : {}}
               >
                 <div className='absolute inset-0 bg-white/10 backdrop-blur-md -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out rounded-full'></div>
                 <span className='relative z-10 flex items-center gap-2'>
                   <FaEnvelopeOpen className='text-sm' />
-                  Buka Undangan
+                  {isLoaded ? 'Buka Undangan' : `Memuat... ${progress}%`}
                 </span>
               </motion.button>
             </motion.div>
 
-            {/* Spacer */}
             <div className='h-20'></div>
           </div>
-
-          {/* 🌙 LOADER Prefetch (tidak ganggu animasi cover) */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: loadedCount < totalImages ? 1 : 0 }}
-            transition={{ duration: 0.5 }}
-            className='absolute bottom-10 flex flex-col items-center text-white pointer-events-none'
-          >
-            {/* Spinner */}
-            <div className='w-10 h-10 border-2 border-white/40 border-t-white rounded-full animate-spin'></div>
-
-            {/* Progress */}
-            <p className='text-xs mt-2 tracking-wide'>
-              Memuat foto... {progress}%
-            </p>
-          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
