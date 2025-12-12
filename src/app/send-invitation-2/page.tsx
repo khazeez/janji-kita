@@ -204,7 +204,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
           >
             {/* Header */}
             <button onClick={() => setPage('setup')} className="flex items-center gap-1 text-gray-400 hover:text-white">
-              <ChevronLeft className="w-4 h-4" /> Kembali
+              <ChevronLeft className="w-4 h-4" />
             </button>
             <h2 className="lg:text-2xl text-xl pb-6 text-center font-bold text-white">Kirim Undangan</h2>
 
@@ -215,7 +215,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
                 className="flex items-center gap-2 px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg hover:bg-gray-600 transition-all"
               >
                 <Users className="w-5 h-5" />
-                Pilih dari Kontak HP
+                Pilih Kontak
               </button>
             </div>
 
