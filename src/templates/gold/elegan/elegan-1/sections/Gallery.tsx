@@ -105,7 +105,7 @@ export default function Gallery() {
             onClick={() => setSelectedImage(null)}
           >
             <button
-              className='absolute top-49 left-49 bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all z-50 w-10 h-10 rounded-full flex items-center justify-center border border-white/20'
+              className='absolute top-6 left-6 bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all z-50 w-10 h-10 rounded-full flex items-center justify-center border border-white/20'
               onClick={() => setSelectedImage(null)}
             >
               <X size={20} />
