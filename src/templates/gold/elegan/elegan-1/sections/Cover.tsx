@@ -121,9 +121,6 @@ export default function Cover({
             transition={{ duration: 0.5 }}
             className='absolute bottom-10 flex flex-col items-center text-white pointer-events-none'
           >
-            {/* Spinner */}
-            <div className='w-10 h-10 border-2 border-white/40 border-t-white rounded-full animate-spin'></div>
-
             {/* Progress */}
             <p className='text-xs mt-2 tracking-wide'>
               Memuat foto... {progress}%
