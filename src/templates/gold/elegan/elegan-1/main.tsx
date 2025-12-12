@@ -13,6 +13,7 @@ import {
 } from '@/templates/gold/elegan/elegan-1/sections';
 import { Invitation } from '@/types/interface';
 import SplashScreen from '@/components/ui/SplashScreen';
+import LoveStoryTimeline from './sections/LoveStrory';
 
 export interface Props {
   data: Invitation;
@@ -166,6 +167,7 @@ export default function GlassesDesign({ data }: Props) {
               <Introduction data={data} />
               <Quotes />
               <Couple data={data.invitationDataUser} />
+              {/* <LoveStoryTimeline /> */}
               <Gallery />
               <Event data={data.invitationEvent} />
               <Gift data={data.invitationGift} />
