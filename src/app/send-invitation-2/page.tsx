@@ -1,8 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import { Send, Copy, Check, Users } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// Definisi tipe tambahan agar tidak error di TypeScript
+// Definisi tipe tambahan untuk TypeScript
 interface Contact {
   name: string[];
   tel: string[];
@@ -59,8 +60,8 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
     }
   };
 
-  // ✅ Kirim WhatsApp ke satu kontak
-  const handleSendWhatsApp = (name: string, tel: string) => {
+  // ✅ Kirim WhatsApp ke satu kontak dan hapus dari daftar
+  const handleSendWhatsApp = (index: number, name: string, tel: string) => {
     if (!slug) {
       alert('Isi slug undangan terlebih dahulu');
       return;
@@ -74,6 +75,9 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
     const waMessage = encodeURIComponent(message);
     const waUrl = `https://wa.me/${tel}?text=${waMessage}`;
     window.open(waUrl, '_blank');
+
+    // Hapus kontak dari daftar setelah dikirim
+    setContacts((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleCopy = () => {
@@ -93,7 +97,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
               Kirim Undangan
             </h1>
             <p className="text-gray-400">
-              Pilih kontak lalu kirim undangan satu per satu dengan mudah
+              Pilih kontak lalu kirim undangan satu per satu
             </p>
           </div>
 
@@ -127,27 +131,40 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
               Pilih dari Kontak HP
             </button>
 
-            {contacts.length > 0 && (
-              <div className="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-3 max-h-64 overflow-y-auto text-sm divide-y divide-gray-800">
-                {contacts.map((c, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between py-2"
-                  >
-                    <div>
-                      <p className="font-medium">{c.name}</p>
-                      <p className="text-gray-400 text-xs">{c.tel}</p>
-                    </div>
-                    <button
-                      onClick={() => handleSendWhatsApp(c.name, c.tel)}
-                      className="flex items-center gap-1 bg-pink-600 hover:bg-pink-700 text-white px-3 py-1.5 rounded-lg text-sm transition-all"
+            <AnimatePresence>
+              {contacts.length > 0 && (
+                <motion.div
+                  className="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-3 max-h-64 overflow-y-auto text-sm divide-y divide-gray-800"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {contacts.map((c, i) => (
+                    <motion.div
+                      key={c.tel}
+                      className="flex items-center justify-between py-2"
+                      initial={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.3 } }}
                     >
-                      <Send className="w-4 h-4" />
-                      Kirim
-                    </button>
-                  </div>
-                ))}
-              </div>
+                      <div>
+                        <p className="font-medium">{c.name}</p>
+                        <p className="text-gray-400 text-xs">{c.tel}</p>
+                      </div>
+                      <button
+                        onClick={() => handleSendWhatsApp(i, c.name, c.tel)}
+                        className="flex items-center gap-1 bg-pink-600 hover:bg-pink-700 text-white px-3 py-1.5 rounded-lg text-sm transition-all"
+                      >
+                        <Send className="w-4 h-4" />
+                        Kirim
+                      </button>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {contacts.length === 0 && (
+              <p className="text-xs text-gray-500 mt-2 italic">Belum ada kontak dipilih</p>
             )}
             <p className="text-xs text-gray-500 mt-2">
               Browser yang didukung: Chrome / Edge Android
