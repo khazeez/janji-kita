@@ -1,9 +1,9 @@
 'use client';
 import React, { useState } from 'react';
-import { Send, Copy, Check, Users } from 'lucide-react';
+import { Send, Copy, Check, Users, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Definisi tipe tambahan untuk TypeScript
+// ====== TypeScript types ======
 interface Contact {
   name: string[];
   tel: string[];
@@ -19,9 +19,10 @@ declare global {
   }
 }
 
+// ====== Component ======
 export default function InvitationSender() {
+  const [page, setPage] = useState<'setup' | 'send'>('setup');
   const [slug, setSlug] = useState('');
-  const [contacts, setContacts] = useState<{ name: string; tel: string }[]>([]);
   const [copied, setCopied] = useState(false);
   const [customMessage, setCustomMessage] = useState(`Assalamu'alaikum Warahmatullahi Wabarakatuh
 
@@ -40,9 +41,13 @@ Atas kehadiran dan doa restunya, kami ucapkan terima kasih.
 
 Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
 
+  const [contacts, setContacts] = useState<{ name: string; tel: string }[]>([]);
+  const [sentContacts, setSentContacts] = useState<{ name: string; tel: string }[]>([]);
+  const [tab, setTab] = useState<'unsent' | 'sent'>('unsent');
+
   const baseUrl = 'https://janjikita.art';
 
-  // ✅ Pilih banyak kontak
+  // ====== Pilih kontak ======
   const handlePickContacts = async () => {
     if (!navigator.contacts?.select) {
       alert('Fitur pilih kontak tidak didukung di browser ini. Gunakan Chrome Android.');
@@ -60,7 +65,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
     }
   };
 
-  // ✅ Kirim WhatsApp ke satu kontak dan hapus dari daftar
+  // ====== Kirim ke satu kontak ======
   const handleSendWhatsApp = (index: number, name: string, tel: string) => {
     if (!slug) {
       alert('Isi slug undangan terlebih dahulu');
@@ -76,10 +81,13 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
     const waUrl = `https://wa.me/${tel}?text=${waMessage}`;
     window.open(waUrl, '_blank');
 
-    // Hapus kontak dari daftar setelah dikirim
+    // Pindahkan ke daftar sudah dikirim
+    const sent = contacts[index];
+    setSentContacts((prev) => [...prev, sent]);
     setContacts((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // ====== Copy link ======
   const handleCopy = () => {
     if (!slug) return;
     const link = `${baseUrl}/${slug}`;
@@ -88,123 +96,231 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // ====== Preview Pesan ======
+  const previewMessage = customMessage
+    .replace('{nama}', 'Budi Santoso')
+    .replace('{link}', `${baseUrl}/${slug || 'slug-undangan'}`);
+
+  // ====== UI ======
   return (
     <div className="min-h-screen bg-gray-900 p-4 md:p-8 text-gray-100">
       <div className="max-w-3xl mx-auto">
-        <div className="bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-              Kirim Undangan
-            </h1>
-            <p className="text-gray-400">
-              Pilih kontak lalu kirim undangan satu per satu
-            </p>
-          </div>
+        {/* === PAGE 1: SETUP UNDANGAN === */}
+        {page === 'setup' && (
+          <motion.div
+            key="setup"
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 40 }}
+            transition={{ duration: 0.3 }}
+            className="bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700"
+          >
+            <div className="text-center mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                Setup Undangan
+              </h1>
+              <p className="text-gray-400">
+                Masukkan slug dan ubah template pesan Anda
+              </p>
+            </div>
 
-          {/* Slug */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-300 mb-2">
-              Slug Undangan
-            </label>
-            <input
-              type="text"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              placeholder="contoh: wedding-john-jane"
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:border-pink-400 focus:outline-none"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              URL akan menjadi: {baseUrl}/{slug || '...'}
-            </p>
-          </div>
+            {/* Slug */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-300 mb-2">
+                Slug Undangan
+              </label>
+              <input
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                placeholder="contoh: wedding-aziz-ana"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:border-pink-400 focus:outline-none"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                URL akan menjadi: {baseUrl}/{slug || '...'}
+              </p>
+            </div>
 
-          {/* Pick Contacts */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-300 mb-2">
-              Pilih Kontak
-            </label>
-            <button
-              onClick={handlePickContacts}
-              className="flex items-center gap-2 px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg hover:bg-gray-600 transition-all"
-            >
-              <Users className="w-5 h-5" />
-              Pilih dari Kontak HP
-            </button>
+            {/* Template */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-300 mb-2">
+                Template Pesan
+              </label>
+              <textarea
+                value={customMessage}
+                onChange={(e) => setCustomMessage(e.target.value)}
+                rows={10}
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-gray-100 rounded-lg font-mono text-sm focus:border-pink-400 focus:outline-none"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Gunakan <code>{'{nama}'}</code> dan <code>{'{link}'}</code>
+              </p>
+            </div>
 
-            <AnimatePresence>
-              {contacts.length > 0 && (
+            {/* Preview */}
+            <div className="bg-gray-900 rounded-lg border border-gray-700 p-4 mb-6">
+              <h3 className="text-sm font-semibold text-gray-400 mb-2">Preview:</h3>
+              <pre className="whitespace-pre-wrap text-sm text-gray-300 leading-relaxed">
+                {previewMessage}
+              </pre>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-2 px-3 py-2 bg-gray-700 rounded-lg text-sm text-gray-200 hover:bg-gray-600"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4 text-green-400" />
+                    <span className="text-green-400">Link Tersalin!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span>Salin Link</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={() => setPage('send')}
+                disabled={!slug}
+                className="bg-gradient-to-r from-pink-600 to-purple-600 text-white font-semibold py-2 px-6 rounded-lg hover:from-pink-700 hover:to-purple-700 disabled:opacity-50 transition-all"
+              >
+                Lanjut ke Kirim →
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* === PAGE 2: KIRIM UNDANGAN === */}
+        {page === 'send' && (
+          <motion.div
+            key="send"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.3 }}
+            className="bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <button
+                onClick={() => setPage('setup')}
+                className="flex items-center gap-1 text-gray-400 hover:text-white"
+              >
+                <ChevronLeft className="w-4 h-4" /> Kembali
+              </button>
+              <h2 className="text-2xl font-bold text-white">Kirim Undangan</h2>
+            </div>
+
+            {/* Tombol pilih kontak */}
+            <div className="mb-4">
+              <button
+                onClick={handlePickContacts}
+                className="flex items-center gap-2 px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg hover:bg-gray-600 transition-all"
+              >
+                <Users className="w-5 h-5" />
+                Pilih dari Kontak HP
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex justify-between items-center mb-3 border-b border-gray-700">
+              <div className="flex">
+                <button
+                  className={`px-4 py-2 text-sm font-semibold ${
+                    tab === 'unsent'
+                      ? 'border-b-2 border-pink-500 text-pink-400'
+                      : 'text-gray-400 hover:text-gray-200'
+                  }`}
+                  onClick={() => setTab('unsent')}
+                >
+                  Belum Dikirim ({contacts.length})
+                </button>
+                <button
+                  className={`px-4 py-2 text-sm font-semibold ${
+                    tab === 'sent'
+                      ? 'border-b-2 border-green-500 text-green-400'
+                      : 'text-gray-400 hover:text-gray-200'
+                  }`}
+                  onClick={() => setTab('sent')}
+                >
+                  Sudah Dikirim ({sentContacts.length})
+                </button>
+              </div>
+            </div>
+
+            {/* Daftar kontak */}
+            <AnimatePresence mode="wait">
+              {tab === 'unsent' && (
                 <motion.div
-                  className="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-3 max-h-64 overflow-y-auto text-sm divide-y divide-gray-800"
+                  key="unsent"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  {contacts.map((c, i) => (
-                    <motion.div
-                      key={c.tel}
-                      className="flex items-center justify-between py-2"
-                      initial={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.3 } }}
-                    >
-                      <div>
-                        <p className="font-medium">{c.name}</p>
-                        <p className="text-gray-400 text-xs">{c.tel}</p>
-                      </div>
-                      <button
-                        onClick={() => handleSendWhatsApp(i, c.name, c.tel)}
-                        className="flex items-center gap-1 bg-pink-600 hover:bg-pink-700 text-white px-3 py-1.5 rounded-lg text-sm transition-all"
+                  {contacts.length === 0 ? (
+                    <p className="text-gray-400 text-sm italic text-center py-6">
+                      Belum ada kontak yang dipilih
+                    </p>
+                  ) : (
+                    contacts.map((c, i) => (
+                      <div
+                        key={c.tel}
+                        className="flex items-center justify-between py-2 border-b border-gray-800"
                       >
-                        <Send className="w-4 h-4" />
-                        Kirim
-                      </button>
-                    </motion.div>
-                  ))}
+                        <div>
+                          <p className="font-medium">{c.name}</p>
+                          <p className="text-gray-400 text-xs">{c.tel}</p>
+                        </div>
+                        <button
+                          onClick={() => handleSendWhatsApp(i, c.name, c.tel)}
+                          className="flex items-center gap-1 bg-pink-600 hover:bg-pink-700 text-white px-3 py-1.5 rounded-lg text-sm transition-all"
+                        >
+                          <Send className="w-4 h-4" />
+                          Kirim
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </motion.div>
+              )}
+
+              {tab === 'sent' && (
+                <motion.div
+                  key="sent"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {sentContacts.length === 0 ? (
+                    <p className="text-gray-400 text-sm italic text-center py-6">
+                      Belum ada yang dikirim
+                    </p>
+                  ) : (
+                    sentContacts.map((c) => (
+                      <div
+                        key={c.tel}
+                        className="flex items-center justify-between py-2 border-b border-gray-800"
+                      >
+                        <div>
+                          <p className="font-medium text-green-400">{c.name}</p>
+                          <p className="text-gray-400 text-xs">{c.tel}</p>
+                        </div>
+                        <span className="text-green-400 text-xs font-semibold">
+                          ✅ Terkirim
+                        </span>
+                      </div>
+                    ))
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {contacts.length === 0 && (
-              <p className="text-xs text-gray-500 mt-2 italic">Belum ada kontak dipilih</p>
-            )}
-            <p className="text-xs text-gray-500 mt-2">
-              Browser yang didukung: Chrome / Edge Android
-            </p>
-          </div>
-
-          {/* Custom Message */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-300 mb-2">
-              Template Pesan
-            </label>
-            <textarea
-              value={customMessage}
-              onChange={(e) => setCustomMessage(e.target.value)}
-              rows={10}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-gray-100 rounded-lg font-mono text-sm focus:border-pink-400 focus:outline-none"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Gunakan <code>{'{nama}'}</code> dan <code>{'{link}'}</code> untuk mengganti otomatis
-            </p>
-          </div>
-
-          {/* Copy Link */}
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-2 px-3 py-2 bg-gray-700 rounded-lg mb-6 text-sm text-gray-200 hover:bg-gray-600"
-          >
-            {copied ? (
-              <>
-                <Check className="w-4 h-4 text-green-400" />
-                <span className="text-green-400">Link Tersalin!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-4 h-4" />
-                <span>Salin Link Dasar</span>
-              </>
-            )}
-          </button>
-        </div>
+          </motion.div>
+        )}
 
         <div className="text-center mt-6 text-sm text-gray-400">
           <p>Made with ❤️ for your special day</p>
