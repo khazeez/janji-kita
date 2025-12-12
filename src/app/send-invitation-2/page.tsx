@@ -2,13 +2,12 @@
 import React, { useState } from 'react';
 import { Send, Copy, Check, Users } from 'lucide-react';
 
-// ✅ Tambahkan interface untuk kontak
+// Definisi tipe tambahan agar tidak error di TypeScript
 interface Contact {
   name: string[];
   tel: string[];
 }
 
-// ✅ Tambahkan interface untuk navigator.contacts
 interface NavigatorContacts {
   select(properties: string[], options?: { multiple: boolean }): Promise<Contact[]>;
 }
@@ -42,8 +41,8 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
 
   const baseUrl = 'https://janjikita.art';
 
+  // ✅ Pilih banyak kontak
   const handlePickContacts = async () => {
-    // ✅ aman untuk browser lain
     if (!navigator.contacts?.select) {
       alert('Fitur pilih kontak tidak didukung di browser ini. Gunakan Chrome Android.');
       return;
@@ -53,35 +52,28 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
       const selected = await navigator.contacts.select(['name', 'tel'], { multiple: true });
       const formatted = selected
         .filter((c) => c.tel?.length)
-        .map((c) => ({
-          name: c.name[0],
-          tel: c.tel[0].replace(/\D/g, ''),
-        }));
+        .map((c) => ({ name: c.name[0], tel: c.tel[0].replace(/\D/g, '') }));
       setContacts(formatted);
     } catch (err) {
       console.error('Contact selection canceled or failed', err);
     }
   };
 
-  const handleSendAll = () => {
+  // ✅ Kirim WhatsApp ke satu kontak
+  const handleSendWhatsApp = (name: string, tel: string) => {
     if (!slug) {
       alert('Isi slug undangan terlebih dahulu');
       return;
     }
-    if (!contacts.length) {
-      alert('Pilih minimal satu kontak');
-      return;
-    }
 
-    contacts.forEach((c, i) => {
-      const link = `${baseUrl}/${slug}?to=${encodeURIComponent(c.name)}`;
-      const message = customMessage
-        .replace('{nama}', c.name)
-        .replace('{link}', link);
-      const waMessage = encodeURIComponent(message);
-      const waUrl = `https://wa.me/${c.tel}?text=${waMessage}`;
-      setTimeout(() => window.open(waUrl, '_blank'), i * 800);
-    });
+    const link = `${baseUrl}/${slug}?to=${encodeURIComponent(name)}`;
+    const message = customMessage
+      .replace('{nama}', name)
+      .replace('{link}', link);
+
+    const waMessage = encodeURIComponent(message);
+    const waUrl = `https://wa.me/${tel}?text=${waMessage}`;
+    window.open(waUrl, '_blank');
   };
 
   const handleCopy = () => {
@@ -98,10 +90,10 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
         <div className="bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700">
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-              Kirim Undangan Massal
+              Kirim Undangan
             </h1>
             <p className="text-gray-400">
-              Pilih banyak kontak dan kirim undangan otomatis via WhatsApp
+              Pilih kontak lalu kirim undangan satu per satu dengan mudah
             </p>
           </div>
 
@@ -136,15 +128,46 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
             </button>
 
             {contacts.length > 0 && (
-              <div className="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-3 max-h-48 overflow-y-auto text-sm">
+              <div className="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-3 max-h-64 overflow-y-auto text-sm divide-y divide-gray-800">
                 {contacts.map((c, i) => (
-                  <div key={i} className="flex justify-between py-1 border-b border-gray-800">
-                    <span>{c.name}</span>
-                    <span className="text-gray-400">{c.tel}</span>
+                  <div
+                    key={i}
+                    className="flex items-center justify-between py-2"
+                  >
+                    <div>
+                      <p className="font-medium">{c.name}</p>
+                      <p className="text-gray-400 text-xs">{c.tel}</p>
+                    </div>
+                    <button
+                      onClick={() => handleSendWhatsApp(c.name, c.tel)}
+                      className="flex items-center gap-1 bg-pink-600 hover:bg-pink-700 text-white px-3 py-1.5 rounded-lg text-sm transition-all"
+                    >
+                      <Send className="w-4 h-4" />
+                      Kirim
+                    </button>
                   </div>
                 ))}
               </div>
             )}
+            <p className="text-xs text-gray-500 mt-2">
+              Browser yang didukung: Chrome / Edge Android
+            </p>
+          </div>
+
+          {/* Custom Message */}
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
+              Template Pesan
+            </label>
+            <textarea
+              value={customMessage}
+              onChange={(e) => setCustomMessage(e.target.value)}
+              rows={10}
+              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-gray-100 rounded-lg font-mono text-sm focus:border-pink-400 focus:outline-none"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Gunakan <code>{'{nama}'}</code> dan <code>{'{link}'}</code> untuk mengganti otomatis
+            </p>
           </div>
 
           {/* Copy Link */}
@@ -164,16 +187,10 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
               </>
             )}
           </button>
+        </div>
 
-          {/* Send Button */}
-          <button
-            onClick={handleSendAll}
-            disabled={!slug || !contacts.length}
-            className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white font-semibold py-4 rounded-xl hover:from-pink-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-3 text-lg shadow-lg"
-          >
-            <Send className="w-6 h-6" />
-            Kirim ke {contacts.length || 0} Kontak
-          </button>
+        <div className="text-center mt-6 text-sm text-gray-400">
+          <p>Made with ❤️ for your special day</p>
         </div>
       </div>
     </div>
