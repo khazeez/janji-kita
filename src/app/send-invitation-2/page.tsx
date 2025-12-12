@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Send, Copy, Check, Users, ChevronLeft } from 'lucide-react';
+import { Send, Copy, Check, Users, ChevronLeft, Image } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // ====== TypeScript types ======
@@ -41,8 +41,8 @@ Atas kehadiran dan doa restunya, kami ucapkan terima kasih.
 
 Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
 
-  const [contacts, setContacts] = useState<{ name: string; tel: string }[]>([]);
-  const [sentContacts, setSentContacts] = useState<{ name: string; tel: string }[]>([]);
+  const [contacts, setContacts] = useState<{ name: string; tel: string; image?: File }[]>([]);
+  const [sentContacts, setSentContacts] = useState<{ name: string; tel: string; image?: File }[]>([]);
   const [tab, setTab] = useState<'unsent' | 'sent'>('unsent');
 
   const baseUrl = 'https://janjikita.art';
@@ -65,8 +65,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
         const combined = [...prev, ...formatted];
         // Hilangkan duplikasi berdasarkan nomor telepon
         const unique = combined.filter(
-          (contact, index, self) =>
-            index === self.findIndex((c) => c.tel === contact.tel)
+          (contact, index, self) => index === self.findIndex((c) => c.tel === contact.tel)
         );
         return unique;
       });
@@ -84,9 +83,9 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
 
     const link = `${baseUrl}/${slug}?to=${encodeURIComponent(name)}`;
     const message = customMessage.replace('{nama}', name).replace('{link}', link);
-
     const waMessage = encodeURIComponent(message);
     const waUrl = `https://wa.me/${tel}?text=${waMessage}`;
+
     window.open(waUrl, '_blank');
 
     const sent = contacts[index];
@@ -101,6 +100,17 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  // ====== Handle Image Upload per kontak ======
+  const handleImageChange = (index: number, file?: File) => {
+    if (file && file.size > 5 * 1024 * 1024) {
+      alert('File terlalu besar! Maksimal 5 MB.');
+      return;
+    }
+    setContacts((prev) =>
+      prev.map((c, i) => (i === index ? { ...c, image: file } : c))
+    );
   };
 
   // ====== Preview Pesan ======
@@ -257,6 +267,21 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
                         <div>
                           <p className="font-medium">{c.name}</p>
                           <p className="text-gray-400 text-xs">{c.tel}</p>
+                          {/* Input Image */}
+                          <div className="mt-1 flex items-center gap-2">
+                            <label className="flex items-center gap-1 text-gray-400 cursor-pointer hover:text-gray-200 text-xs">
+                              <Image className="w-4 h-4" /> Pilih Gambar
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => handleImageChange(i, e.target.files?.[0])}
+                              />
+                            </label>
+                            {c.image && (
+                              <span className="text-gray-300 text-xs">{c.image.name}</span>
+                            )}
+                          </div>
                         </div>
                         <button
                           onClick={() => handleSendWhatsApp(i, c.name, c.tel)}
@@ -281,6 +306,9 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
                         <div>
                           <p className="font-medium text-green-400">{c.name}</p>
                           <p className="text-gray-400 text-xs">{c.tel}</p>
+                          {c.image && (
+                            <span className="text-gray-300 text-xs">{c.image.name}</span>
+                          )}
                         </div>
                         <span className="text-green-400 text-xs font-semibold">✅ Terkirim</span>
                       </div>
