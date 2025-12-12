@@ -1,0 +1,329 @@
+'use client';
+import React, { useState } from 'react';
+import { Send, Copy, Check, Users, ChevronLeft, Image } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// ====== TypeScript types ======
+interface Contact {
+  name: string[];
+  tel: string[];
+}
+
+interface NavigatorContacts {
+  select(properties: string[], options?: { multiple: boolean }): Promise<Contact[]>;
+}
+
+declare global {
+  interface Navigator {
+    contacts?: NavigatorContacts;
+  }
+}
+
+// ====== Component ======
+export default function InvitationSender() {
+  const [page, setPage] = useState<'setup' | 'send'>('setup');
+  const [slug, setSlug] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [customMessage, setCustomMessage] = useState(`Assalamu'alaikum Warahmatullahi Wabarakatuh
+
+Kepada Yth.
+Bapak/Ibu/Saudara/i
+*{nama}*
+
+Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami.
+
+Berikut link undangan kami:
+{link}
+
+Merupakan suatu kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu.
+
+Atas kehadiran dan doa restunya, kami ucapkan terima kasih.
+
+Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
+
+  const [contacts, setContacts] = useState<{ name: string; tel: string; image?: File }[]>([]);
+  const [sentContacts, setSentContacts] = useState<{ name: string; tel: string; image?: File }[]>([]);
+  const [tab, setTab] = useState<'unsent' | 'sent'>('unsent');
+
+  const baseUrl = 'https://janjikita.art';
+
+  // ====== Pilih kontak (menambahkan tanpa menghapus yang lama) ======
+  const handlePickContacts = async () => {
+    if (!navigator.contacts?.select) {
+      alert('Fitur pilih kontak tidak didukung di browser ini. Gunakan Chrome Android.');
+      return;
+    }
+
+    try {
+      const selected = await navigator.contacts.select(['name', 'tel'], { multiple: true });
+
+      const formatted = selected
+        .filter((c) => c.tel?.length)
+        .map((c) => ({ name: c.name[0], tel: c.tel[0].replace(/\D/g, '') }));
+
+      setContacts((prev) => {
+        const combined = [...prev, ...formatted];
+        // Hilangkan duplikasi berdasarkan nomor telepon
+        const unique = combined.filter(
+          (contact, index, self) => index === self.findIndex((c) => c.tel === contact.tel)
+        );
+        return unique;
+      });
+    } catch (err) {
+      console.error('Contact selection canceled or failed', err);
+    }
+  };
+
+  // ====== Kirim ke satu kontak ======
+  const handleSendWhatsApp = (index: number, name: string, tel: string) => {
+    if (!slug) {
+      alert('Isi slug undangan terlebih dahulu');
+      return;
+    }
+
+    const link = `${baseUrl}/${slug}?to=${encodeURIComponent(name)}`;
+    const message = customMessage.replace('{nama}', name).replace('{link}', link);
+    const waMessage = encodeURIComponent(message);
+    const waUrl = `https://wa.me/${tel}?text=${waMessage}`;
+
+    window.open(waUrl, '_blank');
+
+    const sent = contacts[index];
+    setSentContacts((prev) => [...prev, sent]);
+    setContacts((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ====== Copy link ======
+  const handleCopy = () => {
+    if (!slug) return;
+    const link = `${baseUrl}/${slug}`;
+    navigator.clipboard.writeText(link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  // ====== Handle Image Upload per kontak ======
+  const handleImageChange = (index: number, file?: File) => {
+    if (file && file.size > 5 * 1024 * 1024) {
+      alert('File terlalu besar! Maksimal 5 MB.');
+      return;
+    }
+    setContacts((prev) =>
+      prev.map((c, i) => (i === index ? { ...c, image: file } : c))
+    );
+  };
+
+  // ====== Preview Pesan ======
+  const previewMessage = customMessage
+    .replace('{nama}', 'Budi Santoso')
+    .replace('{link}', `${baseUrl}/${slug || 'slug-undangan'}`);
+
+  // ====== UI ======
+  return (
+    <div className="min-h-screen bg-gray-900 p-4 md:p-8 text-gray-100">
+      <div className="max-w-3xl mx-auto">
+        {/* === PAGE 1: SETUP UNDANGAN === */}
+        {page === 'setup' && (
+          <motion.div
+            key="setup"
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 40 }}
+            transition={{ duration: 0.3 }}
+            className="bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700"
+          >
+            <div className="text-center mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Setup Undangan</h1>
+              <p className="text-gray-400">Masukkan slug dan ubah template pesan Anda</p>
+            </div>
+
+            {/* Slug */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-300 mb-2">Slug Undangan</label>
+              <input
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                placeholder="contoh: wedding-aziz-ana"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:border-pink-400 focus:outline-none"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                URL akan menjadi: {baseUrl}/{slug || '...'}
+              </p>
+            </div>
+
+            {/* Template */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-300 mb-2">Template Pesan</label>
+              <textarea
+                value={customMessage}
+                onChange={(e) => setCustomMessage(e.target.value)}
+                rows={10}
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-gray-100 rounded-lg font-mono text-sm focus:border-pink-400 focus:outline-none"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Gunakan <code>{'{nama}'}</code> dan <code>{'{link}'}</code>
+              </p>
+            </div>
+
+            {/* Preview */}
+            <div className="bg-gray-900 rounded-lg border border-gray-700 p-4 mb-6">
+              <h3 className="text-sm font-semibold text-gray-400 mb-2">Preview:</h3>
+              <pre className="whitespace-pre-wrap text-sm text-gray-300 leading-relaxed">{previewMessage}</pre>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-2 px-3 py-2 bg-gray-700 rounded-lg text-sm text-gray-200 hover:bg-gray-600"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4 text-green-400" />
+                    <span className="text-green-400">Link Tersalin!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span>Salin Link</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={() => setPage('send')}
+                disabled={!slug}
+                className="bg-gradient-to-r from-pink-600 to-purple-600 text-white font-semibold py-2 px-6 rounded-lg hover:from-pink-700 hover:to-purple-700 disabled:opacity-50 transition-all"
+              >
+                Lanjut ke Kirim →
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* === PAGE 2: KIRIM UNDANGAN === */}
+        {page === 'send' && (
+          <motion.div
+            key="send"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.3 }}
+            className="bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700"
+          >
+            {/* Header */}
+            <button onClick={() => setPage('setup')} className="flex items-center gap-1 text-gray-400 hover:text-white">
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <h2 className="lg:text-2xl text-xl pb-6 text-center font-bold text-white">Kirim Undangan</h2>
+
+            {/* Tombol pilih kontak */}
+            <div className="mb-4">
+              <button
+                onClick={handlePickContacts}
+                className="flex items-center gap-2 px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg hover:bg-gray-600 transition-all"
+              >
+                <Users className="w-5 h-5" />
+                Pilih Kontak
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex justify-between items-center mb-3 border-b border-gray-700">
+              <div className="flex">
+                <button
+                  className={`px-4 py-2 text-sm font-semibold ${
+                    tab === 'unsent'
+                      ? 'border-b-2 border-pink-500 text-pink-400'
+                      : 'text-gray-400 hover:text-gray-200'
+                  }`}
+                  onClick={() => setTab('unsent')}
+                >
+                  Belum Dikirim ({contacts.length})
+                </button>
+                <button
+                  className={`px-4 py-2 text-sm font-semibold ${
+                    tab === 'sent'
+                      ? 'border-b-2 border-green-500 text-green-400'
+                      : 'text-gray-400 hover:text-gray-200'
+                  }`}
+                  onClick={() => setTab('sent')}
+                >
+                  Sudah Dikirim ({sentContacts.length})
+                </button>
+              </div>
+            </div>
+
+            {/* Daftar kontak */}
+            <AnimatePresence mode="wait">
+              {tab === 'unsent' && (
+                <motion.div key="unsent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  {contacts.length === 0 ? (
+                    <p className="text-gray-400 text-sm italic text-center py-6">Belum ada kontak yang dipilih</p>
+                  ) : (
+                    contacts.map((c, i) => (
+                      <div key={c.tel} className="flex items-center justify-between py-2 border-b border-gray-800">
+                        <div>
+                          <p className="font-medium">{c.name}</p>
+                          <p className="text-gray-400 text-xs">{c.tel}</p>
+                          {/* Input Image */}
+                          <div className="mt-1 flex items-center gap-2">
+                            <label className="flex items-center gap-1 text-gray-400 cursor-pointer hover:text-gray-200 text-xs">
+                              <Image className="w-4 h-4" /> Pilih Gambar
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => handleImageChange(i, e.target.files?.[0])}
+                              />
+                            </label>
+                            {c.image && (
+                              <span className="text-gray-300 text-xs">{c.image.name}</span>
+                            )}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleSendWhatsApp(i, c.name, c.tel)}
+                          className="flex items-center gap-1 bg-pink-600 hover:bg-pink-700 text-white px-3 py-1.5 rounded-lg text-sm transition-all"
+                        >
+                          <Send className="w-4 h-4" />
+                          Kirim
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </motion.div>
+              )}
+
+              {tab === 'sent' && (
+                <motion.div key="sent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                  {sentContacts.length === 0 ? (
+                    <p className="text-gray-400 text-sm italic text-center py-6">Belum ada yang dikirim</p>
+                  ) : (
+                    sentContacts.map((c) => (
+                      <div key={c.tel} className="flex items-center justify-between py-2 border-b border-gray-800">
+                        <div>
+                          <p className="font-medium text-green-400">{c.name}</p>
+                          <p className="text-gray-400 text-xs">{c.tel}</p>
+                          {c.image && (
+                            <span className="text-gray-300 text-xs">{c.image.name}</span>
+                          )}
+                        </div>
+                        <span className="text-green-400 text-xs font-semibold">✅ Terkirim</span>
+                      </div>
+                    ))
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+
+        <div className="text-center mt-6 text-sm text-gray-400">
+          <p>Made with ❤️ for your special day</p>
+        </div>
+      </div>
+    </div>
+  );
+}
