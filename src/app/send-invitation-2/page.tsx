@@ -47,7 +47,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
 
   const baseUrl = 'https://janjikita.art';
 
-  // ====== Pilih kontak ======
+  // ====== Pilih kontak (menambahkan tanpa menghapus yang lama) ======
   const handlePickContacts = async () => {
     if (!navigator.contacts?.select) {
       alert('Fitur pilih kontak tidak didukung di browser ini. Gunakan Chrome Android.');
@@ -56,10 +56,20 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
 
     try {
       const selected = await navigator.contacts.select(['name', 'tel'], { multiple: true });
+
       const formatted = selected
         .filter((c) => c.tel?.length)
         .map((c) => ({ name: c.name[0], tel: c.tel[0].replace(/\D/g, '') }));
-      setContacts(formatted);
+
+      setContacts((prev) => {
+        const combined = [...prev, ...formatted];
+        // Hilangkan duplikasi berdasarkan nomor telepon
+        const unique = combined.filter(
+          (contact, index, self) =>
+            index === self.findIndex((c) => c.tel === contact.tel)
+        );
+        return unique;
+      });
     } catch (err) {
       console.error('Contact selection canceled or failed', err);
     }
@@ -73,15 +83,12 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
     }
 
     const link = `${baseUrl}/${slug}?to=${encodeURIComponent(name)}`;
-    const message = customMessage
-      .replace('{nama}', name)
-      .replace('{link}', link);
+    const message = customMessage.replace('{nama}', name).replace('{link}', link);
 
     const waMessage = encodeURIComponent(message);
     const waUrl = `https://wa.me/${tel}?text=${waMessage}`;
     window.open(waUrl, '_blank');
 
-    // Pindahkan ke daftar sudah dikirim
     const sent = contacts[index];
     setSentContacts((prev) => [...prev, sent]);
     setContacts((prev) => prev.filter((_, i) => i !== index));
@@ -116,19 +123,13 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
             className="bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700"
           >
             <div className="text-center mb-8">
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                Setup Undangan
-              </h1>
-              <p className="text-gray-400">
-                Masukkan slug dan ubah template pesan Anda
-              </p>
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Setup Undangan</h1>
+              <p className="text-gray-400">Masukkan slug dan ubah template pesan Anda</p>
             </div>
 
             {/* Slug */}
             <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-300 mb-2">
-                Slug Undangan
-              </label>
+              <label className="block text-sm font-semibold text-gray-300 mb-2">Slug Undangan</label>
               <input
                 type="text"
                 value={slug}
@@ -143,9 +144,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
 
             {/* Template */}
             <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-300 mb-2">
-                Template Pesan
-              </label>
+              <label className="block text-sm font-semibold text-gray-300 mb-2">Template Pesan</label>
               <textarea
                 value={customMessage}
                 onChange={(e) => setCustomMessage(e.target.value)}
@@ -160,9 +159,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
             {/* Preview */}
             <div className="bg-gray-900 rounded-lg border border-gray-700 p-4 mb-6">
               <h3 className="text-sm font-semibold text-gray-400 mb-2">Preview:</h3>
-              <pre className="whitespace-pre-wrap text-sm text-gray-300 leading-relaxed">
-                {previewMessage}
-              </pre>
+              <pre className="whitespace-pre-wrap text-sm text-gray-300 leading-relaxed">{previewMessage}</pre>
             </div>
 
             {/* Buttons */}
@@ -206,15 +203,10 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
             className="bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8 border border-gray-700"
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <button
-                onClick={() => setPage('setup')}
-                className="flex items-center gap-1 text-gray-400 hover:text-white"
-              >
-                <ChevronLeft className="w-4 h-4" /> Kembali
-              </button>
-              <h2 className="text-2xl font-bold text-white">Kirim Undangan</h2>
-            </div>
+            <button onClick={() => setPage('setup')} className="flex items-center gap-1 text-gray-400 hover:text-white">
+              <ChevronLeft className="w-4 h-4" /> Kembali
+            </button>
+            <h2 className="lg:text-2xl text-xl pb-6 text-center font-bold text-white">Kirim Undangan</h2>
 
             {/* Tombol pilih kontak */}
             <div className="mb-4">
@@ -256,22 +248,12 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
             {/* Daftar kontak */}
             <AnimatePresence mode="wait">
               {tab === 'unsent' && (
-                <motion.div
-                  key="unsent"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
+                <motion.div key="unsent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                   {contacts.length === 0 ? (
-                    <p className="text-gray-400 text-sm italic text-center py-6">
-                      Belum ada kontak yang dipilih
-                    </p>
+                    <p className="text-gray-400 text-sm italic text-center py-6">Belum ada kontak yang dipilih</p>
                   ) : (
                     contacts.map((c, i) => (
-                      <div
-                        key={c.tel}
-                        className="flex items-center justify-between py-2 border-b border-gray-800"
-                      >
+                      <div key={c.tel} className="flex items-center justify-between py-2 border-b border-gray-800">
                         <div>
                           <p className="font-medium">{c.name}</p>
                           <p className="text-gray-400 text-xs">{c.tel}</p>
@@ -290,29 +272,17 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
               )}
 
               {tab === 'sent' && (
-                <motion.div
-                  key="sent"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
+                <motion.div key="sent" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                   {sentContacts.length === 0 ? (
-                    <p className="text-gray-400 text-sm italic text-center py-6">
-                      Belum ada yang dikirim
-                    </p>
+                    <p className="text-gray-400 text-sm italic text-center py-6">Belum ada yang dikirim</p>
                   ) : (
                     sentContacts.map((c) => (
-                      <div
-                        key={c.tel}
-                        className="flex items-center justify-between py-2 border-b border-gray-800"
-                      >
+                      <div key={c.tel} className="flex items-center justify-between py-2 border-b border-gray-800">
                         <div>
                           <p className="font-medium text-green-400">{c.name}</p>
                           <p className="text-gray-400 text-xs">{c.tel}</p>
                         </div>
-                        <span className="text-green-400 text-xs font-semibold">
-                          ✅ Terkirim
-                        </span>
+                        <span className="text-green-400 text-xs font-semibold">✅ Terkirim</span>
                       </div>
                     ))
                   )}
