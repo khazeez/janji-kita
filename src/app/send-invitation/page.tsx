@@ -113,11 +113,15 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
     setContacts((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // ====== Copy link ======
+  // ====== Copy message ======
   const handleCopy = () => {
     if (!slug) return;
-    const link = `${baseUrl}/${slug}`;
-    navigator.clipboard.writeText(link);
+
+    const previewMessage = customMessage
+      .replace('{nama}', 'Budi Santoso')
+      .replace('{link}', `${baseUrl}/${slug}`);
+
+    navigator.clipboard.writeText(previewMessage);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -207,12 +211,12 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
                 {copied ? (
                   <>
                     <Check className='w-4 h-4 text-green-400' />
-                    <span className='text-green-400'>Link Tersalin!</span>
+                    <span className='text-green-400'>Pesan Tersalin!</span>
                   </>
                 ) : (
                   <>
                     <Copy className='w-4 h-4' />
-                    <span>Salin Link</span>
+                    <span>Salin Pesan</span>
                   </>
                 )}
               </button>
@@ -220,7 +224,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
               <button
                 onClick={() => setPage('send')}
                 disabled={!slug}
-                className='bg-gradient-to-r from-pink-700 to-pink-400 text-white font-semibold py-2 px-6 rounded-lg disabled:from-gray-500 disabled:to-gray-500 disabled:cursor-not-allowed transition-all'
+                className='bg-gradient-to-r from-pink-700 to-pink-400 text-white text-sm py-2 px-6 rounded-lg disabled:from-gray-500 disabled:to-gray-500 disabled:cursor-not-allowed transition-all'
               >
                 Lanjut
               </button>
