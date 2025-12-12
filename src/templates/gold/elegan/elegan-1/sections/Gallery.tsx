@@ -11,7 +11,7 @@ export default function Gallery() {
     { id: 3, src: '/images/imam31.webp', alt: 'Wedding Photo 3' },
     { id: 4, src: '/images/imam53.webp', alt: 'Wedding Photo 4' },
     { id: 5, src: '/images/imam22.webp', alt: 'Wedding Photo 5' },
-    { id: 6, src: '/images/imam39.webp', alt: 'Wedding Photo 6' },
+    { id: 6, src: '/images/imam39.png', alt: 'Wedding Photo 6' },
     { id: 7, src: '/images/imam81.webp', alt: 'Wedding Photo 7' },
     { id: 8, src: '/images/imam22.webp', alt: 'Wedding Photo 8' },
     { id: 9, src: '/images/imam73.webp', alt: 'Wedding Photo 9' },
@@ -105,7 +105,7 @@ export default function Gallery() {
             onClick={() => setSelectedImage(null)}
           >
             <button
-              className='absolute top-6 right-6 bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all z-50 w-10 h-10 rounded-full flex items-center justify-center border border-white/20'
+              className='absolute top-49 left-49 bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all z-50 w-10 h-10 rounded-full flex items-center justify-center border border-white/20'
               onClick={() => setSelectedImage(null)}
             >
               <X size={20} />

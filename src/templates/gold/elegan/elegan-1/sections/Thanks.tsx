@@ -27,7 +27,7 @@ export default function Thanks({ data }: Props) {
     {
       name: 'Instagram',
       icon: Instagram,
-      href: '#',
+      href: 'https://instagram.com/janjikita.art',
       color: 'hover:text-pink-400',
     },
     {

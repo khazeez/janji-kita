@@ -18,7 +18,7 @@ export default function Cover({
 }: CoverPageProps) {
   const images = [
     '/images/imam22.webp',
-    '/images/imam39.webp',
+    '/images/imam39.png',
     '/images/imam53.webp',
     '/images/imam73.webp',
   ];

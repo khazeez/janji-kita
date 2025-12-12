@@ -12,7 +12,7 @@ export default function Couple({ data }: Props) {
   const photos = [
     '/images/imam22.webp',
     '/images/imam31.webp',
-    '/images/imam39.webp',
+    '/images/imam39.png',
     '/images/imam53.webp',
     '/images/imam73.webp',
     '/images/imam81.webp',
