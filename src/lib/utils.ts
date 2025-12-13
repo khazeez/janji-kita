@@ -6,7 +6,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-function toCamelCase(str: string): string {
+// ============================================
+// TRANSFORMER HELPER
+// ============================================
+
+export function toCamelCase(str: string): string {
   return str
     .toLowerCase()
     .replace(/([-_][a-z])/g, (group) =>
@@ -14,7 +18,7 @@ function toCamelCase(str: string): string {
     );
 }
 
-function transformKeys(obj: any): any {
+export function transformKeys(obj: any): any {
   if (Array.isArray(obj)) {
     return obj.map((item) => transformKeys(item));
   }
@@ -29,6 +33,7 @@ function transformKeys(obj: any): any {
 
   return obj;
 }
+
 
 export function transformInvitationResponse(
   dbResponse: any

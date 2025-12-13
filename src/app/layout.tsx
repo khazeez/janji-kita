@@ -17,16 +17,16 @@ export const metadata: Metadata = {
   title: 'JanjiKita',
   description: 'Berbagi moment indah dengan sanak keluarga',
   icons: {
-    icon: '/janjiKitaPutih.png', // ubah favicon default
+    icon: '/wedding3.jpg', // ubah favicon default
   },
   openGraph: {
     title: 'JanjiKita',
     description: 'Berbagi moment indah dengan sanak keluarga',
-    url: 'https://janjikita.art', // ganti dengan domain kamu
+    url: 'https://janjikita.art',
     siteName: 'JanjiKita',
     images: [
       {
-        url: '/janjiKitaPutih.png', // 🖼️ gambar preview (pastikan ada di public/og-image.jpg)
+        url: '/janjiKitaPutih.png',
         width: 1200,
         height: 630,
         alt: 'JanjiKita Wedding Invitation',
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'JanjiKita',
     description: 'Berbagi moment indah dengan sanak keluarga',
-    images: ['/janjiKitaPutih.png'], // 🖼️ gunakan gambar yang sama
+    images: ['/wedding3.jpg'], // 🖼️ gunakan gambar yang sama
   },
 };
 

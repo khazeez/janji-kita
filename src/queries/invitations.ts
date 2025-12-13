@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
-import { transformInvitationResponse } from '@/lib/utils';
+import { transformInvitationResponse, transformKeys } from '@/lib/utils';
 //function untuk mengambil semua product
 export async function getProductInvitation() {
   const { data, error } = await supabase.from('PRODUCT').select(`*`);
@@ -136,33 +136,6 @@ export async function getDataInvitationUser(slug: string) {
 }
 
 
-// ============================================
-// TRANSFORMER HELPER
-// ============================================
-
-function toCamelCase(str: string): string {
-  return str
-    .toLowerCase()
-    .replace(/([-_][a-z])/g, (group) =>
-      group.toUpperCase().replace('-', '').replace('_', '')
-    );
-}
-
-function transformKeys(obj: any): any {
-  if (Array.isArray(obj)) {
-    return obj.map((item) => transformKeys(item));
-  }
-
-  if (obj !== null && typeof obj === 'object') {
-    return Object.keys(obj).reduce((result, key) => {
-      const camelKey = toCamelCase(key);
-      result[camelKey] = transformKeys(obj[key]);
-      return result;
-    }, {} as any);
-  }
-
-  return obj;
-}
 
 // ============================================
 // INSERT MESSAGES

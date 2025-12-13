@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { getDataInvitationUser, getProductInvitation } from '@/queries';
-import Loading from '@/components/ui/Loading'
+import { getDataInvitationUser } from '@/queries';
+import Loading from '@/components/ui/Loading';
 import NetflixDesign from '@/templates/gold/special';
 import GlassesDesign from '@/templates/gold/elegan/elegan-1/main';
 
-export default function Slug() {
-  const params = useParams();
+// ❌ Hapus pemanggilan manual generateMetadata()
+// karena Next.js akan otomatis memanggilnya dari metadata.ts
 
+export default function SlugPage() {
+  const params = useParams();
   const slugParam = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
   const slug = slugParam?.toString().toLowerCase();
 
@@ -24,6 +26,7 @@ export default function Slug() {
         const dataInv = await getDataInvitationUser(slug);
         setDataUser(dataInv);
       } catch (err) {
+        console.error('Error fetching data:', err);
         setDataUser(null);
       } finally {
         setLoading(false);
@@ -33,36 +36,17 @@ export default function Slug() {
     fetchData();
   }, [slug]);
 
-  if (loading) {
-    return (
-      <>
-        <Loading />
-        {/* <div className="flex items-center justify-center min-h-screen bg-black">
-          <h1 className="text-white text-2xl text-center">Loading...</h1>
-        </div> */}
-      </>
-    );
-  }
+  if (loading) return <Loading />;
 
-  // Jika tidak ada data (slug salah)
   if (!dataUser) {
-    console.log("INIIIIIIII", dataUser)
     return (
       <div className='min-h-screen bg-black flex items-center justify-center'>
-        <div className='text-center'>
-          <h1 className='text-white text-2xl mb-4'>
-            Wedding Invitation Not Found
-          </h1>
-        </div>
+        <h1 className='text-white text-2xl'>Wedding Invitation Not Found</h1>
       </div>
     );
-  } else {
-    console.log('INIIIIIIII', dataUser);
   }
 
-  // Ambil nama produk dari relasi Supabase
-  const productName = dataUser.product.productName;
-  console.log('INIIII YAAA', productName);
+  const productName = dataUser.product?.productName;
 
   switch (productName) {
     case 'Inkjlsd':
@@ -72,7 +56,7 @@ export default function Slug() {
     default:
       return (
         <div className='min-h-screen bg-black flex items-center justify-center'>
-          <h1 className='text-white text-2xl'>Invalid Product </h1>
+          <h1 className='text-white text-2xl'>Invalid Product</h1>
         </div>
       );
   }
