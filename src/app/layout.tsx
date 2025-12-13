@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: 'JanjiKita',
     images: [
       {
-        url: '/janjiKitaPutih.png',
+        url: '/wedding3.jpg',
         width: 1200,
         height: 630,
         alt: 'JanjiKita Wedding Invitation',
