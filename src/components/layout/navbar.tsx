@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import {
-  Menu,
   X,
   BookOpen,
   Info,
@@ -11,13 +10,13 @@ import {
   LogIn,
   UserPlus,
   Home,
+  SlidersHorizontal,
 } from 'lucide-react';
 import Link from 'next/link';
 import clsx from 'clsx';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
@@ -29,8 +28,44 @@ export default function Navbar() {
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
-  const openLoginPopup = () => setShowLoginPopup(true);
-  const closeLoginPopup = () => setShowLoginPopup(false);
+
+  const DonerIcon = ({ size = 24, className = '' }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox='0 0 24 24'
+      fill='none'
+      className={className}
+    >
+      <line
+        x1='4'
+        y1='7'
+        x2='20'
+        y2='7'
+        stroke='currentColor'
+        strokeWidth='2'
+        strokeLinecap='round'
+      />
+      <line
+        x1='4'
+        y1='12'
+        x2='16'
+        y2='12'
+        stroke='currentColor'
+        strokeWidth='2'
+        strokeLinecap='round'
+      />
+      <line
+        x1='4'
+        y1='17'
+        x2='12'
+        y2='17'
+        stroke='currentColor'
+        strokeWidth='2'
+        strokeLinecap='round'
+      />
+    </svg>
+  );
 
   return (
     <>
@@ -44,7 +79,8 @@ export default function Navbar() {
               isOpen ? 'text-black' : 'text-white'
             )}
           >
-            Janji<span className='text-pink-500'>Kita</span>
+            <img src="/janjiKitaPutih.png" className='w-auto h-10' />
+            {/* Janji<span className='text-pink-500'>Kita</span> */}
           </Link>
 
           {/* Desktop Navigation */}
@@ -84,7 +120,11 @@ export default function Navbar() {
             onClick={toggleSidebar}
             aria-label='Toggle Menu'
           >
-            {isOpen ? <X className='w-6 h-6' /> : <Menu className='w-6 h-6' />}
+            {isOpen ? (
+              <X className='w-6 h-6' />
+            ) : (
+              <DonerIcon className='w-6 h-6' />
+            )}
           </button>
         </div>
       </header>
@@ -153,14 +193,14 @@ export default function Navbar() {
 
             {/* Auth Section */}
             <div className='space-y-3'>
-              <button
-                onClick={openLoginPopup}
+              <Link
+                href='/sign-in'
                 className='relative group flex items-center space-x-4 p-3 rounded-xl hover:bg-gray-50 transition-all duration-200 overflow-hidden w-full text-left'
               >
                 <LogIn className='w-5 h-5 text-gray-500 group-hover:text-gray-700 transition-colors duration-200' />
                 <span className='font-medium'>Sign in</span>
                 <span className='absolute bottom-2 left-3 w-0 h-0.5 bg-gradient-to-r from-gray-400 to-gray-600 group-hover:w-[calc(100%-24px)] transition-all duration-300 ease-out'></span>
-              </button>
+              </Link>
 
               <Link
                 href='/sign-up'

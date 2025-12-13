@@ -125,11 +125,9 @@ export default function LoginPage() {
     <div className='min-h-screen flex items-center justify-center  p-4 overflow-hidden'>
       <div className='relative bg-white rounded-2xl md:rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100 max-h-[95vh] overflow-y-auto'>
         {/* Header */}
-        <div className='flex items-center justify-between p-4 md:p-6 border-b border-gray-200'>
-          <h2 className='text-xl md:text-2xl font-bold text-gray-800'>
-            Welcome Back!
-          </h2>
-        </div>
+        <h2 className='text-xl py-10 text-center md:text-2xl font-bold text-gray-800'>
+          Welcome Back!
+        </h2>
 
         {/* Body */}
         <form
