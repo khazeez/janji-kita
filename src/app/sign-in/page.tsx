@@ -1,32 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
-import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signInWithEmail, signInWithGoogle } from '@/lib/auth';
+import { supabase } from '@/lib/supabaseClient';
 
 interface FormErrors {
   email?: string;
   password?: string;
+  general?: string;
 }
-
-const DUMMY_USERS = [
-  {
-    email: 'admin@example.com',
-    password: 'admin123',
-    name: 'Admin User',
-  },
-  {
-    email: 'user@example.com',
-    password: 'user1234',
-    name: 'Regular User',
-  },
-  {
-    email: 'test@example.com',
-    password: 'test12345',
-    name: 'Test User',
-  },
-];
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,6 +24,19 @@ export default function LoginPage() {
     password: '',
     rememberMe: false,
   });
+
+  // Check jika user sudah login
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        router.replace('/dashboard');
+      }
+    };
+    checkUser();
+  }, [router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -67,8 +65,8 @@ export default function LoginPage() {
 
     if (!formData.password) {
       newErrors.password = 'Password wajib diisi';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password minimal 8 karakter';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password minimal 6 karakter';
     }
 
     setErrors(newErrors);
@@ -81,53 +79,104 @@ export default function LoginPage() {
     if (!validateForm()) return;
 
     setIsLoading(true);
+    setErrors({});
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      const validUser = DUMMY_USERS.find(
-        (user) =>
-          user.email === formData.email && user.password === formData.password
+      const { user, session, error } = await signInWithEmail(
+        formData.email,
+        formData.password
       );
 
-      if (validUser) {
-        console.log('Login berhasil:', validUser);
-
-        if (formData.rememberMe) {
-          localStorage.setItem(
-            'user',
-            JSON.stringify({
-              email: validUser.email,
-              name: validUser.name,
-            })
-          );
+      // Check if there's an error
+      if (error) {
+        // Handle error dari function
+        if (error.includes('Invalid login credentials')) {
+          setErrors({
+            general: 'Email atau password salah. Silakan coba lagi.',
+          });
+        } else if (error.includes('Email not confirmed')) {
+          setErrors({
+            general: 'Email belum diverifikasi. Silakan cek email Anda.',
+          });
+        } else {
+          setErrors({
+            general: error || 'Terjadi kesalahan saat login',
+          });
         }
-
-        router.push('/dashboard');
-      } else {
-        setErrors({
-          email: 'Email atau password salah!',
-        });
+        return;
       }
+
+      console.log('Login berhasil:', user?.email);
+
+      // Optional: Save remember me preference
+      if (formData.rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      }
+
+      router.push('/dashboard');
     } catch (error) {
-      console.error('Error:', error);
-      setErrors({ email: 'Terjadi kesalahan, silakan coba lagi' });
+      console.error('Unexpected error:', error);
+      setErrors({
+        general: 'Terjadi kesalahan tidak terduga. Silakan coba lagi.',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleLogin = () => {
-    console.log('Google login clicked');
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      const { error } = await signInWithGoogle();
+
+      // Check if there's an error
+      if (error) {
+        setErrors({
+          general: error || 'Gagal login dengan Google. Silakan coba lagi.',
+        });
+        setIsLoading(false);
+        return;
+      }
+      // Jika sukses (error === null), browser akan redirect ke Google
+      // Loading state akan tetap true sampai redirect selesai
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      setErrors({
+        general: 'Terjadi kesalahan saat login dengan Google.',
+      });
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className='min-h-screen flex items-center justify-center  p-4 overflow-hidden'>
+    <div className='min-h-screen flex items-center justify-center p-4 overflow-hidden bg-gradient-to-br from-pink-50 to-purple-50'>
       <div className='relative bg-white rounded-2xl md:rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100 max-h-[95vh] overflow-y-auto'>
         {/* Header */}
         <h2 className='text-xl py-10 text-center md:text-2xl font-bold text-gray-800'>
           Welcome Back!
         </h2>
+
+        {/* General Error Message */}
+        {errors.general && (
+          <div className='mx-4 md:mx-6 mb-4 p-3 bg-red-50 border border-red-200 rounded-lg'>
+            <p className='text-red-600 text-sm flex items-center gap-2'>
+              <svg
+                className='w-5 h-5 flex-shrink-0'
+                fill='currentColor'
+                viewBox='0 0 20 20'
+              >
+                <path
+                  fillRule='evenodd'
+                  d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'
+                  clipRule='evenodd'
+                />
+              </svg>
+              {errors.general}
+            </p>
+          </div>
+        )}
 
         {/* Body */}
         <form
@@ -149,11 +198,12 @@ export default function LoginPage() {
                 onFocus={() => setFocusedField('email')}
                 onBlur={() => setFocusedField(null)}
                 placeholder='Masukkan email kamu'
+                disabled={isLoading}
                 className={`w-full pl-9 md:pl-10 pr-4 py-2.5 md:py-3 border ${
                   errors.email
                     ? 'border-red-500 focus:ring-red-500'
                     : 'border-gray-300 focus:ring-pink-500'
-                } rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 outline-none text-sm md:text-base`}
+                } rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 outline-none text-sm md:text-base disabled:bg-gray-100 disabled:cursor-not-allowed`}
               />
               {formData.email &&
                 !errors.email &&
@@ -220,16 +270,18 @@ export default function LoginPage() {
                 onFocus={() => setFocusedField('password')}
                 onBlur={() => setFocusedField(null)}
                 placeholder='Masukkan password kamu'
+                disabled={isLoading}
                 className={`w-full pl-9 md:pl-10 pr-11 md:pr-12 py-2.5 md:py-3 border ${
                   errors.password
                     ? 'border-red-500 focus:ring-red-500'
                     : 'border-gray-300 focus:ring-pink-500'
-                } rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 outline-none text-sm md:text-base`}
+                } rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 outline-none text-sm md:text-base disabled:bg-gray-100 disabled:cursor-not-allowed`}
               />
               <button
                 type='button'
                 onClick={() => setShowPassword(!showPassword)}
-                className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200'
+                disabled={isLoading}
+                className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200 disabled:opacity-50'
               >
                 {showPassword ? (
                   <EyeOff className='w-4 h-4 md:w-5 md:h-5' />
@@ -251,7 +303,7 @@ export default function LoginPage() {
                     clipRule='evenodd'
                   />
                 </svg>
-                Masukkan password Anda (min. 8 karakter)
+                Masukkan password Anda (min. 6 karakter)
               </p>
             )}
             {errors.password && (
@@ -280,16 +332,17 @@ export default function LoginPage() {
                 name='rememberMe'
                 checked={formData.rememberMe}
                 onChange={handleChange}
-                className='w-3.5 h-3.5 md:w-4 md:h-4 text-pink-500 border-gray-300 rounded focus:ring-pink-500 cursor-pointer'
+                disabled={isLoading}
+                className='w-3.5 h-3.5 md:w-4 md:h-4 text-pink-500 border-gray-300 rounded focus:ring-pink-500 cursor-pointer disabled:cursor-not-allowed'
               />
               <span className='text-gray-600'>Ingatkan saya</span>
             </label>
-            <button
-              type='button'
+            <Link
+              href='/forgot-password'
               className='text-pink-500 hover:text-pink-600 font-medium transition-colors duration-200'
             >
               Lupa Password?
-            </button>
+            </Link>
           </div>
 
           {/* Login Button */}

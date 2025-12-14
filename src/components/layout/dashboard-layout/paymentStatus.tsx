@@ -159,12 +159,12 @@ export default function PaymentStatus() {
     activeTab === 'inprogress' ? inProgressOrders : historyOrders;
 
   return (
-    <div className='min-h-screen bg-transparent md:p-8'>
+    <div className='min-h-screen bg-transparent'>
       <div className='max-w-4xl mx-auto'>
         {/* Tabs */}
-        <h2 className='text-xl md:text-2xl font-bold  mt-2 mb-3 md:mb-6 text-white'>
+        {/* <h2 className='text-xl md:text-2xl font-bold  mt-2 mb-3 md:mb-6 text-white'>
           Status Pembayaran
-        </h2>
+        </h2> */}
         <div className='flex gap-2 mb-6 border-b border-gray-100 top-0 bg-gray-900 z-10 sm:justify-between md:justify-start'>
           <button
             onClick={() => setActiveTab('inprogress')}

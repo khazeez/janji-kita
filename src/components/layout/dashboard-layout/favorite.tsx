@@ -148,9 +148,9 @@ export default function Saved() {
     <div className='space-y-4 md:space-y-6'>
       {/* Header */}
       <div>
-        <h2 className='text-xl md:text-2xl lg:text-2xl font-bold text-white mb-1 md:mb-2'>
+        {/* <h2 className='text-xl md:text-2xl lg:text-2xl font-bold text-white mb-1 md:mb-2'>
           Tema Favorit
-        </h2>
+        </h2> */}
         <p className='text-sm md:text-base text-gray-400'>
           {savedItems.length} tema favorit tersimpan
         </p>

@@ -1,20 +1,25 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { signUpWithEmail, signUpWithGoogle } from '@/lib/auth';
 
 interface FormErrors {
   name?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
+  general?: string;
 }
 
 export default function SignUp() {
+  const router = useRouter();
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -33,6 +38,13 @@ export default function SignUp() {
       setErrors({
         ...errors,
         [name]: undefined,
+      });
+    }
+    // Clear general error
+    if (errors.general) {
+      setErrors({
+        ...errors,
+        general: undefined,
       });
     }
   };
@@ -84,23 +96,81 @@ export default function SignUp() {
     }
 
     setIsLoading(true);
+    setErrors({});
+    setSuccessMessage('');
 
     try {
-      // Simulasi API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Form submitted:', formData);
-      // Redirect atau tampilkan success message
-    } catch (error) {
-      console.error('Error:', error);
-      setErrors({ email: 'Terjadi kesalahan. Silakan coba lagi.' });
+      // Sign up with Supabase
+      const { user, error } = await signUpWithEmail(
+        formData.email,
+        formData.password,
+        {
+          full_name: formData.name,
+        }
+      );
+
+      if (error) {
+        // Handle specific Supabase errors
+        if (error.includes('already registered')) {
+          setErrors({ email: 'Email sudah terdaftar' });
+        } else if (error.includes('Invalid email')) {
+          setErrors({ email: 'Format email tidak valid' });
+        } else if (error.includes('Password')) {
+          setErrors({ password: error });
+        } else {
+          setErrors({ general: error });
+        }
+        return;
+      }
+
+      // Success
+      setSuccessMessage(
+        'Akun berhasil dibuat! Silakan cek email Anda untuk verifikasi.'
+      );
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
+
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 2000);
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      setErrors({
+        general: 'Terjadi kesalahan. Silakan coba lagi.',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleSignUp = () => {
-    console.log('Google sign up clicked');
-    // Implement Google OAuth here
+  const handleGoogleSignUp = async () => {
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      const { error } = await signUpWithGoogle();
+
+      if (error) {
+        setErrors({
+          general: 'Gagal login dengan Google. Silakan coba lagi.',
+        });
+        setIsLoading(false);
+      }
+      // No need to set isLoading to false here because user will be redirected
+    } catch (error) {
+      console.error('Google signup error:', error);
+      setErrors({
+        general: 'Terjadi kesalahan. Silakan coba lagi.',
+      });
+      setIsLoading(false);
+    }
   };
 
   // Password strength indicator
@@ -126,14 +196,11 @@ export default function SignUp() {
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center p-4 relative overflow-hidden'>
-      <div
-        className='w-50% max-w-6xl bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-gray-800/50 relative z-1 md:overflow-hidden
-'
-      >
-        {/* Left Side - Image */}
-        <div className='p-6 md:p-12 flex flex-col justify-center'>
+      <div className='w-full max-w-md bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-gray-800/50 relative z-10'>
+        {/* Header */}
+        <div className='p-6 md:p-12'>
           <div className='mb-6 md:mb-8'>
-            <h1 className='text-2xl md:text-4xl text-center font-bold  bg-gradient-to-r from-pink-600 via-pink-500 to-pink-400 bg-clip-text text-transparent mb-2'>
+            <h1 className='text-2xl md:text-4xl text-center font-bold bg-gradient-to-r from-pink-600 via-pink-500 to-pink-400 bg-clip-text text-transparent mb-2'>
               Yuk! bikin akun
             </h1>
             <p className='text-sm md:text-base text-center text-gray-400'>
@@ -141,8 +208,48 @@ export default function SignUp() {
             </p>
           </div>
 
+          {/* Success Message */}
+          {successMessage && (
+            <div className='mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-xl'>
+              <p className='text-green-400 text-sm flex items-center gap-2'>
+                <svg
+                  className='w-5 h-5'
+                  fill='currentColor'
+                  viewBox='0 0 20 20'
+                >
+                  <path
+                    fillRule='evenodd'
+                    d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
+                    clipRule='evenodd'
+                  />
+                </svg>
+                {successMessage}
+              </p>
+            </div>
+          )}
+
+          {/* General Error Message */}
+          {errors.general && (
+            <div className='mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl'>
+              <p className='text-red-400 text-sm flex items-center gap-2'>
+                <svg
+                  className='w-5 h-5'
+                  fill='currentColor'
+                  viewBox='0 0 20 20'
+                >
+                  <path
+                    fillRule='evenodd'
+                    d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'
+                    clipRule='evenodd'
+                  />
+                </svg>
+                {errors.general}
+              </p>
+            </div>
+          )}
+
           {/* Form Fields */}
-          <form className='space-y-4'>
+          <form className='space-y-4' onSubmit={(e) => e.preventDefault()}>
             {/* Name Field */}
             <div>
               <div className='relative'>
@@ -154,11 +261,12 @@ export default function SignUp() {
                   onFocus={() => setFocusedField('name')}
                   onBlur={() => setFocusedField(null)}
                   placeholder='Nama Lengkap'
+                  disabled={isLoading}
                   className={`w-full px-4 py-3 md:py-3.5 bg-gray-800/50 border text-sm md:text-base ${
                     errors.name
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-gray-700 focus:ring-pink-500'
-                  } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all`}
+                  } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
                 />
                 {formData.name && !errors.name && (
                   <svg
@@ -219,11 +327,12 @@ export default function SignUp() {
                   onFocus={() => setFocusedField('email')}
                   onBlur={() => setFocusedField(null)}
                   placeholder='Alamat Email'
+                  disabled={isLoading}
                   className={`w-full px-4 py-3 md:py-3.5 bg-gray-800/50 border text-sm md:text-base ${
                     errors.email
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-gray-700 focus:ring-pink-500'
-                  } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all`}
+                  } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
                 />
                 {formData.email &&
                   !errors.email &&
@@ -286,16 +395,18 @@ export default function SignUp() {
                   onFocus={() => setFocusedField('password')}
                   onBlur={() => setFocusedField(null)}
                   placeholder='Password'
+                  disabled={isLoading}
                   className={`w-full px-4 py-3 md:py-3.5 pr-12 bg-gray-800/50 border text-sm md:text-base ${
                     errors.password
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-gray-700 focus:ring-pink-500'
-                  } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all`}
+                  } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
                 />
                 <button
                   type='button'
                   onClick={() => setShowPassword(!showPassword)}
-                  className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors'
+                  disabled={isLoading}
+                  className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors disabled:opacity-50'
                 >
                   {showPassword ? (
                     <svg
@@ -402,16 +513,18 @@ export default function SignUp() {
                   onFocus={() => setFocusedField('confirmPassword')}
                   onBlur={() => setFocusedField(null)}
                   placeholder='Konfirmasi Password'
+                  disabled={isLoading}
                   className={`w-full px-4 py-3 md:py-3.5 pr-12 bg-gray-800/50 border text-sm md:text-base ${
                     errors.confirmPassword
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-gray-700 focus:ring-pink-500'
-                  } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all`}
+                  } rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
                 />
                 <button
                   type='button'
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors'
+                  disabled={isLoading}
+                  className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors disabled:opacity-50'
                 >
                   {showConfirmPassword ? (
                     <svg
@@ -570,8 +683,6 @@ export default function SignUp() {
             </svg>
             Lanjutkan dengan Google
           </button>
-
-          {/* Divider */}
 
           {/* Footer */}
           <p className='text-center text-gray-400 text-xs md:text-sm mt-6 md:mt-8'>

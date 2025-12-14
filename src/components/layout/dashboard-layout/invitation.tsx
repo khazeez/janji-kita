@@ -24,9 +24,9 @@ export default function Invitation({ onNavigateToTheme }: InvitationProps) {
 
   return (
     <div className='px-4'>
-      <h2 className='text-2xl font-bold mb-6 text-white'>
+      {/* <h2 className='text-2xl font-bold mb-6 text-white'>
         Invitation
-      </h2>
+      </h2> */}
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-12'>
         <div

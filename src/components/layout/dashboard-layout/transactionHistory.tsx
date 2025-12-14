@@ -80,7 +80,7 @@ export default function TransactionHistory() {
 
   return (
     <div>
-      <h2 className='text-2xl font-bold mb-6 text-white'>Riwayat Transaksi</h2>
+      {/* <h2 className='text-2xl font-bold mb-6 text-white'>Riwayat Transaksi</h2> */}
 
       {transactions.length === 0 ? (
         <div className='bg-gray-800 border border-gray-700 rounded-lg p-12 flex flex-col items-center justify-center'>
