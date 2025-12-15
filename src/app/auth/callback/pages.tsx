@@ -11,34 +11,49 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Supabase otomatis membaca hash fragment dari URL
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
+        // Parse hash fragment
+        const hashParams = new URLSearchParams(
+          window.location.hash.substring(1)
+        );
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
 
-        if (error) {
-          console.error('Error getting session:', error);
-          setError(error.message);
-          setTimeout(() => router.push('/auth/error'), 2000);
-          return;
-        }
+        console.log('🔍 Access Token:', accessToken ? 'Found' : 'Not found');
+        console.log('🔍 Refresh Token:', refreshToken ? 'Found' : 'Not found');
 
-        if (session) {
-          console.log('Login berhasil:', session.user.email);
-          router.push('/dashboard');
+        if (accessToken && refreshToken) {
+          // Set session dari token
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+
+          if (error) {
+            console.error('Error setting session:', error);
+            setError(error.message);
+            setTimeout(() => router.push('/sign-in'), 2000);
+            return;
+          }
+
+          if (data.session) {
+            console.log('✅ Login berhasil:', data.session.user.email);
+            // Redirect ke dashboard
+            router.push('/dashboard');
+          }
         } else {
-          console.log('No session found');
-          router.push('/');
+          console.log('❌ No tokens in URL');
+          setError('Token tidak ditemukan');
+          setTimeout(() => router.push('/sign-in'), 2000);
         }
       } catch (err) {
         console.error('Callback error:', err);
         setError('Terjadi kesalahan saat memproses login');
-        setTimeout(() => router.push('/auth/error'), 2000);
+        setTimeout(() => router.push('/sign-in'), 2000);
       }
     };
 
-    handleCallback();
+    // Tunggu sebentar untuk memastikan hash fragment sudah ada
+    setTimeout(handleCallback, 100);
   }, [router]);
 
   return (
@@ -49,6 +64,9 @@ export default function AuthCallbackPage() {
             <div className='text-red-500 text-xl mb-4'>⚠️</div>
             <h2 className='text-xl font-semibold mb-2 text-red-600'>Error</h2>
             <p className='text-gray-600'>{error}</p>
+            <p className='text-sm text-gray-500 mt-2'>
+              Mengalihkan ke halaman login...
+            </p>
           </>
         ) : (
           <>
