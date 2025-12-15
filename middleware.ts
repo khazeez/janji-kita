@@ -1,71 +1,38 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
 
-export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request,
-  });
+export function middleware(request: NextRequest) {
+  const { pathname, origin } = request.nextUrl;
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    console.error('❌ Supabase env missing');
-    return response;
+  // Jangan jalankan middleware untuk file Next.js internal
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/static')
+  ) {
+    return NextResponse.next();
   }
 
-  const supabase = createServerClient(supabaseUrl, supabaseKey, {
-    cookies: {
-      get(name: string) {
-        return request.cookies.get(name)?.value;
-      },
-      set(name: string, value: string, options: any) {
-        response.cookies.set({
-          name,
-          value,
-          ...options,
-          sameSite: 'lax', // ⭐ Konsisten
-          secure: process.env.NODE_ENV === 'production', // ⭐ HTTPS
-        });
-      },
-      remove(name: string, options: any) {
-        response.cookies.set({
-          name,
-          value: '',
-          maxAge: 0,
-          ...options,
-        });
-      },
-    },
-  });
+  const hasAuthCookie = request.cookies
+    .getAll()
+    .some(
+      (cookie) =>
+        cookie.name.startsWith('sb-') && cookie.name.endsWith('-auth-token')
+    );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { pathname } = request.nextUrl;
-  const isAuthPage = pathname === '/sign-in' || pathname === '/sign-up';
+  const isAuthPage = ['/sign-in', '/sign-up'].includes(pathname);
   const isDashboard = pathname.startsWith('/dashboard');
 
-  // Log untuk production debugging
-  if (!user && isDashboard) {
-    console.log('🚫 [PROD] No user, redirect to sign-in', {
-      path: pathname,
-      cookies: request.cookies.getAll().map((c) => c.name),
-    });
+  if (isDashboard && !hasAuthCookie) {
+    return NextResponse.redirect(new URL('/sign-in', origin));
   }
 
-  if (isDashboard && !user) {
-    return NextResponse.redirect(new URL('/sign-in', request.url));
+  if (isAuthPage && hasAuthCookie) {
+    return NextResponse.redirect(new URL('/dashboard', origin));
   }
 
-  if (isAuthPage && user) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/sign-in', '/sign-up'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };
