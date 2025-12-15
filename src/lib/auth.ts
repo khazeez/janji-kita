@@ -114,7 +114,7 @@ export async function signUpWithGoogle() {
     
     const isProduction = window.location.hostname !== 'localhost';
     const redirectTo = isProduction
-      ? `${process.env.NEXT_JANJIKITA_URL}/auth/callback`
+      ? `${process.env.NEXT_PUBLIC_JANJIKITA_URL}/auth/callback`
       : `${window.location.origin}/auth/callback`;
 
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -139,11 +139,11 @@ export async function signUpWithGoogle() {
 
 export async function signInWithGoogle() {
   try {
-    const isProduction = window.location.hostname !== 'localhost';
-    const redirectTo = isProduction
-      ? `${process.env.NEXT_JANJIKITA_URL}/auth/callback`
-      : `${window.location.origin}/auth/callback`;
-
+    // Hardcode dulu untuk testing
+    const redirectTo = 'https://janjikita.art/auth/callback'; // GANTI dengan domain prod Anda
+    
+    console.log('Redirect To:', redirectTo);
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -159,7 +159,7 @@ export async function signInWithGoogle() {
 
     return { error: null };
   } catch (error: any) {
-    console.error('Google sign up error:', error);
+    console.error('Google sign in error:', error);
     return { error: error.message };
   }
 }
