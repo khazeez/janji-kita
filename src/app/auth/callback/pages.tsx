@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
-import { toast } from '@/lib/toast';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -37,9 +36,7 @@ export default function AuthCallbackPage() {
           }
 
           if (data.session) {
-
             console.log('✅ Login berhasil:', data.session.user.email);
-            toast.success('Login berhasil');
             // Redirect ke dashboard
             router.push('/dashboard');
           }
