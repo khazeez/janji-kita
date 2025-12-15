@@ -1,37 +1,23 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // Check jika ada cookie auth Supabase
-  // Format cookie name: sb-{project-ref}-auth-token
-  const allCookies = request.cookies.getAll();
-  const hasAuthToken = allCookies.some(
-    (cookie) =>
-      cookie.name.startsWith('sb-') &&
-      cookie.name.includes('auth-token') &&
-      cookie.value !== ''
-  );
+  const hasAuthCookie = request.cookies
+    .getAll()
+    .some(
+      (cookie) =>
+        cookie.name.startsWith('sb-') && cookie.name.endsWith('-auth-token')
+    );
 
-  const isAuthPage =
-    request.nextUrl.pathname === '/sign-in' ||
-    request.nextUrl.pathname === '/sign-up';
-  const isDashboard = request.nextUrl.pathname.startsWith('/dashboard');
+  const { pathname } = request.nextUrl;
 
-  console.log('Middleware check:', {
-    path: request.nextUrl.pathname,
-    hasAuthToken,
-    isAuthPage,
-    isDashboard,
-  });
+  const isAuthPage = pathname === '/sign-in' || pathname === '/sign-up';
+  const isDashboard = pathname.startsWith('/dashboard');
 
-  // Redirect ke sign-in jika tidak ada token dan mengakses dashboard
-  if (isDashboard && !hasAuthToken) {
-    console.log('❌ No auth token, redirecting to sign-in');
+  if (isDashboard && !hasAuthCookie) {
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
-  // Redirect ke dashboard jika sudah login dan mengakses halaman auth
-  if (isAuthPage && hasAuthToken) {
-    console.log('✅ Already logged in, redirecting to dashboard');
+  if (isAuthPage && hasAuthCookie) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
