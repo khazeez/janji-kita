@@ -2,7 +2,6 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 export async function createServerSupabaseClient() {
-  // cookies() di Next.js 14+ memang async
   const cookieStore = await cookies();
 
   return createServerClient(
@@ -17,14 +16,14 @@ export async function createServerSupabaseClient() {
           try {
             cookieStore.set({ name, value, ...options });
           } catch (error) {
-            // Context server component — bisa diabaikan
+            // Server Component context
           }
         },
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: '', ...options });
           } catch (error) {
-            // Context server component — bisa diabaikan
+            // Server Component context
           }
         },
       },
