@@ -6,13 +6,13 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
 
-  console.log('🔵 Callback route hit:', {
+  console.log('🔵 Callback [PROD]:', {
     hasCode: !!code,
-    url: requestUrl.href,
+    host: requestUrl.host,
+    origin: requestUrl.origin,
   });
 
   if (!code) {
-    console.log('❌ No code found, redirecting to sign-in');
     return NextResponse.redirect(`${requestUrl.origin}/sign-in`);
   }
 
@@ -29,15 +29,16 @@ export async function GET(request: NextRequest) {
           return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: any) {
-          console.log('🍪 Setting cookie:', name);
+          // ⭐ Pastikan cookie settings cocok untuk production
           response.cookies.set({
             name,
             value,
             ...options,
+            sameSite: 'lax', // PENTING untuk OAuth
+            secure: process.env.NODE_ENV === 'production', // HTTPS di production
           });
         },
         remove(name: string, options: any) {
-          console.log('🗑️ Removing cookie:', name);
           response.cookies.set({
             name,
             value: '',
@@ -51,8 +52,8 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-  console.log('🔐 Exchange result:', {
-    hasSession: !!data.session,
+  console.log('🔐 Exchange [PROD]:', {
+    success: !!data.session,
     hasUser: !!data.user,
     error: error?.message,
   });
@@ -62,20 +63,21 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${requestUrl.origin}/sign-in`);
   }
 
-  // Log cookies yang akan di-set
-  console.log('📦 Response cookies:', response.cookies.getAll());
-
-  // PENTING: Buat response redirect BARU dengan cookies yang sudah di-set
+  // Buat redirect response baru
   const redirectResponse = NextResponse.redirect(
     `${requestUrl.origin}/dashboard`
   );
 
-  // Copy semua cookies dari response lama ke response redirect
+  // Copy cookies
   response.cookies.getAll().forEach((cookie) => {
-    redirectResponse.cookies.set(cookie);
+    redirectResponse.cookies.set({
+      ...cookie,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
   });
 
-  console.log('✅ Redirecting to dashboard with cookies');
+  console.log('✅ Redirecting to dashboard [PROD]');
 
   return redirectResponse;
 }
