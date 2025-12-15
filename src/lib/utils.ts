@@ -6,10 +6,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// ============================================
-// TRANSFORMER HELPER
-// ============================================
-
 export function toCamelCase(str: string): string {
   return str
     .toLowerCase()
