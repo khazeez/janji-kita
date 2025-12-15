@@ -133,25 +133,19 @@ export async function signUpWithGoogle() {
 
 // Sign in with Google
 export async function signInWithGoogle() {
-  try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-      },
-    });
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/callback`,
+    },
+  });
 
-    if (error) throw error;
-
-    return { error: null };
-  } catch (error: any) {
-    console.error('Google sign in error:', error);
+  if (error) {
+    console.error('Google OAuth error:', error);
     return { error: error.message };
   }
+
+  return { error: null };
 }
 
 // Sign out
