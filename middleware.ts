@@ -6,23 +6,36 @@ export async function middleware(request: NextRequest) {
     request,
   });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
-        },
-        set(name: string, value: string, options: any) {
-          response.cookies.set({ name, value, ...options });
-        },
-        remove(name: string, options: any) {
-          response.cookies.set({ name, value: '', ...options });
-        },
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    console.error('❌ Supabase env missing');
+    return response;
+  }
+
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      get(name: string) {
+        return request.cookies.get(name)?.value;
       },
-    }
-  );
+      set(name: string, value: string, options: any) {
+        response.cookies.set({
+          name,
+          value,
+          ...options,
+        });
+      },
+      remove(name: string, options: any) {
+        response.cookies.set({
+          name,
+          value: '',
+          maxAge: 0,
+          ...options,
+        });
+      },
+    },
+  });
 
   const {
     data: { user },
