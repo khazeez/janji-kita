@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
+  console.log('🟡 Middleware hit:', request.nextUrl.pathname);
+
   let response = NextResponse.next({
     request,
   });
@@ -17,7 +19,13 @@ export async function middleware(request: NextRequest) {
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
       get(name: string) {
-        return request.cookies.get(name)?.value;
+        const value = request.cookies.get(name)?.value;
+        console.log(
+          '🍪 Middleware reading cookie:',
+          name,
+          value ? 'EXISTS' : 'MISSING'
+        );
+        return value;
       },
       set(name: string, value: string, options: any) {
         response.cookies.set({
@@ -41,19 +49,29 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  console.log('👤 Middleware user check:', {
+    path: request.nextUrl.pathname,
+    hasUser: !!user,
+    userId: user?.id,
+    allCookies: request.cookies.getAll().map((c) => c.name),
+  });
+
   const { pathname } = request.nextUrl;
 
   const isAuthPage = pathname === '/sign-in' || pathname === '/sign-up';
   const isDashboard = pathname.startsWith('/dashboard');
 
   if (isDashboard && !user) {
+    console.log('🚫 No user, redirecting to sign-in');
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
   if (isAuthPage && user) {
+    console.log('✅ User exists on auth page, redirecting to dashboard');
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
+  console.log('✅ Middleware passed');
   return response;
 }
 

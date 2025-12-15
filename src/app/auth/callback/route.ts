@@ -6,7 +6,13 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
 
+  console.log('🔵 Callback route hit:', {
+    hasCode: !!code,
+    url: requestUrl.href,
+  });
+
   if (!code) {
+    console.log('❌ No code found, redirecting to sign-in');
     return NextResponse.redirect(`${requestUrl.origin}/sign-in`);
   }
 
@@ -23,6 +29,7 @@ export async function GET(request: NextRequest) {
           return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: any) {
+          console.log('🍪 Setting cookie:', name);
           response.cookies.set({
             name,
             value,
@@ -30,6 +37,7 @@ export async function GET(request: NextRequest) {
           });
         },
         remove(name: string, options: any) {
+          console.log('🗑️ Removing cookie:', name);
           response.cookies.set({
             name,
             value: '',
@@ -41,13 +49,33 @@ export async function GET(request: NextRequest) {
     }
   );
 
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+  console.log('🔐 Exchange result:', {
+    hasSession: !!data.session,
+    hasUser: !!data.user,
+    error: error?.message,
+  });
 
   if (error) {
-    console.error('OAuth error:', error);
+    console.error('❌ OAuth error:', error);
     return NextResponse.redirect(`${requestUrl.origin}/sign-in`);
   }
 
-  // Redirect setelah cookies ter-set
-  return NextResponse.redirect(`${requestUrl.origin}/dashboard`);
+  // Log cookies yang akan di-set
+  console.log('📦 Response cookies:', response.cookies.getAll());
+
+  // PENTING: Buat response redirect BARU dengan cookies yang sudah di-set
+  const redirectResponse = NextResponse.redirect(
+    `${requestUrl.origin}/dashboard`
+  );
+
+  // Copy semua cookies dari response lama ke response redirect
+  response.cookies.getAll().forEach((cookie) => {
+    redirectResponse.cookies.set(cookie);
+  });
+
+  console.log('✅ Redirecting to dashboard with cookies');
+
+  return redirectResponse;
 }
