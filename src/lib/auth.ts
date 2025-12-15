@@ -111,10 +111,16 @@ export async function signInWithEmail(email: string, password: string) {
 // Sign up with Google
 export async function signUpWithGoogle() {
   try {
+    
+    const isProduction = window.location.hostname !== 'localhost';
+    const redirectTo = isProduction
+      ? `${process.env.NEXT_JANJIKITA_URL}/auth/callback`
+      : `${window.location.origin}/auth/callback`;
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -131,21 +137,31 @@ export async function signUpWithGoogle() {
   }
 }
 
-// Sign in with Google
 export async function signInWithGoogle() {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/callback`,
-    },
-  });
+  try {
+    const isProduction = window.location.hostname !== 'localhost';
+    const redirectTo = isProduction
+      ? `${process.env.NEXT_JANJIKITA_URL}/auth/callback`
+      : `${window.location.origin}/auth/callback`;
 
-  if (error) {
-    console.error('Google OAuth error:', error);
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    });
+
+    if (error) throw error;
+
+    return { error: null };
+  } catch (error: any) {
+    console.error('Google sign up error:', error);
     return { error: error.message };
   }
-
-  return { error: null };
 }
 
 // Sign out
