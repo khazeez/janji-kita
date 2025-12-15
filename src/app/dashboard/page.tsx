@@ -30,7 +30,7 @@ import Catalogue from '@/components/layout/dashboard-layout/theme';
 export default function Dashboard() {
   const router = useRouter();
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState<
     | 'invitation'
     | 'theme'
@@ -51,57 +51,57 @@ export default function Dashboard() {
     progress: 1,
   };
 
-  useEffect(() => {
-    // Bersihkan hash fragment dari URL jika ada
-    if (window.location.hash) {
-      window.history.replaceState(null, '', window.location.pathname);
-    }
+  // useEffect(() => {
+  //   // Bersihkan hash fragment dari URL jika ada
+  //   if (window.location.hash) {
+  //     window.history.replaceState(null, '', window.location.pathname);
+  //   }
 
     // Check auth status
-    const checkAuth = async () => {
-      try {
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
+    // const checkAuth = async () => {
+    //   try {
+    //     // const {
+    //     //   // data: { session },
+    //     //   error,
+    //     // } = await supabase.auth.getSession();
 
-        if (error) {
-          console.error('Error getting session:', error);
-          router.replace('/sign-in');
-          return;
-        }
+    //     // if (error) {
+    //     //   console.error('Error getting session:', error);
+    //     //   router.replace('/sign-in');
+    //     //   return;
+    //     // }
 
-        if (!session) {
-          router.replace('/sign-in');
-          return;
-        }
+    //     // if (!session) {
+    //     //   router.replace('/sign-in');
+    //     //   return;
+    //     // }
 
-        setUser(session.user);
-        setLoading(false);
-      } catch (err) {
-        console.error('Auth check error:', err);
-        router.replace('/sign-in');
-      }
-    };
+    //     // setUser(session.user);
+    //     setLoading(false);
+    //   } catch (err) {
+    //     console.error('Auth check error:', err);
+    //     router.replace('/sign-in');
+    //   }
+    // };
 
-    checkAuth();
+    // checkAuth();
 
     // Listen untuk perubahan auth state
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_OUT') {
-        setUser(null);
-        router.replace('/sign-in');
-      } else if (session?.user) {
-        setUser(session.user);
-      }
-    });
+  //   const {
+  //     data: { subscription },
+  //   } = supabase.auth.onAuthStateChange(async (event, session) => {
+  //     if (event === 'SIGNED_OUT') {
+  //       setUser(null);
+  //       router.replace('/sign-in');
+  //     } else if (session?.user) {
+  //       setUser(session.user);
+  //     }
+  //   });
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [router]);
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   };
+  // }, [router]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -264,21 +264,21 @@ export default function Dashboard() {
   };
 
   // Loading state
-  if (loading) {
-    return (
-      <div className='flex items-center justify-center min-h-screen bg-gray-900'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-16 w-16 border-b-2 border-pink-500 mx-auto mb-4'></div>
-          <p className='text-white'>Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className='flex items-center justify-center min-h-screen bg-gray-900'>
+  //       <div className='text-center'>
+  //         <div className='animate-spin rounded-full h-16 w-16 border-b-2 border-pink-500 mx-auto mb-4'></div>
+  //         <p className='text-white'>Loading...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  // Jika tidak ada user (fallback)
-  if (!user) {
-    return null;
-  }
+  // // Jika tidak ada user (fallback)
+  // if (!user) {
+  //   return null;
+  // }
 
   return (
     <div className='flex flex-col md:flex-row min-h-screen bg-gray-900'>
@@ -421,8 +421,9 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {/* Profile Dropdown */}
-              <div className='relative' ref={dropdownRef}>
+              {/* //Profile Dropdown */}
+
+              {/* <div className='relative' ref={dropdownRef}>
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className='flex items-center gap-2 md:gap-3 hover:bg-gray-700 rounded-lg px-2 md:px-3 py-2 transition-colors'
@@ -454,7 +455,7 @@ export default function Dashboard() {
                   />
                 </button>
 
-                {/* Dropdown Menu */}
+                
                 {profileDropdownOpen && (
                   <div className='absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-700 rounded-lg shadow-lg py-2'>
                     <div className='px-4 py-3 border-b border-gray-700 md:hidden'>
@@ -494,7 +495,7 @@ export default function Dashboard() {
                     </button>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
         </header>
