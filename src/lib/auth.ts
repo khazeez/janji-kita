@@ -111,10 +111,20 @@ export async function signInWithEmail(email: string, password: string) {
 // Sign up with Google
 export async function signUpWithGoogle() {
   try {
+    // Gunakan env var untuk production
+    const baseUrl =
+      process.env.NEXT_PUBLIC_JANJIKITA_URL || window.location.origin;
+
+    console.log('🔵 OAuth Config:', {
+      baseUrl,
+      redirectTo: `${baseUrl}/auth/callback`,
+      env: process.env.NODE_ENV,
+    });
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${baseUrl}/auth/callback`,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -122,22 +132,33 @@ export async function signUpWithGoogle() {
       },
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ OAuth error:', error);
+      throw error;
+    }
 
     return { error: null };
   } catch (error: any) {
-    console.error('Google sign up error:', error);
+    console.error('Google sign in error:', error);
     return { error: error.message };
   }
 }
-
 // Sign in with Google
 export async function signInWithGoogle() {
   try {
+    // Gunakan env var untuk production
+    const baseUrl = process.env.NEXT_PUBLIC_JANJIKITA_URL || window.location.origin;
+
+    console.log('🔵 OAuth Config:', {
+      baseUrl,
+      redirectTo: `${baseUrl}/auth/callback`,
+      env: process.env.NODE_ENV,
+    });
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${baseUrl}/auth/callback`,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -145,7 +166,10 @@ export async function signInWithGoogle() {
       },
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ OAuth error:', error);
+      throw error;
+    }
 
     return { error: null };
   } catch (error: any) {
