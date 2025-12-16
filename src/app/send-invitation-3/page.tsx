@@ -471,7 +471,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
                       type='tel'
                       value={manualTel}
                       onChange={(e) => setManualTel(e.target.value)}
-                      placeholder='Nomor Telepon (contoh: 08123456789 atau 628123456789)'
+                      placeholder='Nomor Telepon (contoh: 08123456789)'
                       className='w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg text-sm focus:border-pink-400 focus:outline-none'
                     />
                     <div className='flex gap-2'>
