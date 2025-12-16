@@ -1,7 +1,10 @@
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabase/client';
 import { transformInvitationResponse, transformKeys } from '@/lib/utils';
 //function untuk mengambil semua product
+
+const supabase = createClient()
 export async function getProductInvitation() {
+  
   const { data, error } = await supabase.from('PRODUCT').select(`*`);
 
   if (error) {
@@ -134,8 +137,6 @@ export async function getDataInvitationUser(slug: string) {
 
   return dataCamelCase;
 }
-
-
 
 // ============================================
 // INSERT MESSAGES

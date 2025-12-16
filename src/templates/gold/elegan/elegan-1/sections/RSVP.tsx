@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, MessageCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getGuestBook, insertMessages } from '@/queries';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabase/client';
 import { GuestBook } from '@/types/interface';
 
 export interface Props {
@@ -22,6 +22,8 @@ export default function RSVP({ invitationId }: Props) {
   // ============================================
   // HELPER FUNCTIONS
   // ============================================
+
+  const supabase = createClient()
 
   const getNameFromURL = () => {
     const urlParams = new URLSearchParams(window.location.search);

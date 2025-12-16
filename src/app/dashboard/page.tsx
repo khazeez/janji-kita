@@ -17,7 +17,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 import Invitation from '@/components/layout/dashboard-layout/invitation';
@@ -57,36 +57,36 @@ export default function Dashboard() {
   //     window.history.replaceState(null, '', window.location.pathname);
   //   }
 
-    // Check auth status
-    // const checkAuth = async () => {
-    //   try {
-    //     // const {
-    //     //   // data: { session },
-    //     //   error,
-    //     // } = await supabase.auth.getSession();
+  // Check auth status
+  // const checkAuth = async () => {
+  //   try {
+  //     // const {
+  //     //   // data: { session },
+  //     //   error,
+  //     // } = await supabase.auth.getSession();
 
-    //     // if (error) {
-    //     //   console.error('Error getting session:', error);
-    //     //   router.replace('/sign-in');
-    //     //   return;
-    //     // }
+  //     // if (error) {
+  //     //   console.error('Error getting session:', error);
+  //     //   router.replace('/sign-in');
+  //     //   return;
+  //     // }
 
-    //     // if (!session) {
-    //     //   router.replace('/sign-in');
-    //     //   return;
-    //     // }
+  //     // if (!session) {
+  //     //   router.replace('/sign-in');
+  //     //   return;
+  //     // }
 
-    //     // setUser(session.user);
-    //     setLoading(false);
-    //   } catch (err) {
-    //     console.error('Auth check error:', err);
-    //     router.replace('/sign-in');
-    //   }
-    // };
+  //     // setUser(session.user);
+  //     setLoading(false);
+  //   } catch (err) {
+  //     console.error('Auth check error:', err);
+  //     router.replace('/sign-in');
+  //   }
+  // };
 
-    // checkAuth();
+  // checkAuth();
 
-    // Listen untuk perubahan auth state
+  // Listen untuk perubahan auth state
   //   const {
   //     data: { subscription },
   //   } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -119,6 +119,7 @@ export default function Dashboard() {
   }, []);
 
   const handleLogout = async () => {
+    const supabase = createClient()
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
@@ -295,7 +296,9 @@ export default function Dashboard() {
         >
           {/* <Heart className='text-pink-500' size={24} /> */}
           {!sidebarCollapsed && (
-            <h1 className='text-2xl font-bold ml-5 text-white'>Janji<span className='text-pink-500'>Kita</span></h1>
+            <h1 className='text-2xl font-bold ml-5 text-white'>
+              Janji<span className='text-pink-500'>Kita</span>
+            </h1>
             // <img src="/janjiKitaPutih.png" className='h-15 pl-5' alt="Janji Kita - Logo" />
           )}
         </div>
@@ -380,7 +383,9 @@ export default function Dashboard() {
 
             {/* Page Title - Desktop */}
             <div className='hidden md:block'>
-              <h2 className='text-2xl font-bold text-white'>{getPageTitle()}</h2>
+              <h2 className='text-2xl font-bold text-white'>
+                {getPageTitle()}
+              </h2>
             </div>
 
             {/* Right Side Actions */}

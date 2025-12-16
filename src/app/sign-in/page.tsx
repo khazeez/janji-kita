@@ -5,7 +5,7 @@ import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signInWithEmail, signInWithGoogle } from '@/lib/auth';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabase/client';
 
 interface FormErrors {
   email?: string;
@@ -24,6 +24,8 @@ export default function LoginPage() {
     password: '',
     rememberMe: false,
   });
+
+  const supabase = createClient()
 
   // Check jika user sudah login
   useEffect(() => {
