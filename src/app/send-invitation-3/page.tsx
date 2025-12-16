@@ -341,12 +341,12 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -40 }}
             transition={{ duration: 0.3 }}
-            className=' rounded-2xl shadow-xl px-6 md:p-8'
+            className=' rounded-2xl shadow-xl p-6 md:p-8'
           >
             {/* Header */}
             <button
               onClick={() => setPage('setup')}
-              className='flex items-center gap-1 text-gray-400 hover:text-white pb-2'
+              className='flex items-center gap-1 text-gray-400 hover:text-white mb-4'
             >
               <ChevronLeft className='w-4 h-4' />
             </button>
@@ -361,7 +361,13 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`);
               </label>
               <select
                 value={selectedMethod || ''}
-                onChange={(e) => setSelectedMethod(e.target.value as 'picker' | 'manual' | 'csv' || null)}
+                onChange={(e) => {
+                  setSelectedMethod(e.target.value as 'picker' | 'manual' | 'csv' || null);
+                  // Reset manual input form ketika ganti metode
+                  setShowManualInput(false);
+                  setManualName('');
+                  setManualTel('');
+                }}
                 className='w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:border-pink-400 focus:outline-none'
               >
                 <option value=''>-- Pilih metode tambah kontak --</option>
