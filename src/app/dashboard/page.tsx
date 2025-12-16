@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import {
   User,
   Palette,
@@ -30,7 +31,7 @@ import Catalogue from '@/components/layout/dashboard-layout/theme';
 export default function Dashboard() {
   const router = useRouter();
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState<
     | 'invitation'
     | 'theme'
@@ -51,57 +52,24 @@ export default function Dashboard() {
     progress: 1,
   };
 
-  // useEffect(() => {
-  //   // Bersihkan hash fragment dari URL jika ada
-  //   if (window.location.hash) {
-  //     window.history.replaceState(null, '', window.location.pathname);
-  //   }
+  // Get user data
+  useEffect(() => {
+    const getUser = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  // Check auth status
-  // const checkAuth = async () => {
-  //   try {
-  //     // const {
-  //     //   // data: { session },
-  //     //   error,
-  //     // } = await supabase.auth.getSession();
+      if (user) {
+        setUser(user);
+      } else {
+        router.replace('/sign-in');
+      }
+      setLoading(false);
+    };
 
-  //     // if (error) {
-  //     //   console.error('Error getting session:', error);
-  //     //   router.replace('/sign-in');
-  //     //   return;
-  //     // }
-
-  //     // if (!session) {
-  //     //   router.replace('/sign-in');
-  //     //   return;
-  //     // }
-
-  //     // setUser(session.user);
-  //     setLoading(false);
-  //   } catch (err) {
-  //     console.error('Auth check error:', err);
-  //     router.replace('/sign-in');
-  //   }
-  // };
-
-  // checkAuth();
-
-  // Listen untuk perubahan auth state
-  //   const {
-  //     data: { subscription },
-  //   } = supabase.auth.onAuthStateChange(async (event, session) => {
-  //     if (event === 'SIGNED_OUT') {
-  //       setUser(null);
-  //       router.replace('/sign-in');
-  //     } else if (session?.user) {
-  //       setUser(session.user);
-  //     }
-  //   });
-
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   };
-  // }, [router]);
+    getUser();
+  }, [router]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -119,7 +87,7 @@ export default function Dashboard() {
   }, []);
 
   const handleLogout = async () => {
-    const supabase = createClient()
+    const supabase = createClient();
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
@@ -132,6 +100,14 @@ export default function Dashboard() {
       console.error('Logout error:', err);
       alert('Terjadi kesalahan saat logout.');
     }
+  };
+
+  // Get first name from full name
+  const getFirstName = () => {
+    if (!user) return 'User';
+    const fullName =
+      user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+    return fullName.split(' ')[0];
   };
 
   // Menu Sidebar
@@ -158,20 +134,6 @@ export default function Dashboard() {
     },
     { id: 'attendance', label: 'Data Kehadiran', icon: Users },
   ];
-
-  // Get page title based on active menu
-  const getPageTitle = () => {
-    const titles = {
-      invitation: 'Invitation',
-      theme: 'Tema',
-      favorite: 'Favorite',
-      payment: 'Transaksi',
-      progress: 'Progress Undangan',
-      attendance: 'Data Kehadiran',
-      profile: 'Profile',
-    };
-    return titles[activeMenu] || 'Dashboard';
-  };
 
   // Komponen konten dinamis (SPA)
   const renderContent = () => {
@@ -265,21 +227,21 @@ export default function Dashboard() {
   };
 
   // Loading state
-  // if (loading) {
-  //   return (
-  //     <div className='flex items-center justify-center min-h-screen bg-gray-900'>
-  //       <div className='text-center'>
-  //         <div className='animate-spin rounded-full h-16 w-16 border-b-2 border-pink-500 mx-auto mb-4'></div>
-  //         <p className='text-white'>Loading...</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center min-h-screen bg-gray-900'>
+        <div className='text-center'>
+          <div className='animate-spin rounded-full h-16 w-16 border-b-2 border-pink-500 mx-auto mb-4'></div>
+          <p className='text-white'>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
-  // // Jika tidak ada user (fallback)
-  // if (!user) {
-  //   return null;
-  // }
+  // Jika tidak ada user (fallback)
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className='flex flex-col md:flex-row min-h-screen bg-gray-900'>
@@ -294,12 +256,10 @@ export default function Dashboard() {
             sidebarCollapsed ? 'justify-center' : 'gap-2'
           }`}
         >
-          {/* <Heart className='text-pink-500' size={24} /> */}
           {!sidebarCollapsed && (
-            <h1 className='text-2xl font-bold ml-5 text-white'>
+            <Link className='text-3xl font-bold ml-5 text-white' href='/'>
               Janji<span className='text-pink-500'>Kita</span>
-            </h1>
-            // <img src="/janjiKitaPutih.png" className='h-15 pl-5' alt="Janji Kita - Logo" />
+            </Link>
           )}
         </div>
 
@@ -316,7 +276,7 @@ export default function Dashboard() {
         </button>
 
         {/* Menu */}
-        <nav className='flex-1 p-4 space-y-2 overflow-y-auto'>
+        <nav className='flex-1 p-4 space-y-2 text-sm font-bold overflow-y-auto'>
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -361,7 +321,7 @@ export default function Dashboard() {
             title={sidebarCollapsed ? 'Logout' : ''}
           >
             <LogOut size={20} />
-            {!sidebarCollapsed && <span className='font-medium'>Logout</span>}
+            {!sidebarCollapsed && <span className='text-sm'>Logout</span>}
           </button>
         </div>
       </aside>
@@ -373,65 +333,40 @@ export default function Dashboard() {
         }`}
       >
         {/* Header Desktop & Mobile */}
-        <header className=' sticky bg-gray-900  top-0 z-40'>
+        <header className='sticky bg-gray-900 top-0 z-40'>
           <div className='px-4 md:px-6 py-3 md:py-3.5 flex items-center justify-between'>
-            {/* Logo & Title - Mobile */}
-            <div className='flex items-center gap-3 md:hidden'>
-              <Heart className='text-pink-500' size={20} />
-              <h1 className='text-sm font-bold text-white'>JanjiKita</h1>
-            </div>
-
-            {/* Page Title - Desktop */}
-            <div className='hidden md:block'>
-              <h2 className='text-2xl font-bold text-white'>
-                {getPageTitle()}
-              </h2>
+            {/* Left Side - Logo & Greeting */}
+            <div className='flex items-center gap-3 ml-3'>
+              {/* <Heart className='text-pink-500 md:hidden' size={20} /> */}
+              <div>
+                <h1 className='text-sm md:text-lg font-bold text-white'>
+                  <span className='hidden'>JanjiKita</span>
+                  <span className='md:inline md:text-2xl text-xl'>
+                    Hi, {getFirstName()}! ❤️
+                  </span>
+                </h1>
+                <p className='md:block text-xs text-gray-400'>
+                  Selamat datang kembali
+                </p>
+              </div>
             </div>
 
             {/* Right Side Actions */}
-            <div className='flex items-center gap-3'>
-              {/* Notification Buttons - Mobile Only */}
-              <div className='flex items-center gap-2 md:hidden'>
-                {/* <button
-                  onClick={() => setActiveMenu('favorite')}
-                  className='relative text-gray-300 hover:text-white p-2'
-                >
-                  <Star size={20} />
-                  <Badge count={notifications.cart} />
-                </button> */}
-                <button
-                  onClick={() => setActiveMenu('payment')}
-                  className='relative text-gray-300 hover:text-white p-2'
-                >
-                  <Bell size={20} />
-                  <Badge count={notifications.payment} />
-                </button>
-              </div>
+            <div className='flex items-center gap-2 md:gap-3'>
+              {/* Notification Button */}
+              <button
+                onClick={() => setActiveMenu('payment')}
+                className='relative text-gray-300 hover:text-white p-2 hover:bg-gray-700 rounded-lg transition-colors'
+              >
+                <Bell size={20} />
+                <Badge count={notifications.payment} />
+              </button>
 
-              {/* Notification Buttons - Desktop */}
-              <div className='hidden md:flex items-center gap-2'>
-                {/* <button
-                  onClick={() => setActiveMenu('favorite')}
-                  className='relative text-gray-300 hover:text-white p-2 hover:bg-gray-700 rounded-lg transition-colors'
-                >
-                  <Star size={20} />
-                  <Badge count={notifications.cart} />
-                </button> */}
-                <button
-                  onClick={() => setActiveMenu('payment')}
-                  className='relative text-gray-300 hover:text-white p-2 hover:bg-gray-700 rounded-lg transition-colors'
-                >
-                  <Bell size={20} />
-                  <Badge count={notifications.payment} />
-                </button>
-              </div>
-
-              {/* //Profile Dropdown */}
-
-              {/* <div className='relative' ref={dropdownRef}>
+              {/* Profile Dropdown */}
+              <div className='relative' ref={dropdownRef}>
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className='flex items-center gap-2 md:gap-3 hover:bg-gray-700 rounded-lg px-2 md:px-3 py-2 transition-colors'
+                  className='flex items-center gap-2 hover:bg-gray-700 rounded-lg px-2 py-2 transition-colors'
                 >
                   {user.user_metadata?.avatar_url ? (
                     <img
@@ -444,26 +379,18 @@ export default function Dashboard() {
                       <User className='text-gray-400' size={18} />
                     </div>
                   )}
-                  <div className='hidden md:block text-left'>
-                    <p className='text-white font-medium text-sm truncate max-w-[120px]'>
-                      {user.user_metadata?.full_name || 'User'}
-                    </p>
-                    <p className='text-gray-400 text-xs truncate max-w-[120px]'>
-                      {user.email}
-                    </p>
-                  </div>
                   <ChevronDown
                     size={16}
-                    className={`text-gray-400 transition-transform ${
+                    className={`text-gray-400 transition-transform hidden md:block ${
                       profileDropdownOpen ? 'rotate-180' : ''
                     }`}
                   />
                 </button>
 
-                
+                {/* Dropdown Menu */}
                 {profileDropdownOpen && (
                   <div className='absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-700 rounded-lg shadow-lg py-2'>
-                    <div className='px-4 py-3 border-b border-gray-700 md:hidden'>
+                    <div className='px-4 py-3 border-b border-gray-700'>
                       <p className='text-white font-medium text-sm truncate'>
                         {user.user_metadata?.full_name || 'User'}
                       </p>
@@ -484,6 +411,7 @@ export default function Dashboard() {
                     <button
                       onClick={() => {
                         setProfileDropdownOpen(false);
+                        // Add settings handler here
                       }}
                       className='w-full flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors'
                     >
@@ -500,13 +428,13 @@ export default function Dashboard() {
                     </button>
                   </div>
                 )}
-              </div> */}
+              </div>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className='flex-1 p-4 md:p-6 pb-24 md:pb-6 overflow-y-auto'>
+        <main className='flex-1 p-4 md:p-6 pb-24 md:pb-6 overflow-y-auto bg-gray-900'>
           <div className='max-w-6xl mx-auto'>{renderContent()}</div>
         </main>
       </div>
