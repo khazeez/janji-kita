@@ -7,11 +7,13 @@ import Product from "@/components/layout/product";
 import FAQ from "@/components/layout/faq";
 import Footer from "@/components/layout/footer";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 
 
 export default function Home() {
   return (
     <>
+      <Analytics />
       <SpeedInsights />
       {/* <Globe /> */}
       <LightRays
