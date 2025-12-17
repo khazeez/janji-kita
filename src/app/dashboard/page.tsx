@@ -241,9 +241,9 @@ export default function Dashboard() {
   // Jika tidak ada user (fallback)
   if (!user) {
     return (
-      <div className="text-white text-2xl">
+      <div className="text-white text-center text-2xl">
         User tidak ada
-        User: {user}
+        {user}
       </div>
     );
   }
