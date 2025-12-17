@@ -19,7 +19,7 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [showVerificationPopup, setShowVerificationPopup] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -29,45 +29,28 @@ export default function SignUp() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    // Clear error for this field when user starts typing
+    setFormData({ ...formData, [name]: value });
     if (errors[name as keyof FormErrors]) {
-      setErrors({
-        ...errors,
-        [name]: undefined,
-      });
+      setErrors({ ...errors, [name]: undefined });
     }
-    // Clear general error
     if (errors.general) {
-      setErrors({
-        ...errors,
-        general: undefined,
-      });
+      setErrors({ ...errors, general: undefined });
     }
   };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-
-    // Name validation
     if (!formData.name.trim()) {
       newErrors.name = 'Nama lengkap wajib diisi';
     } else if (formData.name.trim().length < 3) {
       newErrors.name = 'Nama minimal 3 karakter';
     }
-
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
       newErrors.email = 'Email wajib diisi';
     } else if (!emailRegex.test(formData.email)) {
       newErrors.email = 'Format email tidak valid';
     }
-
-    // Password validation
     if (!formData.password) {
       newErrors.password = 'Password wajib diisi';
     } else if (formData.password.length < 8) {
@@ -76,41 +59,27 @@ export default function SignUp() {
       newErrors.password =
         'Password harus mengandung huruf besar, huruf kecil, dan angka';
     }
-
-    // Confirm password validation
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Konfirmasi password wajib diisi';
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Password tidak cocok';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validateForm()) return;
     setIsLoading(true);
     setErrors({});
-    setSuccessMessage('');
-
     try {
-      // Sign up with Supabase
       const { user, error } = await signUpWithEmail(
         formData.email,
         formData.password,
-        {
-          full_name: formData.name,
-        }
+        { full_name: formData.name }
       );
-
       if (error) {
-        // Handle specific Supabase errors
         if (error.includes('already registered')) {
           setErrors({ email: 'Email sudah terdaftar' });
         } else if (error.includes('Invalid email')) {
@@ -122,29 +91,11 @@ export default function SignUp() {
         }
         return;
       }
-
-      // Success
-      setSuccessMessage(
-        'Akun berhasil dibuat! Silakan cek email Anda untuk verifikasi.'
-      );
-
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      });
-
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 2000);
+      setShowVerificationPopup(true);
+      setFormData({ name: '', email: '', password: '', confirmPassword: '' });
     } catch (error: any) {
       console.error('Signup error:', error);
-      setErrors({
-        general: 'Terjadi kesalahan. Silakan coba lagi.',
-      });
+      setErrors({ general: 'Terjadi kesalahan. Silakan coba lagi.' });
     } finally {
       setIsLoading(false);
     }
@@ -153,37 +104,27 @@ export default function SignUp() {
   const handleGoogleSignUp = async () => {
     setIsLoading(true);
     setErrors({});
-
     try {
       const { error } = await signUpWithGoogle();
-
       if (error) {
-        setErrors({
-          general: 'Gagal login dengan Google. Silakan coba lagi.',
-        });
+        setErrors({ general: 'Gagal login dengan Google. Silakan coba lagi.' });
         setIsLoading(false);
       }
-      // No need to set isLoading to false here because user will be redirected
     } catch (error) {
       console.error('Google signup error:', error);
-      setErrors({
-        general: 'Terjadi kesalahan. Silakan coba lagi.',
-      });
+      setErrors({ general: 'Terjadi kesalahan. Silakan coba lagi.' });
       setIsLoading(false);
     }
   };
 
-  // Password strength indicator
   const getPasswordStrength = (password: string) => {
     if (!password) return { strength: 0, label: '', color: '' };
-
     let strength = 0;
     if (password.length >= 8) strength++;
     if (/[a-z]/.test(password)) strength++;
     if (/[A-Z]/.test(password)) strength++;
     if (/\d/.test(password)) strength++;
     if (/[^a-zA-Z0-9]/.test(password)) strength++;
-
     if (strength <= 2) return { strength, label: 'Lemah', color: 'bg-red-500' };
     if (strength <= 3)
       return { strength, label: 'Sedang', color: 'bg-yellow-500' };
@@ -196,8 +137,77 @@ export default function SignUp() {
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center p-4 relative overflow-hidden'>
+      {showVerificationPopup && (
+        <div className='fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
+          <div className='bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 md:p-8'>
+            <div className='flex justify-center mb-4'>
+              <div className='w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center'>
+                <svg
+                  className='w-8 h-8 text-green-500'
+                  fill='currentColor'
+                  viewBox='0 0 20 20'
+                >
+                  <path
+                    fillRule='evenodd'
+                    d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
+                    clipRule='evenodd'
+                  />
+                </svg>
+              </div>
+            </div>
+            <h2 className='text-xl md:text-2xl font-bold text-center text-white mb-3'>
+              Berhasil Mendaftar!
+            </h2>
+            <p className='text-gray-400 text-center text-sm md:text-base mb-6'>
+              Akun Anda telah berhasil dibuat. Silakan verifikasi email Anda
+              untuk melanjutkan.
+            </p>
+            <div className='bg-pink-500/10 border border-pink-500/30 rounded-xl p-4 mb-6'>
+              <div className='flex items-start gap-3'>
+                <svg
+                  className='w-5 h-5 text-pink-500 mt-0.5 flex-shrink-0'
+                  fill='currentColor'
+                  viewBox='0 0 20 20'
+                >
+                  <path d='M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z' />
+                  <path d='M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z' />
+                </svg>
+                <div className='flex-1'>
+                  <p className='text-pink-400 text-sm font-medium mb-1'>
+                    Cek Email Anda
+                  </p>
+                  <p className='text-gray-400 text-xs'>
+                    Kami telah mengirimkan link verifikasi ke email Anda. Klik
+                    link tersebut untuk mengaktifkan akun.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className='flex flex-col gap-3'>
+              <button
+                onClick={() => router.push('/sign-in')}
+                className='w-full bg-gradient-to-r from-pink-600 via-pink-500 to-pink-400 hover:from-pink-700 hover:via-pink-600 hover:to-pink-500 text-white font-bold py-3 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/30 text-sm md:text-base'
+              >
+                Ke Halaman Login
+              </button>
+              <button
+                onClick={() => setShowVerificationPopup(false)}
+                className='w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 rounded-xl transition-all duration-300 border border-gray-700 text-sm md:text-base'
+              >
+                Tetap di Sini
+              </button>
+            </div>
+            <p className='text-center text-gray-500 text-xs mt-4'>
+              Tidak menerima email?{' '}
+              <button className='text-pink-500 hover:text-pink-400 font-medium'>
+                Kirim ulang
+              </button>
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className='w-full max-w-md bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-gray-800/50 relative z-10'>
-        {/* Header */}
         <div className='p-6 md:p-12'>
           <div className='mb-6 md:mb-8'>
             <h1 className='text-2xl md:text-4xl text-center font-bold bg-gradient-to-r from-pink-600 via-pink-500 to-pink-400 bg-clip-text text-transparent mb-2'>
@@ -208,27 +218,6 @@ export default function SignUp() {
             </p>
           </div>
 
-          {/* Success Message */}
-          {successMessage && (
-            <div className='mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-xl'>
-              <p className='text-green-400 text-sm flex items-center gap-2'>
-                <svg
-                  className='w-5 h-5'
-                  fill='currentColor'
-                  viewBox='0 0 20 20'
-                >
-                  <path
-                    fillRule='evenodd'
-                    d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
-                    clipRule='evenodd'
-                  />
-                </svg>
-                {successMessage}
-              </p>
-            </div>
-          )}
-
-          {/* General Error Message */}
           {errors.general && (
             <div className='mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl'>
               <p className='text-red-400 text-sm flex items-center gap-2'>
@@ -248,9 +237,7 @@ export default function SignUp() {
             </div>
           )}
 
-          {/* Form Fields */}
           <form className='space-y-4' onSubmit={(e) => e.preventDefault()}>
-            {/* Name Field */}
             <div>
               <div className='relative'>
                 <input
@@ -316,7 +303,6 @@ export default function SignUp() {
               )}
             </div>
 
-            {/* Email Field */}
             <div>
               <div className='relative'>
                 <input
@@ -384,7 +370,6 @@ export default function SignUp() {
               )}
             </div>
 
-            {/* Password Field */}
             <div>
               <div className='relative'>
                 <input
@@ -445,8 +430,6 @@ export default function SignUp() {
                   )}
                 </button>
               </div>
-
-              {/* Password Strength Indicator */}
               {formData.password && (
                 <div className='mt-2'>
                   <div className='flex gap-1 mb-1'>
@@ -477,7 +460,6 @@ export default function SignUp() {
                   </p>
                 </div>
               )}
-
               {focusedField === 'password' && !formData.password && (
                 <p className='text-gray-400 text-xs mt-1.5 ml-1'>
                   Min. 8 karakter, gunakan kombinasi huruf besar, kecil, dan
@@ -502,7 +484,6 @@ export default function SignUp() {
               )}
             </div>
 
-            {/* Confirm Password Field */}
             <div>
               <div className='relative'>
                 <input
@@ -613,7 +594,6 @@ export default function SignUp() {
               )}
             </div>
 
-            {/* Submit Button */}
             <button
               onClick={handleSubmit}
               disabled={isLoading}
@@ -657,7 +637,6 @@ export default function SignUp() {
             <div className='flex-1 border-t border-gray-800'></div>
           </div>
 
-          {/* Google Sign Up Button */}
           <button
             onClick={handleGoogleSignUp}
             disabled={isLoading}
@@ -684,7 +663,6 @@ export default function SignUp() {
             Lanjutkan dengan Google
           </button>
 
-          {/* Footer */}
           <p className='text-center text-gray-400 text-xs md:text-sm mt-6 md:mt-8'>
             Sudah punya akun?{' '}
             <Link
@@ -695,7 +673,6 @@ export default function SignUp() {
             </Link>
           </p>
 
-          {/* Terms */}
           <p className='text-center text-gray-500 text-xs mt-3 md:mt-4'>
             Dengan mendaftar, Anda menyetujui{' '}
             <a href='#' className='text-pink-500 hover:underline'>

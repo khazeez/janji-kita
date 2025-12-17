@@ -153,7 +153,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='min-h-screen flex items-center justify-center p-4 overflow-hidden bg-gradient-to-br from-pink-50 to-purple-50'>
+    <div className='min-h-screen flex items-center justify-center p-4 overflow-hidden bg-gray-900'>
       <div className='relative bg-white rounded-2xl md:rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-100 max-h-[95vh] overflow-y-auto'>
         {/* Header */}
         <h2 className='text-xl py-10 text-center md:text-2xl font-bold text-gray-800'>
