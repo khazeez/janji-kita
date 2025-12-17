@@ -240,7 +240,11 @@ export default function Dashboard() {
 
   // Jika tidak ada user (fallback)
   if (!user) {
-    return null;
+    return (
+      <div className="">
+        User tidak ada
+      </div>
+    );
   }
 
   return (
