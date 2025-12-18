@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createClient } from '@/lib/supabase/client';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -13,17 +12,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   // Cek cookies autentikasi Supabase
   const cookies = request.cookies.getAll();
   const hasAuthCookie = cookies.some(
     (cookie) =>
-      cookie.name.startsWith('sb-') &&
-      cookie.name.includes('auth-token') &&
+      (cookie.name === 'sb-access-token' ||
+        cookie.name === 'sb-refresh-token') &&
       cookie.value &&
       cookie.value.length > 0
   );
@@ -32,12 +26,12 @@ export async function middleware(request: NextRequest) {
   const isDashboard = pathname.startsWith('/dashboard');
 
   // Redirect ke sign-in jika mencoba akses dashboard tanpa auth
-  if (isDashboard && (!hasAuthCookie || !user)) {
+  if (isDashboard && !hasAuthCookie) {
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
   // Redirect ke dashboard jika sudah login dan mencoba akses halaman auth
-  if (isAuthPage && hasAuthCookie && user) {
+  if (isAuthPage && hasAuthCookie) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 

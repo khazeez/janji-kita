@@ -53,23 +53,26 @@ export default function Dashboard() {
   };
 
   // Get user data
-  useEffect(() => {
-    const getUser = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+ useEffect(() => {
+   const getUser = async () => {
+     try {
+       const supabase = createClient();
+       const {
+         data: { user },
+       } = await supabase.auth.getUser();
 
-      if (user) {
-        setUser(user);
-      } else {
-        router.replace('/sign-in');
-      }
-      setLoading(false);
-    };
+       setUser(user || null); // kalau null, tetap null
+     } catch (err) {
+       console.error('Error getting user:', err);
+       setUser(null);
+     } finally {
+       setLoading(false);
+     }
+   };
 
-    getUser();
-  }, [router]);
+   getUser();
+ }, []);
+
 
   // Close dropdown when clicking outside
   useEffect(() => {
