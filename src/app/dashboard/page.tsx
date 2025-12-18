@@ -61,7 +61,7 @@ export default function Dashboard() {
          data: { user },
        } = await supabase.auth.getUser();
 
-       setUser(user || null); // kalau null, tetap null
+       setUser(user);
      } catch (err) {
        console.error('Error getting user:', err);
        setUser(null);
