@@ -458,7 +458,7 @@ export default function Catalogue() {
   return (
     <div className='min-h-screen bg-transparent'>
       <header className='z-50 top-0 border-b border-gray-700/40 transition-all duration-500'>
-        <div className='max-w-7xl mx-auto px-3 sm:px-6 pb-5'>
+        <div className='max-w-7xl mx-auto  pb-5'>
           {/* Search Bar & Dropdown */}
           <div className='flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto mb-3 sm:mb-6'>
             {/* Search */}
@@ -539,8 +539,8 @@ export default function Catalogue() {
         </div>
       </header>
 
-      <section className=' px-3 sm:px-6'>
-        <div className='max-w-7xl mx-auto'>
+      <section className=''>
+        <div className=' mx-auto'>
           {filteredCatalogues.length === 0 ? (
             <div className='text-center py-12'>
               <Search className='w-10 h-10 sm:w-16 sm:h-16 mx-auto mb-3 text-gray-500 opacity-50' />
@@ -552,14 +552,14 @@ export default function Catalogue() {
               </p>
             </div>
           ) : (
-            <div className='grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6'>
+            <div className='grid grid-cols-2 lg:grid-cols-3 gap-2'>
               {filteredCatalogues.map((item) => (
                 <div
                   key={item.id}
                   onClick={() => handleItemClick(item)}
                   className='group bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 overflow-hidden border border-gray-700/50 hover:-translate-y-1 cursor-pointer'
                 >
-                  <div className='relative h-36 sm:h-56 overflow-hidden'>
+                  <div className='relative h-60 md:h-85 overflow-hidden'>
                     <img
                       src={item.image}
                       alt={item.name}

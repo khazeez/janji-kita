@@ -53,26 +53,34 @@ export default function Dashboard() {
   };
 
   // Get user data
- useEffect(() => {
-   const getUser = async () => {
-     try {
-       const supabase = createClient();
-       const {
-         data: { user },
-       } = await supabase.auth.getUser();
+  useEffect(() => {
+    const supabase = createClient();
 
-       setUser(user);
-     } catch (err) {
-       console.error('Error getting user:', err);
-       setUser(null);
-     } finally {
-       setLoading(false);
-     }
-   };
+    const getUserData = async () => {
+      setLoading(true);
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
 
-   getUser();
- }, []);
+      if (error) {
+        console.error('Error fetching session:', error);
+        setUser(null);
+      } else {
+        setUser(session?.user || null);
+      }
 
+      setLoading(false);
+    };
+
+    getUserData();
+  }, []);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/sign-in'); // redirect ke login jika user null
+    }
+  }, [loading, user]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -244,7 +252,7 @@ export default function Dashboard() {
   // Jika tidak ada user (fallback)
   if (!user) {
     return (
-      <div className="text-white items-center text-center text-2xl">
+      <div className='text-white items-center text-center text-2xl'>
         User tidak ada
         {user}
       </div>

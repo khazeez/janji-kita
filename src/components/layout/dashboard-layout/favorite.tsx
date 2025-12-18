@@ -157,7 +157,7 @@ export default function Saved() {
       </div>
 
       {/* Grid Cards */}
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6'>
+      <div className='grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6'>
         {savedItems.map((item) => (
           <div
             key={item.id}
@@ -230,10 +230,10 @@ export default function Saved() {
 
             {/* Card Content */}
             <div className='p-3 md:p-4'>
-              <h3 className='text-base md:text-lg font-bold text-white mb-1 md:mb-2 line-clamp-1'>
+              <h3 className='text-xs md:text-lg font-bold text-white mb-1 md:mb-2 line-clamp-1'>
                 {item.name}
               </h3>
-              <p className='text-lg md:text-xl font-bold text-pink-500'>
+              <p className='text-xs md:text-xl font-bold text-pink-500'>
                 {formatPrice(item.price)}
               </p>
             </div>
