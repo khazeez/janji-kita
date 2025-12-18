@@ -15,13 +15,13 @@ const geistMono = Geist_Mono({
 // 🧠 Metadata global
 export const metadata: Metadata = {
   title: 'JanjiKita',
-  description: 'Berbagi moment indah dengan sanak keluarga',
+  description: 'Janjikita.art: Pilihan terbaik untuk membantu berbagi moment berharga anda',
   icons: {
     icon: '/wedding3.jpg', // ubah favicon default
   },
   openGraph: {
     title: 'JanjiKita',
-    description: 'Berbagi moment indah dengan sanak keluarga',
+    description: 'Janjikita.art: Pilihan terbaik untuk membantu berbagi moment berharga anda',
     url: 'https://janjikita.art',
     siteName: 'JanjiKita',
     images: [
@@ -37,8 +37,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'JanjiKita',
-    description: 'Berbagi moment indah dengan sanak keluarga',
+    title: 'janjikita art',
+    description: 'Janjikita.art: Pilihan terbaik untuk membantu berbagi moment berharga anda',
     images: ['/wedding3.jpg'], // 🖼️ gunakan gambar yang sama
   },
 };
