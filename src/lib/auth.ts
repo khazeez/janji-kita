@@ -1,4 +1,4 @@
-import { createClient } from './supabase/client';
+import supabase from './supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 
 // ============================================
@@ -11,7 +11,6 @@ export async function isLoggedIn(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
 
   try {
-    const supabase = createClient();
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -25,20 +24,21 @@ export async function isLoggedIn(): Promise<boolean> {
 // Get current user
 export async function getCurrentUser(): Promise<User | null> {
   try {
-    const supabase = createClient();
     const {
       data: { user },
       error,
     } = await supabase.auth.getUser();
 
     if (error) {
-      console.error('Error getting user:', error);
+      // console.log(error);
+      
       return null;
     }
 
     return user;
   } catch (error) {
-    console.error('Error getting user:', error);
+    // console.log(error);
+    
     return null;
   }
 }
@@ -46,7 +46,6 @@ export async function getCurrentUser(): Promise<User | null> {
 // Get current session
 export async function getSession(): Promise<Session | null> {
   try {
-    const supabase = createClient();
     const {
       data: { session },
       error,
@@ -82,7 +81,6 @@ export async function signUpWithEmail(
   metadata?: { [key: string]: any }
 ) {
   try {
-    const supabase = createClient();
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -104,7 +102,6 @@ export async function signUpWithEmail(
 // Sign in with email
 export async function signInWithEmail(email: string, password: string) {
   try {
-    const supabase = createClient();
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -122,7 +119,6 @@ export async function signInWithEmail(email: string, password: string) {
 // Sign up with Google (uses PKCE flow automatically)
 export async function signUpWithGoogle() {
   try {
-    const supabase = createClient();
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -146,7 +142,6 @@ export async function signUpWithGoogle() {
 // Sign in with Google (uses PKCE flow automatically)
 export async function signInWithGoogle() {
   try {
-    const supabase = createClient();
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -170,7 +165,6 @@ export async function signInWithGoogle() {
 // Sign out
 export async function signOut() {
   try {
-    const supabase = createClient();
     const { error } = await supabase.auth.signOut();
 
     if (error) throw error;
@@ -190,7 +184,6 @@ export async function signOut() {
 // Reset password
 export async function resetPassword(email: string) {
   try {
-    const supabase = createClient();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
@@ -207,7 +200,6 @@ export async function resetPassword(email: string) {
 // Update password
 export async function updatePassword(newPassword: string) {
   try {
-    const supabase = createClient();
     const { error } = await supabase.auth.updateUser({
       password: newPassword,
     });
@@ -224,7 +216,6 @@ export async function updatePassword(newPassword: string) {
 // Update user metadata
 export async function updateUserMetadata(metadata: { [key: string]: any }) {
   try {
-    const supabase = createClient();
     const { data, error } = await supabase.auth.updateUser({
       data: metadata,
     });
@@ -241,7 +232,6 @@ export async function updateUserMetadata(metadata: { [key: string]: any }) {
 // Refresh session
 export async function refreshSession() {
   try {
-    const supabase = createClient();
     const { data, error } = await supabase.auth.refreshSession();
 
     if (error) throw error;
@@ -257,7 +247,6 @@ export async function refreshSession() {
 export function onAuthStateChange(
   callback: (event: string, session: Session | null) => void
 ) {
-  const supabase = createClient();
   const {
     data: { subscription },
   } = supabase.auth.onAuthStateChange((event, session) => {
@@ -283,7 +272,6 @@ export async function resendVerificationEmail() {
       throw new Error('No user email found');
     }
 
-    const supabase = createClient();
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: user.email,
@@ -323,7 +311,6 @@ export async function isAdmin(): Promise<boolean> {
 // Sign in with magic link
 export async function signInWithMagicLink(email: string) {
   try {
-    const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -343,7 +330,6 @@ export async function signInWithMagicLink(email: string) {
 // Verify OTP
 export async function verifyOtp(email: string, token: string) {
   try {
-    const supabase = createClient();
     const { data, error } = await supabase.auth.verifyOtp({
       email,
       token,

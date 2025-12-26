@@ -50,6 +50,8 @@ export interface Product {
   promoPriceWithPhoto?: number;
   features: any[]; // bisa kamu buat tipe khusus nanti
   isPromo: boolean;
+  productType: 'web' | 'video' | 'filter';
+  description: string;
   isNew: boolean;
   isActive: boolean;
   isDeleted: boolean;
@@ -83,11 +85,11 @@ export interface Invitation {
   productId: string;
   invitationUrl: string;
   invitationStatus:
-  | 'DRAFT'
-  | 'IN-PROGRESS'
-  | 'COMPLETED'
-  | 'PUBLISHED'
-  | 'EXPIRED';
+  | 'draft'
+  | 'in-progress'
+  | 'completed'
+  | 'published'
+  | 'expired';
   invitationDataUser: InvitationDataUser;
   invitationEvent: InvitationEvent[];
   invitationGift: InvitationGift;
@@ -225,4 +227,20 @@ export interface AuditLog {
   ipAddress?: string;
   userAgent?: string;
   createdAt: string;
+}
+
+
+export interface PhotoData{
+  groomPhoto: string;
+  bridePhoto: string;
+  gallery: any[]
+}
+
+export interface NotificationType {
+  id: string;
+  type: 'info' | 'success' | 'warning' | 'promo';
+  title: string;
+  message: string;
+  time: string;
+  isRead: boolean;
 }

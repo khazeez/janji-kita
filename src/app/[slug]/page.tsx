@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { getDataInvitationUser, getProductInvitation } from '@/queries';
-import Loading from '@/components/ui/Loading'
-import NetflixDesign from '@/templates/gold/special';
-import GlassesDesign from '@/templates/gold/elegan/elegan-1/main';
+import { getDataInvitationUser, getProductInvitation } from '@/models';
+import Loading from '@/components/ui/Loading';
+import GlassesDesign from '@/theme/gold/elegan/elegan-1/main';
 
 export default function Slug() {
   const params = useParams();
@@ -14,6 +13,7 @@ export default function Slug() {
   const slug = slugParam?.toString().toLowerCase();
 
   const [dataUser, setDataUser] = useState<any>(null);
+  const [invitationStatus, setInvitationStatus] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,6 +23,7 @@ export default function Slug() {
       try {
         const dataInv = await getDataInvitationUser(slug);
         setDataUser(dataInv);
+        setInvitationStatus(dataInv?.invitationStatus);
       } catch (err) {
         setDataUser(null);
       } finally {
@@ -46,27 +47,43 @@ export default function Slug() {
 
   // Jika tidak ada data (slug salah)
   if (!dataUser) {
-    console.log("INIIIIIIII", dataUser)
     return (
       <div className='min-h-screen bg-black flex items-center justify-center'>
         <div className='text-center'>
-          <h1 className='text-white text-2xl mb-4'>
-            Wedding Invitation Not Found
-          </h1>
+          <h1 className='text-white text-2xl mb-4'>Undangan tidak ditemukan</h1>
         </div>
       </div>
     );
-  } else {
-    console.log('INIIIIIIII', dataUser);
   }
 
-  // Ambil nama produk dari relasi Supabase
+  switch (invitationStatus) {
+    case 'draft':
+      return (
+        <div className='min-h-screen bg-black flex items-center justify-center'>
+          <div className='text-center'>
+            <h1 className='text-white text-2xl mb-4'>Undanganmu belum aktif</h1>
+          </div>
+        </div>
+      );
+      break;
+
+    case 'expired':
+      return (
+        <div className='min-h-screen bg-black flex items-center justify-center'>
+          <div className='text-center'>
+            <h1 className='text-white text-2xl mb-4'>Undanganmu sudah kadaluarsa</h1>
+          </div>
+        </div>
+      );
+      break;
+
+    default:
+      break;
+  }
+
   const productName = dataUser.product.productName;
-  console.log('INIIII YAAA', productName);
 
   switch (productName) {
-    case 'Inkjlsd':
-      return <NetflixDesign data={dataUser} />;
     case 'Glasses':
       return <GlassesDesign data={dataUser} />;
     default:

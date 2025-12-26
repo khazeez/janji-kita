@@ -1,6 +1,11 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { Invitation } from '@/types/interface';
+import {
+  Invitation,
+  InvitationGift,
+  InvitationGiftBank,
+  InvitationGiftWallet,
+} from '@/types/interface';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -30,9 +35,31 @@ export function transformKeys(obj: any): any {
   return obj;
 }
 
-
-export function transformInvitationResponse(
-  dbResponse: any
-): Invitation {
+export function transformInvitationResponse(dbResponse: any): Invitation {
   return transformKeys(dbResponse) as Invitation;
 }
+
+export function transformInvitationGiftResponse(
+  dbResponse: any
+): InvitationGift {
+  return transformKeys(dbResponse) as InvitationGift;
+}
+
+export function transformInvitationGiftBankResponse(
+  dbResponse: any
+): InvitationGiftBank {
+  return transformKeys(dbResponse) as InvitationGiftBank;
+}
+
+export function transformInvitationGiftWalletResponse(
+  dbResponse: any
+): InvitationGiftWallet {
+  return transformKeys(dbResponse) as InvitationGiftWallet;
+}
+
+
+
+
+
+
+

@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { createClient } from '@/lib/supabase/client';
+import supabase from '@/lib/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 
@@ -41,7 +41,6 @@ export default function Navbar() {
   // Get user on mount
   useEffect(() => {
     const getUser = async () => {
-      const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -50,9 +49,6 @@ export default function Navbar() {
     };
 
     getUser();
-
-    // Listen to auth changes
-    const supabase = createClient();
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -83,7 +79,6 @@ export default function Navbar() {
   const closeSidebar = () => setIsOpen(false);
 
   const handleLogout = async () => {
-    const supabase = createClient();
     await supabase.auth.signOut();
     setProfileDropdownOpen(false);
     router.push('/');
@@ -258,9 +253,9 @@ export default function Navbar() {
                 </Link>
                 <Link
                   href='/sign-up'
-                  className='px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-lg hover:from-pink-600 hover:to-pink-700 transition-all duration-200 font-medium shadow-lg'
+                  className='px-2 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-lg hover:from-pink-600 hover:to-pink-700 transition-all duration-200 font-medium shadow-lg'
                 >
-                  Sign up
+                  Get Started
                 </Link>
               </>
             )}
