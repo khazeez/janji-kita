@@ -1,6 +1,6 @@
 
 import Introduction from "@/components/layout/introduction";
-import LightRays from "@/components/background/LightRise";
+import LightRays from '@/components/background/LightRise';
 import Navbar from "@/components/layout/navbar";
 import Services from "@/components/layout/service";
 import Product from "@/components/layout/product";
