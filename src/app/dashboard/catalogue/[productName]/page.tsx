@@ -87,7 +87,7 @@ export default function ProductDetailPage() {
                   <img
                     src={selectedItem.data.coverImage}
                     alt={selectedItem.data.productName}
-                    className='w-full h-48 sm:h-80 lg:h-96 object-cover'
+                    className='w-full h-100 lg:h-full object-cover'
                   />
                   <div className='absolute top-2 left-2 flex gap-1.5'>
                     <span
