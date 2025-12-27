@@ -15,7 +15,6 @@ export default function Home() {
     <>
       <Analytics />
       <SpeedInsights />
-      {/* <Globe /> */}
       <LightRays
         raysOrigin='top-center'
         raysColor='##aaaaff'
