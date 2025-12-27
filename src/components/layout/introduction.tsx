@@ -1,4 +1,4 @@
-import Device from '@/components/ui/Device';
+import Device from '../ui/device';
 import Link from 'next/link';
 
 export default function Introduction() {
