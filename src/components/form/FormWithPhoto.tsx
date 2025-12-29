@@ -10,6 +10,7 @@ import {
   InvitationDataUser,
   InvitationEvent,
   InvitationGift,
+  PhotoData,
 } from '@/types/interface';
 
 // Komponen form
@@ -19,12 +20,12 @@ import GiftDataInput from '@/components/layout/form-ui/GiftDataInput';
 import LinkDataInput from '@/components/layout/form-ui/LinkDataInput';
 import ConfirmationScreen from '@/components/layout/form-ui/ConfirmationScreen';
 import ResultScreenSuccsess from '../layout/form-ui/Result';
-
+import PhotoInput from '../layout/form-ui/InputPhoto';
 
 // function untuk insert data
 import insertData from '@/models/form';
 
-export default function Form1() {
+export default function Form2() {
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isLinkValid, setIsLinkValid] = useState(false);
@@ -32,13 +33,19 @@ export default function Form1() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const totalSteps = 5;
+  let totalSteps = 6;
 
   // Ambil param
   const params = useParams();
   const searchParams = useSearchParams();
   const productId = params?.productId as string; // Dari /create/[productId]
-  const variant = searchParams.get('variant'); // Dari ?variant=no-photo
+
+  // State untuk data photo
+  const [photoData, setPhotoData] = useState<PhotoData>({
+    groomPhoto: '',
+    bridePhoto: '',
+    gallery: [],
+  });
 
   // State untuk InvitationDataUser
   const [invitationDataUser, setInvitationDataUser] =
@@ -213,7 +220,6 @@ export default function Form1() {
       setCurrentStep(currentStep + 1);
     }
   };
-
 
   const router = useRouter();
   const handleBack = () => {
@@ -409,8 +415,9 @@ export default function Form1() {
       1: 'Data Mempelai',
       2: 'Tempat Acara',
       3: 'Informasi Gift',
-      4: 'Buat Link Undangan',
-      5: 'Konfirmasi Data',
+      4: 'Photo kamu',
+      5: 'Buat Link Undangan',
+      6: 'Konfirmasi Data',
     };
     return titles[currentStep] || '';
   };
@@ -487,8 +494,17 @@ export default function Form1() {
           <GiftDataInput data={invitationGift} onChange={setInvitationGift} />
         )}
 
-        {/* Step 4: Link */}
+        {/* Step 4: Photo mempelai */}
         {currentStep === 4 && (
+          <PhotoInput
+            data={photoData}
+            onChange={(data) => setPhotoData(data)}
+            mempelaiIndex={1}
+          />
+        )}
+
+        {/* Step 5: Link */}
+        {currentStep === 5 && (
           <LinkDataInput
             data={invitation as Invitation}
             onChange={(data) => setInvitation(data)}
@@ -496,8 +512,8 @@ export default function Form1() {
           />
         )}
 
-        {/* Step 5: Konfirmasi */}
-        {currentStep === 5 && (
+        {/* Step 6: Konfirmasi */}
+        {currentStep === 6 && (
           <ConfirmationScreen
             brideGroomData={invitationDataUser}
             venueData={invitationEvents}

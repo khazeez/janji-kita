@@ -1,6 +1,6 @@
 import supabase from '@/lib/supabase/client';
 import {
-  transformInvitationResponse,
+  transformDataInvitationResponse,
   transformKeys,
   transformInvitationGiftResponse,
   transformInvitationGiftBankResponse,
@@ -40,7 +40,7 @@ class FormModels {
         throw error;
       }
 
-      const result = transformInvitationResponse(data);
+      const result = transformDataInvitationResponse(data);
 
       return {
         success: true,

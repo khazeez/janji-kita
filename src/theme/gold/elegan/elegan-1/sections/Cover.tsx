@@ -7,7 +7,6 @@ interface CoverPageProps {
   isOpen: boolean;
   onOpen: () => void;
   bridePhoto?: string;
-  weddingDate?: string;
 }
 
 export default function Cover({
@@ -26,14 +25,11 @@ export default function Cover({
   const [loadedCount, setLoadedCount] = useState(0);
   const totalImages = images.length;
 
-  // Prefetch images without blocking UI
   useEffect(() => {
     images.forEach((src) => {
       const img = new Image();
       img.src = src;
-      img.onload = () => {
-        setLoadedCount((prev) => prev + 1);
-      };
+      img.onload = () => setLoadedCount((p) => p + 1);
     });
   }, []);
 
@@ -43,25 +39,37 @@ export default function Cover({
     <AnimatePresence>
       {!isOpen && (
         <motion.div
-          className='fixed inset-0 flex items-center justify-center overflow-hidden'
+          /* ⬇️ PENTING: absolute, BUKAN fixed */
+          className='
+            absolute inset-0
+            z-50
+            flex items-center justify-center
+            overflow-hidden
+          '
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.05 }}
           transition={{ duration: 0.8 }}
         >
-          {/* 🌿 Background */}
+          {/* Background */}
           <div className='absolute inset-0'>
             <img
               src={bridePhoto || '/images/imam73.webp'}
               alt='Background'
-              className='w-full h-full object-cover brightness-75 scale-105 animate-slow-zoom'
+              className='
+                w-full h-full
+                object-cover object-center
+                brightness-75
+                scale-105
+                animate-slow-zoom
+              '
             />
-            <div className='absolute -bottom-1 left-1/2 -translate-x-1/2 w-[110%] h-1/3 bg-gradient-to-t from-black via-black/80 to-transparent'></div>
+            <div className='absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black via-black/80 to-transparent' />
           </div>
 
-          {/* ✨ Main Container */}
-          <div className='relative z-10 flex flex-col items-center justify-between h-screen pb-10 px-8'>
+          {/* Content */}
+          <div className='relative z-10 flex flex-col items-center justify-between h-full w-full pb-10 px-8'>
             {/* Logo */}
-            <div className='text-center text-white pt-5 pb-50'>
+            <div className='text-center text-white pt-6'>
               <h1 className='flex items-center justify-center'>
                 <span className='text-9xl font-madelyn leading-none'>I</span>
                 <span className='text-6xl font-rumble-brave leading-none'>
@@ -70,61 +78,55 @@ export default function Cover({
               </h1>
             </div>
 
-            {/* ✨ Main Content */}
+            {/* Main */}
             <motion.div
-              className='text-center text-white pt-40'
+              className='text-center text-white'
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
             >
-              {/* Guest Name */}
               {guestName && (
                 <motion.div
                   className='mb-8'
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 1, delay: 1 }}
+                  transition={{ delay: 1 }}
                 >
-                  <p className='text-sm italic text-white'>Kepada tamu Yth.</p>
-                  <p className='text-sm italic text-white'>
-                    Bapak/Ibu/Saudara/i
-                  </p>
-                  <p className='text-lg font-semibold text-white mt-1 drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'>
-                    {guestName}
-                  </p>
+                  <p className='text-sm italic'>Kepada Yth.</p>
+                  <p className='text-sm italic'>Bapak/Ibu/Saudara/i</p>
+                  <p className='text-lg font-semibold mt-1'>{guestName}</p>
                 </motion.div>
               )}
 
-              {/* Buka Button */}
               <motion.button
                 onClick={onOpen}
-                className='relative px-6 py-3 border border-white text-white rounded-full font-sm overflow-hidden group'
+                className='
+                  relative px-6 py-3
+                  border border-white
+                  rounded-full
+                  text-white
+                  overflow-hidden
+                '
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className='absolute inset-0 bg-white/10 backdrop-blur-md -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out rounded-full'></div>
                 <span className='relative z-10 flex items-center gap-2'>
-                  <FaEnvelopeOpen className='text-sm' />
+                  <FaEnvelopeOpen />
                   Buka Undangan
                 </span>
               </motion.button>
             </motion.div>
 
-            {/* Spacer */}
-            <div className='h-20'></div>
+            <div className='h-12' />
           </div>
 
-          {/* 🌙 LOADER Prefetch (tidak ganggu animasi cover) */}
+          {/* Loader */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: loadedCount < totalImages ? 1 : 0 }}
-            transition={{ duration: 0.5 }}
-            className='absolute bottom-10 flex flex-col items-center text-white pointer-events-none'
+            className='absolute bottom-6 text-white text-xs'
           >
-            {/* Progress */}
-            <p className='text-xs mt-2 tracking-wide'>
-              Memuat foto... {progress}%
-            </p>
+            Memuat foto... {progress}%
           </motion.div>
         </motion.div>
       )}

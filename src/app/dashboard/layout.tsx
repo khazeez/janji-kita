@@ -116,12 +116,6 @@ export default function DashboardLayout({
       href: '/dashboard',
     },
     {
-      id: 'invitation',
-      label: 'Invitation',
-      icon: Mail,
-      href: '/dashboard/invitation',
-    },
-    {
       id: 'catalogue',
       label: 'Tema',
       icon: Palette,
@@ -245,7 +239,7 @@ export default function DashboardLayout({
       {/* Main Content Area */}
       <div className='flex-1 flex flex-col overflow-hidden'>
         {/* Main Content */}
-        <main className='flex-1 overflow-y-auto p-4 lg:p-6 pb-20 lg:pb-6'>
+        <main className='flex-1 overflow-y-auto scrollbar-hide p-4'>
           {children}
         </main>
       </div>

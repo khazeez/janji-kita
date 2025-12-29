@@ -244,3 +244,13 @@ export interface NotificationType {
   time: string;
   isRead: boolean;
 }
+
+
+export interface AllInvitationData extends Omit<Invitation, 'productId'> {
+    product: Product;
+    invitationDataUser: InvitationDataUser;
+    invitationGift: InvitationGift;
+    invitationEvent: InvitationEvent[];
+    guestBook: GuestBook[];
+
+}

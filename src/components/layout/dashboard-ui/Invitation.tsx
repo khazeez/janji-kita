@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { AllInvitationData } from '@/types/interface';
 import {
   Package,
   CheckCircle,
@@ -8,19 +9,18 @@ import {
   Heart,
   Share2,
   CreditCard,
+  Eye,
+  Clock,
+  Zap,
+  Calendar,
 } from 'lucide-react';
 
-interface InvitationType {
-  id: string;
-  title: string;
-  date: string;
-  status: string;
-  thumbnailUrl?: string;
-  link?: string;
-}
+type Props = {
+  data: AllInvitationData[];
+};
 
-export default function Invitation() {
-  const [invitations] = useState<InvitationType[]>([]);
+export default function InvitationComponents({ data }: Props) {
+  const [showEditWarning, setShowEditWarning] = useState(false);
 
   const steps = [
     {
@@ -57,95 +57,102 @@ export default function Invitation() {
     },
   ];
 
+  const getStatusConfig = (invitation: AllInvitationData) => {
+    const createdAt = new Date(invitation.createdAt);
+    const expiryDate = new Date(createdAt);
+    expiryDate.setMonth(expiryDate.getMonth() + 6);
+    const now = new Date();
+    const isExpired = now > expiryDate;
+
+    if (isExpired) {
+      return {
+        label: 'Kadaluarsa',
+        color: 'text-gray-400',
+        bgColor: 'bg-gray-500/10',
+        borderColor: 'border-gray-500/20',
+        icon: Clock,
+        expired: true,
+        expiryDate,
+      };
+    }
+
+    if (invitation.invitationStatus === 'published') {
+      return {
+        label: 'Aktif',
+        color: 'text-green-400',
+        bgColor: 'bg-green-500/10',
+        borderColor: 'border-green-500/20',
+        icon: CheckCircle,
+        expired: false,
+        expiryDate,
+      };
+    }
+
+    return {
+      label: 'Belum Aktif',
+      color: 'text-yellow-400',
+      bgColor: 'bg-yellow-500/10',
+      borderColor: 'border-yellow-500/20',
+      icon: Clock,
+      expired: false,
+      expiryDate,
+    };
+  };
+
+  const formatExpiryDate = (date: Date) => {
+    return date.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  };
+
+  const isEventDay = (eventDate: string) => {
+    const event = new Date(eventDate);
+    const now = new Date();
+    return (
+      event.getDate() === now.getDate() &&
+      event.getMonth() === now.getMonth() &&
+      event.getFullYear() === now.getFullYear()
+    );
+  };
+
+  const handleEditClick = (
+    invitation: AllInvitationData,
+    e: React.MouseEvent
+  ) => {
+    if (isEventDay(invitation.invitationEvent[0].startTime)) {
+      e.preventDefault();
+      setShowEditWarning(true);
+    }
+  };
+
   return (
     <div className='px-4 space-y-12'>
-      {/* Hero Section */}
-      
-      <div className='bg-gray-800 border border-gray-700 rounded-xl p-8 md:p-10'>
-        <h2 className='text-2xl md:text-3xl font-bold text-white mb-3'>
-          Buat Undangan Digital 15 detik langsung jadi
-        </h2>
-        <p className='text-gray-400 text-lg mb-10'>
-          Tanpa cetak, tanpa ribet. Dari pilih desain sampai siap dibagikan,
-          semua dalam hitungan menit.
-        </p>
-
-        {/* Steps */}
-        <div className='relative mb-10'>
-          {/* Desktop - Curved SVG Line */}
-          <svg
-            className='hidden md:block absolute top-6 left-0 w-full h-24 pointer-events-none'
-            style={{ zIndex: 0 }}
-          >
-            <path
-              d='M 48 0 Q 25% -30, 50% 0 T 100% 0'
-              stroke='#374151'
-              strokeWidth='2'
-              fill='none'
-              strokeDasharray='8 4'
-            />
-          </svg>
-
-          <div className='flex flex-col md:flex-row justify-between gap-10 md:gap-0 relative'>
-            {steps.map((step, index) => {
-              const Icon = step.icon;
-
-              return (
-                <div
-                  key={step.number}
-                  className='relative flex md:flex-col items-start md:items-center gap-4 md:w-full'
-                >
-                  {/* Mobile - Wavy Line */}
-                  {index < steps.length - 1 && (
-                    <svg
-                      className='md:hidden absolute left-6 top-12 w-0.5 pointer-events-none'
-                      style={{ height: 'calc(100% + 40px)' }}
-                    >
-                      <path
-                        d='M 1 0 Q -8 25%, 1 50% T 1 100%'
-                        stroke='#374151'
-                        strokeWidth='2'
-                        fill='none'
-                      />
-                    </svg>
-                  )}
-
-                  {/* Step circle with glow */}
-                  <div className='relative z-10'>
-                    <div className='absolute inset-0 rounded-full bg-pink-600 blur-md opacity-50 animate-pulse'></div>
-                    <div className='relative w-12 h-12 rounded-full bg-pink-600 flex items-center justify-center text-white font-bold text-lg shadow-lg transform hover:scale-110 transition-transform'>
-                      {step.number}
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className='md:text-center max-w-xs'>
-                    <div className='flex md:flex-col items-center md:items-center gap-3 mb-2'>
-                      <Icon size={22} className={step.color} />
-                      <h3 className='text-white font-semibold text-base'>
-                        {step.title}
-                      </h3>
-                    </div>
-                    <p className='text-gray-400 text-sm leading-relaxed'>
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+      {/* Edit Warning Modal */}
+      {showEditWarning && (
+        <div className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4'>
+          <div className='bg-gray-800 border border-gray-700 rounded-2xl p-6 max-w-md w-full shadow-2xl'>
+            <div className='flex items-center gap-3 mb-4'>
+              <div className='bg-red-500/10 p-3 rounded-full'>
+                <Calendar className='text-red-500' size={24} />
+              </div>
+              <h3 className='text-xl font-bold text-white'>Tidak Bisa Edit</h3>
+            </div>
+            <p className='text-gray-400 mb-6'>
+              Undangan sudah tidak bisa diedit karena hari ini adalah hari H
+              acara Anda.
+            </p>
+            <button
+              onClick={() => setShowEditWarning(false)}
+              className='w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-semibold py-3 rounded-lg transition-all duration-300'
+            >
+              Mengerti
+            </button>
           </div>
         </div>
+      )}
 
-        {/* CTA */}
-        <div className='pt-6 border-t border-gray-700'>
-          <Link
-            href='catalogue'
-            className='inline-block bg-pink-600 hover:bg-pink-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors'
-          >
-            Mulai Buat Undangan Sekarang
-          </Link>
-        </div>
-      </div>
 
       {/* Invitation List Section */}
       <div>
@@ -153,20 +160,18 @@ export default function Invitation() {
           <h2 className='text-2xl font-bold text-white'>
             Undangan Digital Saya
           </h2>
-          {invitations.length > 0 && (
-            <span className='text-gray-400 text-sm'>
-              {invitations.length} undangan aktif
+          {data.length > 0 && (
+            <span className='text-gray-400 text-sm bg-gray-800 px-3 py-1 rounded-full border border-gray-700'>
+              {data.length} undangan
             </span>
           )}
         </div>
 
-        {invitations.length === 0 ? (
-          <div className='bg-gray-800 border border-gray-700 rounded-xl p-12 flex flex-col items-center justify-center'>
-            <Package
-              size={64}
-              className='text-gray-600 mb-4'
-              strokeWidth={1.5}
-            />
+        {data.length === 0 ? (
+          <div className='bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 border border-gray-700 rounded-2xl p-12 flex flex-col items-center justify-center shadow-xl'>
+            <div className='bg-gray-700/50 p-6 rounded-full mb-4'>
+              <Package size={64} className='text-gray-500' strokeWidth={1.5} />
+            </div>
             <p className='text-gray-300 text-center mb-2 text-lg font-semibold'>
               Belum Ada Undangan
             </p>
@@ -175,54 +180,157 @@ export default function Invitation() {
             </p>
             <Link
               href='catalogue'
-              className='bg-pink-600 hover:bg-pink-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors'
+              className='bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-pink-500/50'
             >
               Buat Undangan
             </Link>
           </div>
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {invitations.map((invitation) => (
-              <div
-                key={invitation.id}
-                className='bg-gray-800 border border-gray-700 rounded-xl overflow-hidden hover:border-pink-500 transition-colors cursor-pointer group'
-              >
-                {invitation.thumbnailUrl && (
-                  <div className='h-48 bg-gray-700 overflow-hidden'>
-                    <img
-                      src={invitation.thumbnailUrl}
-                      alt={invitation.title}
-                      className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
-                    />
+            {data.map((invitation) => {
+              const statusConfig = getStatusConfig(invitation);
+              const StatusIcon = statusConfig.icon;
+              const isExpired = statusConfig.expired;
+
+              return (
+                <div
+                  key={invitation.invitationId}
+                  className={`bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 border rounded-2xl overflow-hidden transition-all duration-300 ${
+                    isExpired
+                      ? 'border-gray-700 opacity-60 cursor-not-allowed'
+                      : 'border-gray-700 hover:border-pink-500/50 hover:shadow-xl hover:shadow-pink-500/10 cursor-pointer group'
+                  }`}
+                >
+                  {/* Header gradient */}
+                  <div
+                    className={`h-2 ${
+                      isExpired
+                        ? 'bg-gray-600'
+                        : 'bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500'
+                    }`}
+                  ></div>
+
+                  {/* Image */}
+                  <div className='relative h-80 bg-gradient-to-br from-gray-700 to-gray-800 overflow-hidden'>
+                    {invitation.product.coverImage ? (
+                      <img
+                        src={invitation.product.coverImage}
+                        alt={`Wedding ${invitation.invitationDataUser.groomNickName} & ${invitation.invitationDataUser.brideNickName}`}
+                        className='w-full h-full object-cover'
+                      />
+                    ) : (
+                      <>
+                        <div className='absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60'></div>
+                        <div className='absolute inset-0 flex items-center justify-center'>
+                          <Heart
+                            size={48}
+                            className='text-pink-500/20'
+                            strokeWidth={1}
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {/* Status Badge */}
+                    <div className='absolute top-3 right-3'>
+                      <div
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${statusConfig.bgColor} ${statusConfig.borderColor} border backdrop-blur-sm`}
+                      >
+                        <StatusIcon size={14} className={statusConfig.color} />
+                        <span
+                          className={`${statusConfig.color} text-xs font-medium`}
+                        >
+                          {statusConfig.label}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                )}
 
-                <div className='p-4'>
-                  <h3 className='text-white font-bold text-lg mb-1'>
-                    {invitation.title}
-                  </h3>
-                  <p className='text-gray-400 text-sm mb-3'>
-                    {invitation.date}
-                  </p>
+                  <div className='p-5'>
+                    {/* Title */}
+                    <h3
+                      className={`font-bold text-xl mb-2 transition-colors ${
+                        isExpired
+                          ? 'text-gray-500'
+                          : 'text-white group-hover:text-pink-400'
+                      }`}
+                    >
+                      Wedding {invitation.invitationDataUser.groomNickName} &{' '}
+                      {invitation.invitationDataUser.brideNickName}
+                    </h3>
 
-                  <div className='flex items-center gap-2 mb-4'>
-                    <CheckCircle size={16} className='text-green-500' />
-                    <span className='text-green-500 text-sm font-medium'>
-                      Siap Dibagikan
-                    </span>
-                  </div>
+                    {/* Expiry Info */}
+                    <p className='text-gray-500 text-xs mb-4'>
+                      {isExpired ? (
+                        <span className='text-red-400'>
+                          Masa aktif berakhir
+                        </span>
+                      ) : (
+                        <>
+                          Aktif sampai{' '}
+                          {formatExpiryDate(statusConfig.expiryDate)}
+                        </>
+                      )}
+                    </p>
 
-                  <div className='flex gap-2'>
-                    <button className='flex-1 bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors'>
-                      Kelola
-                    </button>
-                    <button className='px-4 bg-gray-700 hover:bg-gray-600 text-white text-sm font-semibold rounded-lg transition-colors'>
-                      Bagikan
-                    </button>
+                    {/* Action Buttons */}
+                    {!isExpired && (
+                      <>
+                        {invitation.invitationStatus === 'draft' ? (
+                          <div className='flex gap-2'>
+                            <Link
+                              href={`invitation/${invitation.invitationId}/preview`}
+                              className='w-full bg-gray-700 hover:bg-gray-600 text-white text-sm font-semibold py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group/btn'
+                            >
+                              <Eye
+                                size={16}
+                                className='group-hover/btn:scale-110 transition-transform'
+                              />
+                              Lihat Detail
+                            </Link>
+                            <button className='w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white text-sm font-semibold py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-pink-500/50'>
+                              <Zap
+                                size={16}
+                                className='group-hover/btn:scale-110 transition-transform'
+                              />
+                              Aktivasi
+                            </button>
+                          </div>
+                        ) : (
+                          <div className='flex gap-2'>
+                            <Link
+                              href={`invitation/${invitation.invitationId}/preview`}
+                              className='w-full bg-gray-700 hover:bg-gray-600 text-white text-sm font-semibold py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group/btn'
+                            >
+                              <Eye
+                                size={16}
+                                className='group-hover/btn:scale-110 transition-transform'
+                              />
+                              Lihat Detail
+                            </Link>
+                            <Link href={'invitation/send'} className='w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white text-sm font-semibold py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-pink-500/50'>
+                              <Share2
+                                size={16}
+                                className='group-hover/btn:scale-110 transition-transform'
+                              />
+                              Bagikan
+                            </Link>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {isExpired && (
+                      <div className='bg-gray-700/50 border border-gray-600 rounded-lg p-3 text-center'>
+                        <p className='text-gray-400 text-sm'>
+                          Undangan tidak dapat diakses
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

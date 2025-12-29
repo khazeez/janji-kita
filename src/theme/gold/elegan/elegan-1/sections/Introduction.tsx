@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Invitation } from '@/types/interface';
+import { AllInvitationData } from '@/types/interface';
 import { motion } from 'framer-motion';
 
 export interface Props {
-  data: Invitation;
+  data: AllInvitationData;
 }
 
 export default function Introduction({ data }: Props) {

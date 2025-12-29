@@ -39,7 +39,7 @@ export default function ResultScreenSuccsess() {
 
           {/* Button Kembali ke Dashboard */}
           <Link
-            href={`/dashboard/invitation/${userId}/preview/${invitationId}`}
+            href={`/invitation/${invitationId}/preview`}
             className='w-full flex items-center justify-center gap-3 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-200'
           >
             <Home size={20} />

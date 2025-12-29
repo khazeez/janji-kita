@@ -1,6 +1,7 @@
 'use client';
 import { useParams, useSearchParams } from 'next/navigation';
 import Form1 from '@/components/form/FormWithNoPhoto';
+import Form2 from '@/components/form/FormWithPhoto';
 
 export default function Form() {
   // Ambil slug dari params
@@ -14,5 +15,5 @@ export default function Form() {
   // Kondisi untuk menampilkan form
   const showForm1 = variant === 'no-photo';
 
-  return <>{showForm1 ? <Form1 /> : 'isi dengan form 2'}</>;
+  return <>{showForm1 ? <Form1 /> : <Form2/> }</>;
 }

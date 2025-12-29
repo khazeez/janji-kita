@@ -31,14 +31,14 @@ export async function getCurrentUser(): Promise<User | null> {
 
     if (error) {
       // console.log(error);
-      
+
       return null;
     }
 
     return user;
   } catch (error) {
     // console.log(error);
-    
+
     return null;
   }
 }

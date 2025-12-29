@@ -5,6 +5,7 @@ import {
   InvitationGift,
   InvitationGiftBank,
   InvitationGiftWallet,
+  AllInvitationData
 } from '@/types/interface';
 
 export function cn(...inputs: ClassValue[]) {
@@ -35,8 +36,14 @@ export function transformKeys(obj: any): any {
   return obj;
 }
 
-export function transformInvitationResponse(dbResponse: any): Invitation {
-  return transformKeys(dbResponse) as Invitation;
+export function transformInvitationResponse(
+  dbResponse: any
+): Invitation[] {
+  return transformKeys(dbResponse) as Invitation[];
+}
+
+export function transformDataInvitationResponse(dbResponse: any): AllInvitationData {
+  return transformKeys(dbResponse) as AllInvitationData;
 }
 
 export function transformInvitationGiftResponse(
