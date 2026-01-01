@@ -20,7 +20,6 @@ import LinkDataInput from '@/components/layout/form-ui/LinkDataInput';
 import ConfirmationScreen from '@/components/layout/form-ui/ConfirmationScreen';
 import ResultScreenSuccsess from '../layout/form-ui/Result';
 
-
 // function untuk insert data
 import insertData from '@/models/form';
 
@@ -28,6 +27,7 @@ export default function Form1() {
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isLinkValid, setIsLinkValid] = useState(false);
+  const [invitationId, setInvitationId] = useState<string | undefined>('');
   const [userId, setUserId] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -214,7 +214,6 @@ export default function Form1() {
     }
   };
 
-
   const router = useRouter();
   const handleBack = () => {
     if (currentStep === 1) {
@@ -262,6 +261,8 @@ export default function Form1() {
       if (!invitationId) {
         throw new Error('Invitation ID tidak ditemukan');
       }
+
+      setInvitationId(invitationId)
 
       // 2. Insert Data User
       const dataUserResult = await insertData.insertDataUser({
@@ -527,7 +528,7 @@ export default function Form1() {
       )}
 
       {/* Success Modal */}
-      {showSuccessModal && <ResultScreenSuccsess />}
+      {showSuccessModal && <ResultScreenSuccsess data={invitationId} />}
     </div>
   );
 }
