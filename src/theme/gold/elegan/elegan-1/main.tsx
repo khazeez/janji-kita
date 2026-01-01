@@ -117,7 +117,7 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
 
         {/* ================= RSVP (FIXED) ================= */}
         {phase === 'main' && (
-          <div className='absolute top-4 right-4 z-50'>
+          <div className='absolute z-50'>
             <RSVP invitationId={data.invitationId} />
           </div>
         )}

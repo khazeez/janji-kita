@@ -1,9 +1,12 @@
 import { CheckCircle, CreditCard, Home } from 'lucide-react';
 import Link from 'next/link';
+import {Invitation} from '@/types/interface'
 
-export default function ResultScreenSuccsess() {
-  const userId = 'skdksjksdkscnsnckskkcsncnc';
-  const invitationId = 'jsdjsjdsdsjdshjd';
+interface Props {
+data: string | undefined
+}
+
+export default function ResultScreenSuccsess({data}: Props) {
 
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[100] p-4'>
@@ -39,7 +42,7 @@ export default function ResultScreenSuccsess() {
 
           {/* Button Kembali ke Dashboard */}
           <Link
-            href={`/invitation/${invitationId}/preview`}
+            href={`/invitation/${data}/preview`}
             className='w-full flex items-center justify-center gap-3 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-200'
           >
             <Home size={20} />

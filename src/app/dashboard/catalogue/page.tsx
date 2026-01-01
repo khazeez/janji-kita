@@ -100,25 +100,33 @@ export default function Catalogue() {
   };
 
   return (
-    <div className='min-h-screen bg-transparent'>
-      <header className='z-50 top-0 border-b border-gray-700/40 transition-all duration-500'>
-        <div className='max-w-7xl mx-auto  pb-5'>
+    <div className='min-h-screen bg-transparent sm:px-5'>
+      <div className='pb-2 px-2'>
+        <h1 className='sm:text-3xl text-xl font-bold'>
+          Pilih tema yang kamu suka!
+        </h1>
+        <p className='text-sm text-gray-400'>
+          Ada lebih dari 100+ tema yang bisa kamu pilih
+        </p>
+      </div>
+      <header className='sticky top-0 z-50 backdrop-blur-xl bg-gray-900/80 border-b border-white/10 transition-all duration-500'>
+        <div className='max-w-7xl mx-auto px-4 py-6'>
           {/* Search Bar & Dropdown */}
-          <div className='flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto mb-3 sm:mb-6'>
+          <div className='flex flex-col sm:flex-row gap-3 max-w-3xl mx-auto mb-6'>
             {/* Search */}
-            <div className='relative flex-1'>
-              <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4' />
+            <div className='relative flex-1 group'>
+              <Search className='absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-pink-400 transition-colors' />
               <input
                 type='text'
                 placeholder='Cari tema...'
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className='w-full pl-9 pr-9 py-2 text-sm bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300'
+                className='w-full pl-12 pr-12 py-3.5 text-sm bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 hover:border-white/20 transition-all duration-300 shadow-lg shadow-black/5'
               />
               {searchQuery && (
                 <button
                   onClick={clearSearch}
-                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-400 transition-colors'
+                  className='absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-pink-400 hover:bg-white/10 rounded-lg p-1 transition-all duration-200'
                 >
                   <X className='w-4 h-4' />
                 </button>
@@ -126,23 +134,23 @@ export default function Catalogue() {
             </div>
 
             {/* Dropdown Product Type */}
-            <div className='relative w-full sm:w-56'>
+            <div className='relative w-full sm:w-64'>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className='w-full flex items-center justify-between px-3 py-2 text-sm bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-lg text-white hover:border-pink-500/50 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300'
+                className='w-full flex items-center justify-between px-4 py-3.5 text-sm bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white hover:border-pink-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all duration-300 shadow-lg shadow-black/5'
               >
-                <span className='truncate text-xs sm:text-sm'>
+                <span className='truncate text-sm font-medium'>
                   {selectedProductType}
                 </span>
                 <ChevronDown
-                  className={`w-4 h-4 transition-transform ${
-                    isDropdownOpen ? 'rotate-180' : ''
+                  className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
+                    isDropdownOpen ? 'rotate-180 text-pink-400' : ''
                   }`}
                 />
               </button>
 
               {isDropdownOpen && (
-                <div className='absolute top-full mt-1 w-full bg-gray-800 border border-gray-700/50 rounded-lg shadow-xl overflow-hidden z-50'>
+                <div className='absolute top-full mt-2 w-full bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200'>
                   {productTypes.map((type) => (
                     <button
                       key={type}
@@ -150,10 +158,10 @@ export default function Catalogue() {
                         setSelectedProductType(type);
                         setIsDropdownOpen(false);
                       }}
-                      className={`w-full px-3 py-2 text-left text-xs sm:text-sm hover:bg-gray-700 transition-colors ${
+                      className={`w-full px-4 py-3 text-left text-sm font-medium transition-all duration-200 ${
                         selectedProductType === type
-                          ? 'bg-pink-600 text-white'
-                          : 'text-gray-300'
+                          ? 'bg-gradient-to-r from-pink-600 to-pink-500 text-white shadow-lg shadow-pink-500/20'
+                          : 'text-gray-300 hover:bg-white/10 hover:text-white'
                       }`}
                     >
                       {type}
@@ -165,15 +173,15 @@ export default function Catalogue() {
           </div>
 
           {/* Segment Filter */}
-          <div className='flex flex-wrap justify-center gap-1.5 sm:gap-3'>
+          <div className='flex flex-wrap justify-center gap-2 sm:gap-3'>
             {segments.map((segment) => (
               <button
                 key={segment}
                 onClick={() => setSelectedSegment(segment)}
-                className={`px-3 py-1.5 sm:px-6 sm:py-2.5 rounded-full font-medium text-[10px] sm:text-sm transition-all duration-300 ${
+                className={`px-5 py-2.5 sm:px-7 sm:py-3 rounded-full font-semibold text-xs sm:text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 ${
                   selectedSegment === segment
-                    ? 'bg-gradient-to-r from-pink-600 to-pink-500 text-white shadow-lg shadow-pink-500/30'
-                    : 'bg-gray-800/60 text-gray-300 hover:bg-gray-700/80 border border-gray-700/50'
+                    ? 'bg-gradient-to-r from-pink-600 via-pink-500 to-rose-500 text-white shadow-xl shadow-pink-500/40 border border-pink-400/20'
+                    : 'bg-white/5 backdrop-blur-md text-gray-300 hover:bg-white/10 hover:text-white border border-white/10 hover:border-white/20 shadow-lg shadow-black/5'
                 }`}
               >
                 {segment}
@@ -204,7 +212,7 @@ export default function Catalogue() {
                 </p>
               </div>
             ) : (
-              <div className='grid grid-cols-2 lg:grid-cols-3 gap-2'>
+              <div className='grid pt-10 grid-cols-2 lg:grid-cols-3 gap-2'>
                 {filteredCatalogues.map((item) => (
                   <Link
                     key={item.data.productId} // pastikan ada key

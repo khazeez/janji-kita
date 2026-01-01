@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Invitation from '@/components/layout/dashboard-ui/Invitation';
 import { getDataInvitationUserByUserId } from '@/models/invitations';
 import supabase from '@/lib/supabase/client';
+import Loading from '@/components/ui/Loading'
 
 export default function Invitations() {
   const [data, setData] = useState<any>(null);
@@ -26,7 +27,11 @@ export default function Invitations() {
     load();
   }, []);
 
-  if (loading) return null;
+  if (loading) return(
+    <>
+    <div className="text-white">Loading...</div>
+    </>
+  );
 
   return <Invitation data={data} />;
 }
