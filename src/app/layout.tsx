@@ -64,6 +64,15 @@ export default function RootLayout({
             gtag('config', 'G-TX735CEGWH');
           `}
         </Script>
+
+        <script
+          src={
+            process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true'
+              ? 'https://app.midtrans.com/snap/snap.js'
+              : 'https://app.sandbox.midtrans.com/snap/snap.js'
+          }
+          data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
+        />
       </head>
 
       <body

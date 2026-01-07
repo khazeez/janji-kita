@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { AllInvitationData } from '@/types/interface';
+import { AllInvitationData, Transactions } from '@/types/interface';
 import {
   Package,
   CheckCircle,
@@ -14,12 +14,14 @@ import {
   Zap,
   Calendar,
 } from 'lucide-react';
+import { createTransaction } from '@/models/transactions';
 
 type Props = {
   data: AllInvitationData[];
+  trx: Transactions;
 };
 
-export default function InvitationComponents({ data }: Props) {
+export default function InvitationComponents({ data, trx }: Props) {
   const [showEditWarning, setShowEditWarning] = useState(false);
 
   const getStatusConfig = (invitation: AllInvitationData) => {
@@ -105,6 +107,40 @@ export default function InvitationComponents({ data }: Props) {
     };
   };
 
+  const handleActivation = async (invitationId: string) => {
+    try {
+      const res = await fetch('/api/midtrans/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invitationId }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Checkout failed');
+      }
+
+      const { snapToken } = await res.json();
+
+      // @ts-ignore
+      window.snap.pay(snapToken, {
+        onSuccess: () => {
+          console.log('Payment success');
+        },
+        onPending: () => {
+          console.log('Payment pending');
+        },
+        onError: () => {
+          console.log('Payment failed');
+        },
+        onClose: () => {
+          console.log('Popup closed');
+        },
+      });
+    } catch (error) {
+      console.error('Activation error:', error);
+    }
+  };
+
   const formatExpiryDate = (date: Date) => {
     return date.toLocaleDateString('id-ID', {
       day: 'numeric',
@@ -121,19 +157,6 @@ export default function InvitationComponents({ data }: Props) {
       event.getMonth() === now.getMonth() &&
       event.getFullYear() === now.getFullYear()
     );
-  };
-
-  const handleEditClick = (
-    invitation: AllInvitationData,
-    e: React.MouseEvent
-  ) => {
-    if (
-      invitation.invitationEvent?.[0]?.startTime &&
-      isEventDay(invitation.invitationEvent[0].startTime)
-    ) {
-      e.preventDefault();
-      setShowEditWarning(true);
-    }
   };
 
   return (
@@ -388,7 +411,12 @@ export default function InvitationComponents({ data }: Props) {
                               />
                               Lihat Detail
                             </Link>
-                            <button className='w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white text-sm font-semibold py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-pink-500/50'>
+                            <button
+                              onClick={() =>
+                                handleActivation(invitation.invitationId)
+                              }
+                              className='w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white text-sm font-semibold py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-pink-500/50'
+                            >
                               <Zap
                                 size={16}
                                 className='group-hover/btn:scale-110 transition-transform'

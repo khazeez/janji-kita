@@ -15,6 +15,7 @@ import {
   LogOut,
   Settings,
   ChevronDown,
+  LayoutDashboardIcon
 } from 'lucide-react';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -132,7 +133,7 @@ export default function Navbar() {
   return (
     <>
       {/* Navbar */}
-      <header className='fixed top-0 left-0 w-full z-50 text-white shadow-lg backdrop-blur-md bg-black/20 border-b border-white/10 leading-relaxed tracking-wide'>
+      <header className='fixed top-0 left-0 w-full z-50 text-white shadow-lg backdrop-blur-md bg-black/20 border- leading-relaxed tracking-wide'>
         <div className='max-w-7xl mx-auto px-6 py-4 flex items-center justify-between'>
           <Link
             href='/'
@@ -174,8 +175,8 @@ export default function Navbar() {
                   href='/dashboard'
                   className='p-2 text-sm bg-pink-500/20 border-1 border-pink-400  text-white rounded-lg hover:from-pink-600 hover:to-pink-700 transition-all duration-200 font-medium shadow-lg flex items-center gap-2'
                 >
-                  {/* <LayoutDashboard size={18} /> */}
-                  Dashboard
+                  <LayoutDashboardIcon size={18} />
+                  {/* Dashboard */}
                 </Link>
 
                 {/* Profile Dropdown */}

@@ -13,8 +13,12 @@ export default function Introduction() {
       <div className='absolute inset-0 z-10 flex items-center justify-center text-white'>
         <div className='text-center md:px-20 px-5 pt-60'>
           <h1 className='md:text-5xl text-3xl font-bold'>
-            Buat undangan estetikmu sendiri hanya dalam waktu 5 menit!
+            Buat undangan, 15 detik langsung jadi!
           </h1>
+          <p className='text-center lg:text-xl text-white/80 mt-2'>
+            Ga perlu ngerti koding, ga perlu paham design, cuman modal niat &
+            kuota internet.
+          </p>
           <div className='flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mt-10'>
             {/* Primary Button */}
 
@@ -23,7 +27,7 @@ export default function Introduction() {
               className='group px-6 py-4 md:px-8 md:py-5 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-xl font-bold text-lg md:text-xl transition-all duration-300 transform shadow-lg shadow-pink-500/25 w-full sm:w-auto'
             >
               <span className='flex items-center justify-center gap-2'>
-                Get Started
+                Cobain sendiri
                 <span className='group-hover:translate-x-1 transition-transform duration-300'>
                   →
                 </span>

@@ -481,3 +481,20 @@ export async function getInvitation(userId: string) {
 
   return transformInvitationResponse(data ?? []);
 }
+
+export async function getInvitationById(invitationId: string) {
+  if (!invitationId) {
+    throw new Error('getInvitation requires userId');
+  }
+
+  const { data, error } = await supabase
+    .from('INVITATION')
+    .select('*')
+    .eq('USER_ID', invitationId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return transformInvitationResponse(data ?? []);
+}

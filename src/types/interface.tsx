@@ -173,12 +173,29 @@ export interface InvitationGiftWallet {
   updatedAt: string;
 }
 
-export interface Transaction {
+export type PaymentStatus =
+  | 'INITIATED'
+  | 'PENDING'
+  | 'PAID'
+  | 'FAILED'
+  | 'EXPIRED'
+  | 'CANCELLED'
+  | 'REFUNDED';
+
+export type PaymentMethod =
+  | 'BANK_TRANSFER'
+  | 'E_WALLET'
+  | 'CREDIT_CARD'
+  | 'QRIS';
+
+
+export interface Transactions {
+  // Identity
   transactionId: string;
   userId: string;
   invitationId: string;
   productId: string;
-  promoId?: string;
+  promoId?: string | null;
 
   // Pricing
   originalAmount: number;
@@ -186,24 +203,23 @@ export interface Transaction {
   finalAmount: number;
 
   // Payment
-  paymentStatus:
-  | 'PENDING'
-  | 'PROCESSING'
-  | 'PAID'
-  | 'FAILED'
-  | 'CANCELLED'
-  | 'REFUNDED';
-  paymentMethod: 'BANK_TRANSFER' | 'E_WALLET' | 'CREDIT_CARD' | 'QRIS';
-  paymentProofUrl?: string;
-  paymentGatewayRef?: string;
+  paymentStatus: PaymentStatus;
+  paymentMethod?: PaymentMethod | null;
+
+  gatewayOrderId: string;
+  gatewayTransactionId?: string | null;
+  paymentProofUrl?: string | null;
 
   // Time
-  paidAt?: string;
-  cancelledAt?: string;
-  refundedAt?: string;
+  paidAt?: string | null;
+  cancelledAt?: string | null;
+  refundedAt?: string | null;
+  expiredAt?: string | null;
+
   createdAt: string;
   updatedAt: string;
 }
+
 
 export interface GuestBook {
   guestId: string;
