@@ -68,18 +68,22 @@ export default function ProductDetailPage() {
 
   // render
   return (
-    <div className='min-h-screen bg-transparent'>
+    <div className='min-h-screen bg-transparent pb-20'>
       <div className='max-w-6xl mx-auto'>
-        <button
-          onClick={handleBack}
-          className='flex items-center gap-1.5 text-gray-300 hover:text-pink-400 transition-colors mb-3 sm:mb-6'
-        >
-          <ArrowLeft className='w-4 h-4' />
-          <span className='text-sm font-medium'>Kembali</span>
-        </button>
-
         {selectedItem ? (
           <div className='overflow-hidden'>
+            <header className='flex gap-2 md:ml-10'>
+              <button
+                onClick={handleBack}
+                className='flex items-center gap-1.5 text-gray-300 hover:text-pink-400 transition-colors mb-3 sm:mb-6'
+              >
+                <ArrowLeft className='w-4 h-4' />
+              </button>
+              <h1 className='text-3xl font-bold text-white mb-1.5'>
+                {selectedItem.data.productName}
+              </h1>
+            </header>
+
             <div className='grid md:grid-cols-2 gap-3 sm:gap-6 p-3 sm:p-6 lg:p-8'>
               {/* LEFT */}
               <div className='space-y-2 sm:space-y-4'>
@@ -105,9 +109,6 @@ export default function ProductDetailPage() {
               <div className='flex flex-col justify-between space-y-3 sm:space-y-0'>
                 <div className='space-y-3 sm:space-y-4'>
                   <div>
-                    <h1 className='text-xl sm:text-3xl font-bold text-white mb-1.5'>
-                      {selectedItem.data.productName}
-                    </h1>
                     <span className='inline-block text-[10px] sm:text-sm font-medium text-pink-400 bg-pink-400/10 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-pink-400/20'>
                       {selectedItem.data.tier}
                     </span>
