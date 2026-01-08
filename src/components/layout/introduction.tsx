@@ -37,14 +37,14 @@ export default function Introduction() {
             Ga perlu ngerti koding, ga perlu paham design, cuman modal niat &
             kuota internet.
           </p>
-          <div className='flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mt-10'>
+          <div className='flex flex-row items-center justify-center gap-4 md:gap-6 mt-10'>
             {/* Primary Button */}
 
             <Link
               href='/sign-up'
-              className='group px-6 py-4 md:px-8 md:py-5 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-xl font-bold text-lg md:text-xl transition-all duration-300 transform shadow-lg shadow-pink-500/25 w-full sm:w-auto'
+              className='group px-6 py-4 md:px-8 md:py-5  bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-xl font-bold text-lg md:text-xl transition-all duration-300 transform shadow-lg shadow-pink-500/25 w-full sm:w-auto'
             >
-              <span className='flex items-center justify-center gap-2'>
+              <span className='flex items-center text-sm md:text-xl justify-center gap-2'>
                 Cobain sendiri
                 <span className='group-hover:translate-x-1 transition-transform duration-300'>
                   →
@@ -55,7 +55,7 @@ export default function Introduction() {
             {/* Secondary Button */}
             <Link
               href='/catalogue'
-              className='group px-6 py-4 md:px-8 md:py-5 text-pink-100 border-2 border-pink-400/70 hover:border-pink-400 backdrop-blur-md bg-black/10 rounded-xl font-bold text-lg md:text-xl transition-all duration-300 transform w-full sm:w-auto hover:text-white'
+              className='group px-6 py-4 md:px-8 md:py-5 text-pink-100 border-2 border-pink-400/70 hover:border-pink-400 backdrop-blur-md bg-black/10 rounded-xl font-bold text-sm md:text-xl transition-all duration-300 transform w-full sm:w-auto hover:text-white'
             >
               <span className='flex items-center justify-center gap-2'>
                 Lihat tema
