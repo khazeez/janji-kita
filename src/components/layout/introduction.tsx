@@ -11,7 +11,7 @@ export default function Introduction() {
 
       {/* Konten di tengah, di atas device */}
       <div className='absolute inset-0 z-10 flex items-center justify-center text-white'>
-        <div className='text-center md:px-20 px-5 pt-30'>
+        <div className='text-center md:px-20 px-5 lg:pt-80 pt-30'>
           <h1 className='md:text-5xl text-3xl font-bold'>
             Buat undangan,{' '}
             <span className='relative inline-block text-pink-500'>
@@ -33,7 +33,7 @@ export default function Introduction() {
             </span>{' '}
             langsung jadi!
           </h1>
-          <p className='text-center lg:text-xl text-white/80 mt-2'>
+          <p className='text-center text-sm lg:text-xl text-white/80 mt-2'>
             Ga perlu ngerti koding, ga perlu paham design, cuman modal niat &
             kuota internet.
           </p>
@@ -42,7 +42,7 @@ export default function Introduction() {
 
             <Link
               href='/sign-up'
-              className='group px-6 py-4 md:px-8 md:py-5  bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-xl font-bold text-lg md:text-xl transition-all duration-300 transform shadow-lg shadow-pink-500/25 w-full sm:w-auto'
+              className='group p-4 md:px-8 md:py-5  bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-xl font-bold text-lg md:text-xl transition-all duration-300 transform shadow-lg shadow-pink-500/25 w-full sm:w-auto'
             >
               <span className='flex items-center text-sm md:text-xl justify-center gap-2'>
                 Cobain sendiri
@@ -55,7 +55,7 @@ export default function Introduction() {
             {/* Secondary Button */}
             <Link
               href='/catalogue'
-              className='group px-6 py-4 md:px-8 md:py-5 text-pink-100 border-2 border-pink-400/70 hover:border-pink-400 backdrop-blur-md bg-black/10 rounded-xl font-bold text-sm md:text-xl transition-all duration-300 transform w-full sm:w-auto hover:text-white'
+              className='group p-4 md:px-8 md:py-5 text-pink-100 border-2 border-pink-400/70 hover:border-pink-400 backdrop-blur-md bg-black/10 rounded-xl font-bold text-sm md:text-xl transition-all duration-300 transform w-full sm:w-auto hover:text-white'
             >
               <span className='flex items-center justify-center gap-2'>
                 Lihat tema

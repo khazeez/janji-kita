@@ -334,28 +334,22 @@ export default function Product() {
           </div>
         </div>
 
-        {/* Background decorative elements for themes section */}
-        <div className='absolute inset-0 overflow-hidden pointer-events-none'>
-          <div className='absolute bottom-20 left-20 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl'></div>
-          <div className='absolute top-40 right-20 w-80 h-80 bg-pink-500/5 rounded-full blur-3xl'></div>
-        </div>
         <div className='max-w-4xl mx-auto text-center mt-16 md:mt-20'>
-          <div className='bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-8 md:p-12'>
+          <div className=' p-2 md:p-12'>
             <h3 className='text-2xl md:text-3xl lg:text-4xl font-bold mb-4'>
               <span className='bg-gradient-to-r from-white to-pink-200 bg-clip-text text-transparent'>
-                Siap untuk memulai?
+                Siap buat cobain?
               </span>
             </h3>
 
             <p className='text-gray-300 text-lg md:text-xl mb-8 leading-relaxed'>
-              Bergabunglah dengan ribuan keluarga yang telah merasakan
-              kebahagiaan bersama kami
+              Cobain dulu experience bikin undangan digital, bisa bikin sepuasanya. Kalo udah yakin beli design yang kamu suka!
             </p>
 
             <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
               <button className='group bg-gradient-to-r from-pink-700 to-pink-400 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-pink-600 hover:to-pink-300 transition-all duration-300 transform shadow-lg shadow-pink-500/25'>
                 <span className='flex items-center gap-2'>
-                  Mulai Sekarang
+                  Cobain Sekarang
                   <span className='group-hover:translate-x-1 transition-transform duration-300'>
                     →
                   </span>

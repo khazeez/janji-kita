@@ -5,8 +5,8 @@ export default function Device() {
       <div
         className='relative mx-auto border-gray-800 dark:border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] w-[300px] shadow-xl overflow-hidden'
         style={{
-          WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
-          maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 60%)',
+          maskImage: 'linear-gradient(to bottom, black 0%, transparent 60%)',
         }}
       >
         <div className='w-[148px] h-[18px] bg-gray-800 top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2 absolute'></div>

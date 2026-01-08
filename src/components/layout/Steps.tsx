@@ -43,7 +43,7 @@ export default function StepsSection() {
   const y = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
   return (
-    <section ref={containerRef} className=' py-20 overflow-hidden'>
+    <section ref={containerRef} className=' overflow-hidden mb-30'>
       <div className='container mx-auto px-6'>
         {/* Header */}
         <h2 className='text-3xl md:text-6xl font-bold text-center mb-4 text-white leading-tight'>
