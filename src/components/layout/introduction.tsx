@@ -11,9 +11,27 @@ export default function Introduction() {
 
       {/* Konten di tengah, di atas device */}
       <div className='absolute inset-0 z-10 flex items-center justify-center text-white'>
-        <div className='text-center md:px-20 px-5 pt-60'>
+        <div className='text-center md:px-20 px-5 pt-30'>
           <h1 className='md:text-5xl text-3xl font-bold'>
-            Buat undangan, 15 detik langsung jadi!
+            Buat undangan,{' '}
+            <span className='relative inline-block text-pink-500'>
+              15 detik
+              <svg
+                className='absolute left-0 -bottom-1 w-full h-4 pt-2 text-pink-300'
+                viewBox='0 0 100 20'
+                preserveAspectRatio='none'
+              >
+                <path
+                  d='M 2 15 Q 50 2, 98 12'
+                  fill='none'
+                  stroke='currentColor'
+                  strokeWidth='10'
+                  strokeLinecap='round'
+                  opacity='0.8'
+                />
+              </svg>
+            </span>{' '}
+            langsung jadi!
           </h1>
           <p className='text-center lg:text-xl text-white/80 mt-2'>
             Ga perlu ngerti koding, ga perlu paham design, cuman modal niat &
