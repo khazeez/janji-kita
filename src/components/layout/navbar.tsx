@@ -173,7 +173,7 @@ export default function Navbar() {
               <>
                 <Link
                   href='/dashboard'
-                  className='p-2 text-sm bg-pink-500/20 border-1 border-pink-400  text-white rounded-lg hover:from-pink-600 hover:to-pink-700 transition-all duration-200 font-medium shadow-lg flex items-center gap-2'
+                  className='p-2 text-sm border-1   text-white rounded-lg hover:text-pink-400 transition-all duration-200 font-medium shadow-lg flex items-center gap-2'
                 >
                   <LayoutDashboardIcon size={18} />
                   {/* Dashboard */}
@@ -206,7 +206,7 @@ export default function Navbar() {
 
                   {/* Dropdown Menu */}
                   {profileDropdownOpen && (
-                    <div className='absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-700 rounded-lg shadow-lg py-2'>
+                    <div className='absolute right-0 mt-2 w-56 bg-black border border-l-4 rounded-lg shadow-lg py-2'>
                       <div className='px-4 py-3 border-b border-gray-700'>
                         <p className='text-white font-medium text-sm truncate'>
                           {user.user_metadata?.full_name || 'User'}
@@ -215,22 +215,7 @@ export default function Navbar() {
                           {user.email}
                         </p>
                       </div>
-                      <Link
-                        href='/dashboard'
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className='w-full flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors'
-                      >
-                        <LayoutDashboard size={18} />
-                        <span className='text-sm'>Dashboard</span>
-                      </Link>
-                      <button
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className='w-full flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors'
-                      >
-                        <Settings size={18} />
-                        <span className='text-sm'>Pengaturan</span>
-                      </button>
-                      <hr className='my-2 border-gray-700' />
+                     
                       <button
                         onClick={handleLogout}
                         className='w-full flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors'

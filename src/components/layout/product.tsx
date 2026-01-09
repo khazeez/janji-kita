@@ -342,13 +342,14 @@ export default function Product() {
               </span>
             </h3>
 
-            <p className='text-gray-300 text-lg md:text-xl mb-8 leading-relaxed'>
-              Cobain dulu experience bikin undangan digital, bisa bikin sepuasanya. Kalo udah yakin beli design yang kamu suka!
+            <p className='text-gray-300 text-sm md:text-xl mb-8 leading-relaxed'>
+              Cobain dulu experience bikin undangan digital, bisa bikin
+              sepuasanya. Kalo udah yakin beli design yang kamu suka!
             </p>
 
-            <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
+            <div className='flex gap-4 justify-center items-center'>
               <button className='group bg-gradient-to-r from-pink-700 to-pink-400 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-pink-600 hover:to-pink-300 transition-all duration-300 transform shadow-lg shadow-pink-500/25'>
-                <span className='flex items-center gap-2'>
+                <span className='flex text-sm md:text-lg items-center gap-2'>
                   Cobain Sekarang
                   <span className='group-hover:translate-x-1 transition-transform duration-300'>
                     →
@@ -357,7 +358,7 @@ export default function Product() {
               </button>
 
               <button className='group text-white border border-pink-400 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-pink hover:border-pink-300 transition-all duration-300'>
-                <span className='flex items-center gap-2'>
+                <span className='flex items-center md:text-lg text-sm gap-2'>
                   Pelajari Lebih Lanjut
                   <span className='group-hover:rotate-45 transition-transform duration-300'>
                     ↗

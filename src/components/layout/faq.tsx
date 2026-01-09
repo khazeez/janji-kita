@@ -61,10 +61,10 @@ const FAQ: React.FC = () => {
       <div className='max-w-4xl mx-auto'>
         {/* Header */}
         <div className='text-center mb-16'>
-          <p className='text-xl uppercase text-slate-400 mb-4 tracking-widest'>
+          <p className='text-xl uppercase text-slate-400 tracking-widest'>
             FAQ
           </p>
-          <h2 className='lg:text-4xl text-2xl font-semibold mb-4 group bg-gradient-to-r from-pink-700 to-pink-400 text-white px-6 py-3 rounded-xl inline-block'>
+          <h2 className='lg:text-4xl text-2xl font-semibold mb-4 text-white rounded-xl inline-block'>
             Pertanyaan Umum
           </h2>
           <p className='text-slate-400 max-w-xl mx-auto'>
