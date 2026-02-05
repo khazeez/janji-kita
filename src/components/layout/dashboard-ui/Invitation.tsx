@@ -24,6 +24,8 @@ type Props = {
   trx: Transactions;
 };
 
+export const runtime = 'edge';
+
 export default function InvitationComponents({ data, trx }: Props) {
   const router = useRouter();
   const [showEditWarning, setShowEditWarning] = useState(false);

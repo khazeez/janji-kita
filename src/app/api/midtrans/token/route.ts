@@ -9,6 +9,8 @@ const snap = new Midtrans.Snap({
   clientKey: process.env.MIDTRANS_CLIENT_KEY!,
 });
 
+export const runtime = 'edge';
+
 export async function POST(req: Request) {
   try {
     const { invitationId } = await req.json();
