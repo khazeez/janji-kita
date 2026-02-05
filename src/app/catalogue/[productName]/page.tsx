@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { getProductByName } from '@/models/invitations';
 import { Product } from '@/types/interface';
+import supabase from '@/lib/supabase/client';
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('id-ID', {
@@ -105,6 +106,18 @@ export default function ProductDetail({ params }: PageProps) {
       return 'bg-purple-500/20 text-purple-300 border-purple-500/40';
     
     return 'bg-gray-800/20 text-gray-400 border-gray-700';
+  };
+
+  const handleUseDesign = async () => {
+    if (!selectedItem) return;
+
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session) {
+      router.push(`/create/${selectedItem.productId}`);
+    } else {
+      router.push('/sign-in');
+    }
   };
 
   // Safe gallery handling
@@ -407,7 +420,7 @@ export default function ProductDetail({ params }: PageProps) {
                 Preview
               </button>
               <button 
-                  onClick={() => router.push('/dashboard/invitation/create')}
+                  onClick={handleUseDesign}
                   className='flex-[2] px-6 py-3.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-rose-500/30 hover:shadow-rose-500/50 hover:scale-[1.02] relative overflow-hidden group'>
                 <span className='relative z-10'>Pakai Design Ini</span>
                 <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700' />
@@ -431,7 +444,7 @@ export default function ProductDetail({ params }: PageProps) {
               <ExternalLink className='w-5 h-5 text-slate-400' />
             </button>
             <button 
-                onClick={() => router.push('/dashboard/invitation/create')}
+                onClick={handleUseDesign}
                 className='flex-1 py-3 bg-rose-500 text-white rounded-xl font-semibold shadow-lg shadow-rose-500/30'>
               Pakai Design
             </button>

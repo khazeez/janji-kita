@@ -414,7 +414,7 @@ export default function ProductDetail({ params }: PageProps) {
                 Preview
               </button>
               <button 
-                  onClick={() => router.push('/dashboard/invitation/create')}
+                  onClick={() => router.push(`/create/${selectedItem.productId}`)}
                   className='flex-[2] px-6 py-3.5 bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-600 hover:to-pink-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-[1.02] relative overflow-hidden group'>
                 <span className='relative z-10'>Pakai Design Ini</span>
                 <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700' />
@@ -438,7 +438,7 @@ export default function ProductDetail({ params }: PageProps) {
               <ExternalLink className='w-5 h-5 text-gray-400' />
             </button>
             <button 
-                onClick={() => router.push('/dashboard/invitation/create')}
+                onClick={() => router.push(`/create/${selectedItem.productId}`)}
                 className='flex-1 py-3 bg-gradient-to-r from-pink-600 to-pink-500 text-white rounded-xl font-semibold shadow-lg shadow-pink-500/30'>
               Pakai Design
             </button>
