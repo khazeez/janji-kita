@@ -129,22 +129,27 @@ export default function RSVP({ invitationId }: Props) {
   };
 
   // ============================================
+  // ============================================
   // FETCH MESSAGES
   // ============================================
 
-  const fetchMessages = async () => {
+  const fetchMessages = React.useCallback(async () => {
     try {
       const result = await getGuestBook(invitationId);
 
       if (result.success && result.data) {
         setMessages(result.data);
       } else {
-        console.error('❌ Error fetching messages:', result.error);
+        // Only log if it's a real error object and not empty
+        const error = (result as any).error; // Cast to avoid TS error on union type narrowing
+        if (error && typeof error === 'object' && Object.keys(error).length > 0) {
+           console.error('❌ Error fetching messages:', error);
+        }
       }
     } catch (err) {
       console.error('❌ Unexpected error:', err);
     }
-  };
+  }, [invitationId]);
 
   // ============================================
   // EFFECTS
@@ -155,7 +160,7 @@ export default function RSVP({ invitationId }: Props) {
     if (invitationId) {
       fetchMessages();
     }
-  }, [invitationId]);
+  }, [invitationId, fetchMessages]);
 
   // Auto scroll ke bawah saat ada pesan baru
   useEffect(() => {

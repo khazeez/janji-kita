@@ -451,18 +451,21 @@ export async function getGuestBook(invitationId: string) {
 }
 
 export async function getProductByName(productName: string) {
+  const decodedName = decodeURIComponent(productName);
   const { data, error } = await supabase
     .from('PRODUCT')
     .select('*')
-    .eq('PRODUCT_NAME', productName);
+    .eq('PRODUCT_NAME', decodedName)
+    .single();
 
   if (error) {
-    throw new Error(error.message);
+    console.error('Error fetching product:', error);
+    return { data: null, error };
   }
 
   const transformedData = transformKeys(data);
 
-  return { transformedData, error };
+  return { data: transformedData, error: null };
 }
 
 export async function getInvitation(userId: string) {

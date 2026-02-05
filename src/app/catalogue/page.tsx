@@ -1,97 +1,25 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Search, X, Heart, Star } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Search, X, Heart, Star, Loader2 } from 'lucide-react';
+import { getProductInvitation } from '@/models/invitations';
+import { Product } from '@/types/interface';
 
 interface CatalogueItem {
-  id: number;
-  name: string;
-  price: string;
-  segment: 'Platinum' | 'Gold' | 'Silver' | 'Bronze';
-  theme: string;
-  image: string;
+  data: Product;
 }
-
-const catalogues: CatalogueItem[] = [
-  {
-    id: 1,
-    name: 'Elegant Rose',
-    price: 'Rp 150.000',
-    segment: 'Gold',
-    theme: 'Adat',
-    image:
-      'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=300&fit=crop',
-  },
-  {
-    id: 2,
-    name: 'Minimalist Love',
-    price: 'Rp 120.000',
-    segment: 'Silver',
-    theme: 'Casual',
-    image:
-      'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=400&h=300&fit=crop',
-  },
-  {
-    id: 3,
-    name: 'Classic Pink',
-    price: 'Rp 250.000',
-    segment: 'Platinum',
-    theme: 'Luxury',
-    image:
-      'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=300&fit=crop',
-  },
-  {
-    id: 4,
-    name: 'Garden Dream',
-    price: 'Rp 140.000',
-    segment: 'Gold',
-    theme: 'Agama',
-    image:
-      'https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?w=400&h=300&fit=crop',
-  },
-  {
-    id: 5,
-    name: 'Modern Chic',
-    price: 'Rp 220.000',
-    segment: 'Platinum',
-    theme: 'Luxury',
-    image:
-      'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=400&h=300&fit=crop',
-  },
-  {
-    id: 6,
-    name: 'Vintage Romance',
-    price: 'Rp 130.000',
-    segment: 'Silver',
-    theme: 'Casual',
-    image:
-      'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=300&fit=crop',
-  },
-  {
-    id: 7,
-    name: 'Royal Wedding',
-    price: 'Rp 180.000',
-    segment: 'Gold',
-    theme: 'Adat',
-    image:
-      'https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=400&h=300&fit=crop',
-  },
-  {
-    id: 8,
-    name: 'Simple Elegance',
-    price: 'Rp 90.000',
-    segment: 'Bronze',
-    theme: 'Agama',
-    image:
-      'https://images.unsplash.com/photo-1522673607212-f2f8ca47c9d4?w=400&h=300&fit=crop',
-  },
-];
 
 const segments: string[] = ['All', 'Platinum', 'Gold', 'Silver', 'Bronze'];
 
 export default function Catalogue() {
+  const router = useRouter();
   const [selectedSegment, setSelectedSegment] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isHeaderFixed, setIsHeaderFixed] = useState<boolean>(false);
+  
+  const [catalogues, setCatalogues] = useState<CatalogueItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [navigatingId, setNavigatingId] = useState<string | null>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsHeaderFixed(window.scrollY > 300);
@@ -99,12 +27,53 @@ export default function Catalogue() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data: Product[] = await getProductInvitation();
+
+        const wrappedData: CatalogueItem[] = data
+          .filter(Boolean)
+          .map((item) => ({ data: item }));
+
+        setCatalogues(wrappedData);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setCatalogues([]);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  const handleNavigation = (url: string, id: string) => {
+    if (navigatingId) return;
+    setNavigatingId(id);
+    router.push(url);
+  };
+
   const filteredCatalogues = catalogues.filter((item) => {
+    if (!item?.data) return false;
+
     const matchesSegment =
-      selectedSegment === 'All' || item.segment === selectedSegment;
+      selectedSegment === 'All' || item.data.segmentation === selectedSegment;
+
     const matchesSearch =
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.theme.toLowerCase().includes(searchQuery.toLowerCase());
+      item.data.productName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.data.segmentation?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.data.productType?.toLowerCase().includes(searchQuery.toLowerCase());
+
     return matchesSegment && matchesSearch;
   });
 
@@ -222,7 +191,14 @@ export default function Catalogue() {
       {/* Catalogue */}
       <section className='py-8 px-4 sm:px-6'>
         <div className='max-w-7xl mx-auto'>
-          {filteredCatalogues.length === 0 ? (
+          {loading ? (
+             <div className='flex items-center justify-center min-h-[400px]'>
+               <div className='text-center'>
+                 <div className='animate-spin rounded-full h-16 w-16 border-b-2 border-pink-500 mx-auto mb-4'></div>
+                 <p className='text-white'>Loading experiences...</p>
+               </div>
+             </div>
+          ) : filteredCatalogues.length === 0 ? (
             <div className='text-center py-16'>
               <Search className='w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 text-gray-500 opacity-50' />
               <h3 className='text-lg sm:text-xl font-semibold text-gray-300 mb-2'>
@@ -233,13 +209,21 @@ export default function Catalogue() {
             <div className='grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
               {filteredCatalogues.map((item) => (
                 <div
-                  key={item.id}
-                  className='group bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 overflow-hidden border border-gray-700/50 hover:-translate-y-1 cursor-pointer'
+                  key={item.data.productId}
+                  onClick={() => handleNavigation(`/catalogue/${item.data.productName}`, item.data.productId)}
+                  className='group relative bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 overflow-hidden border border-gray-700/50 hover:-translate-y-1 cursor-pointer'
                 >
+                  {/* Loading Overlay */}
+                  {navigatingId === item.data.productId && (
+                    <div className="absolute inset-0 z-20 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                      <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
+                    </div>
+                  )}
+
                   <div className='relative h-48 sm:h-56 overflow-hidden'>
                     <img
-                      src={item.image}
-                      alt={item.name}
+                      src={item.data.coverImage}
+                      alt={item.data.productName}
                       className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500'
                     />
                     <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20'></div>
@@ -247,26 +231,26 @@ export default function Catalogue() {
                     <div className='absolute top-2 left-2 sm:top-3 sm:left-3'>
                       <span
                         className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-full shadow-lg ${getSegmentColor(
-                          item.segment
+                          item.data.segmentation
                         )}`}
                       >
-                        {item.segment}
+                        {item.data.segmentation}
                       </span>
                     </div>
 
                     <div className='absolute bottom-2 left-2 sm:bottom-3 sm:left-3'>
                       <span className='text-[10px] sm:text-xs font-medium text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-white/20'>
-                        {item.theme}
+                        {item.data.productType}
                       </span>
                     </div>
                   </div>
 
                   <div className='p-3 sm:p-4 flex items-center justify-between gap-2'>
                     <h3 className='text-xs sm:text-base font-semibold text-white group-hover:text-pink-400 transition-colors line-clamp-1'>
-                      {item.name}
+                      {item.data.productName}
                     </h3>
                     <span className='text-xs sm:text-base font-bold text-pink-400 whitespace-nowrap'>
-                      {item.price}
+                      {formatPrice(item.data.basePriceNoPhoto)}
                     </span>
                   </div>
                 </div>

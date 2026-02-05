@@ -20,7 +20,7 @@ import { AllInvitationData } from '@/types/interface';
 
 type Phase = 'cover' | 'splash' | 'main';
 
-const BACKGROUND_IMAGES = [
+const defaultBackgroundImages = [
   '/images/imam81.webp',
   '/images/imam22.webp',
   '/images/imam53.webp',
@@ -38,6 +38,15 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
   const [guestName, setGuestName] = useState('');
   const [currentImage, setCurrentImage] = useState(0);
 
+  // Use user photos if available, otherwise default
+  const backgroundImages = data.invitationDataUser.galleryPhotos && data.invitationDataUser.galleryPhotos.length > 0
+    ? data.invitationDataUser.galleryPhotos
+    : defaultBackgroundImages;
+
+  // Ref to keep track of images without triggering effect re-runs or HMR errors
+  const backgroundImagesRef = useRef(backgroundImages);
+  backgroundImagesRef.current = backgroundImages;
+
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -49,7 +58,7 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
   useEffect(() => {
     if (phase !== 'main') return;
     const timer = setInterval(() => {
-      setCurrentImage((p) => (p + 1) % BACKGROUND_IMAGES.length);
+      setCurrentImage((p) => (p + 1) % backgroundImagesRef.current.length);
     }, 6000);
     return () => clearInterval(timer);
   }, [phase]);
@@ -65,11 +74,11 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
       className={`min-h-screen ${isEditorMode ? '' : 'flex justify-center'}`}
     >
       {/* ================= DEVICE FRAME ================= */}
-      <div className='relative lg:w-[390px] h-screen overflow-hidden bg-black shadow-xl'>
+      <div className='relative w-full max-w-[360px] h-screen overflow-hidden bg-black shadow-xl'>
         {/* ================= BACKGROUND ================= */}
         {phase === 'main' && (
           <div className='absolute inset-0 z-0'>
-            {BACKGROUND_IMAGES.map((img, i) => (
+            {backgroundImages.map((img, i) => (
               <img
                 key={img}
                 src={img}
@@ -89,6 +98,7 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
         <Cover
           isOpen={phase !== 'cover'}
           guestName={guestName}
+          bridePhoto={data.invitationDataUser.bridePhotoUrl}
           onOpen={() => {
             setIsPlaying(true);
             setPhase('splash');
@@ -108,7 +118,7 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
             <Introduction data={data} />
             <Quotes />
             <Couple data={data.invitationDataUser} />
-            <Gallery />
+            <Gallery photos={data.invitationDataUser.galleryPhotos} />
             <Event data={data.invitationEvent} />
             <Gift data={data.invitationGift} />
             <Thanks data={data.invitationDataUser} />

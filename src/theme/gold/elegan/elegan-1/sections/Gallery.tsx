@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
-export default function Gallery() {
+interface GalleryProps {
+  photos?: string[];
+}
+
+export default function Gallery({ photos }: GalleryProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [visibleImages, setVisibleImages] = useState<number[]>([]);
 
-  const images = [
+  const defaultImages = [
     { id: 1, src: '/images/imam105.webp', alt: 'Wedding Photo 1' },
     { id: 2, src: '/images/imam110.webp', alt: 'Wedding Photo 2' },
     { id: 3, src: '/images/imam31.webp', alt: 'Wedding Photo 3' },
@@ -17,6 +21,10 @@ export default function Gallery() {
     { id: 9, src: '/images/imam73.webp', alt: 'Wedding Photo 9' },
     { id: 10, src: '/images/imam77.webp', alt: 'Wedding Photo 10' },
   ];
+
+  const images = photos && photos.length > 0 
+    ? photos.map((src, index) => ({ id: index + 1, src, alt: `Wedding Photo ${index + 1}` }))
+    : defaultImages;
 
   const mosaicPattern = [
     'col-span-2 row-span-2',

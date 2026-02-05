@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { AllInvitationData, Transactions } from '@/types/interface';
 import {
   Package,
@@ -14,6 +15,7 @@ import {
   Clock,
   Zap,
   Calendar,
+  Loader2,
 } from 'lucide-react';
 import { createTransaction } from '@/models/transactions';
 
@@ -23,7 +25,14 @@ type Props = {
 };
 
 export default function InvitationComponents({ data, trx }: Props) {
+  const router = useRouter();
   const [showEditWarning, setShowEditWarning] = useState(false);
+  const [navigatingId, setNavigatingId] = useState<string | null>(null);
+
+  const handleNavigation = (url: string, id: string) => {
+    setNavigatingId(id);
+    router.push(url);
+  };
 
   const getStatusConfig = (invitation: AllInvitationData) => {
     // Cek status expired dari database
@@ -410,16 +419,21 @@ export default function InvitationComponents({ data, trx }: Props) {
                       <>
                         {invitation.invitationStatus === 'draft' ? (
                           <div className='flex gap-3'>
-                            <Link
-                              href={`invitation/${invitation.invitationId}/preview`}
-                              className='flex-1 bg-gray-700/80 hover:bg-gray-600 border border-gray-600 hover:border-gray-500 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn'
+                            <button
+                              onClick={() => handleNavigation(`invitation/${invitation.invitationId}/preview`, `edit-${invitation.invitationId}`)}
+                              disabled={!!navigatingId}
+                              className='flex-1 bg-gray-700/80 hover:bg-gray-600 border border-gray-600 hover:border-gray-500 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn disabled:opacity-50 disabled:cursor-not-allowed'
                             >
-                              <PencilLineIcon
-                                size={16}
-                                className='group-hover/btn:scale-110 transition-transform'
-                              />
+                              {navigatingId === `edit-${invitation.invitationId}` ? (
+                                <Loader2 size={16} className="animate-spin" />
+                              ) : (
+                                <PencilLineIcon
+                                  size={16}
+                                  className='group-hover/btn:scale-110 transition-transform'
+                                />
+                              )}
                               Edit
-                            </Link>
+                            </button>
                             <button
                               onClick={() =>
                                 handleActivation(invitation.invitationId)
@@ -435,26 +449,36 @@ export default function InvitationComponents({ data, trx }: Props) {
                           </div>
                         ) : (
                           <div className='flex gap-3'>
-                            <Link
-                              href={`invitation/${invitation.invitationId}/preview`}
-                              className='flex-1 bg-gray-700/80 hover:bg-gray-600 border border-gray-600 hover:border-gray-500 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn'
+                            <button
+                              onClick={() => handleNavigation(`invitation/${invitation.invitationId}/preview`, `edit-${invitation.invitationId}`)}
+                              disabled={!!navigatingId}
+                              className='flex-1 bg-gray-700/80 hover:bg-gray-600 border border-gray-600 hover:border-gray-500 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn disabled:opacity-50 disabled:cursor-not-allowed'
                             >
-                              <PencilLineIcon
-                                size={16}
-                                className='group-hover/btn:scale-110 transition-transform'
-                              />
+                              {navigatingId === `edit-${invitation.invitationId}` ? (
+                                <Loader2 size={16} className="animate-spin" />
+                              ) : (
+                                <PencilLineIcon
+                                  size={16}
+                                  className='group-hover/btn:scale-110 transition-transform'
+                                />
+                              )}
                               Edit
-                            </Link>
-                            <Link
-                              href={'invitation/send'}
-                              className='flex-1 bg-gradient-to-r from-pink-700 to-pink-500 hover:from-pink-700 hover:to-rose-700 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-pink-500/50 border border-pink-500/20'
+                            </button>
+                            <button
+                              onClick={() => handleNavigation('invitation/send', `share-${invitation.invitationId}`)}
+                              disabled={!!navigatingId}
+                              className='flex-1 bg-gradient-to-r from-pink-700 to-pink-500 hover:from-pink-700 hover:to-rose-700 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-pink-500/50 border border-pink-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
                             >
-                              <Share2
-                                size={16}
-                                className='group-hover/btn:scale-110 transition-transform'
-                              />
+                              {navigatingId === `share-${invitation.invitationId}` ? (
+                                <Loader2 size={16} className="animate-spin" />
+                              ) : (
+                                <Share2
+                                  size={16}
+                                  className='group-hover/btn:scale-110 transition-transform'
+                                />
+                              )}
                               Bagikan
-                            </Link>
+                            </button>
                           </div>
                         )}
                       </>

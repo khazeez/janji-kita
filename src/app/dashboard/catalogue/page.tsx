@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Search, X, ChevronDown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Search, X, Loader2 } from 'lucide-react';
 import { getProductInvitation } from '@/models/invitations';
 import { Product } from '@/types/interface';
 import Link from 'next/link';
@@ -10,21 +11,14 @@ interface CatalogueItem {
 }
 
 const segments: string[] = ['All', 'Platinum', 'Gold', 'Silver', 'Bronze'];
-const productTypes: string[] = [
-  'Semua Produk',
-  'Web',
-  'Video',
-  'Filter IG/TikTok',
-];
 
 export default function Catalogue() {
+  const router = useRouter();
   const [selectedSegment, setSelectedSegment] = useState<string>('All');
-  const [selectedProductType, setSelectedProductType] =
-    useState<string>('Semua Produk');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [catalogues, setCatalogues] = useState<CatalogueItem[]>([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const [navigatingId, setNavigatingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,14 +42,26 @@ export default function Catalogue() {
     fetchData();
   }, []);
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  const handleNavigation = (url: string, id: string) => {
+    if (navigatingId) return; // Prevent double clicks
+    setNavigatingId(id);
+    router.push(url);
+  };
+
   const filteredCatalogues = catalogues.filter((item) => {
     if (!item?.data) return false; // safety check
 
     const matchesSegment =
       selectedSegment === 'All' || item.data.segmentation === selectedSegment;
-    const matchesProductType =
-      selectedProductType === 'Semua Produk' ||
-      item.data.productType === selectedProductType;
 
     const matchesSearch =
       item.data.productName
@@ -66,7 +72,7 @@ export default function Catalogue() {
         .includes(searchQuery.toLowerCase()) ||
       item.data.productType?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesSegment && matchesProductType && matchesSearch;
+    return matchesSegment && matchesSearch;
   });
 
   const clearSearch = () => setSearchQuery('');
@@ -111,10 +117,9 @@ export default function Catalogue() {
       </div>
       <header className='sticky top-0 z-50 backdrop-blur-xl bg-gray-900/80 border-b border-white/10 transition-all duration-500'>
         <div className='max-w-7xl mx-auto px-4 py-6'>
-          {/* Search Bar & Dropdown */}
-          <div className='flex flex-col sm:flex-row gap-3 max-w-3xl mx-auto mb-6'>
-            {/* Search */}
-            <div className='relative flex-1 group'>
+          {/* Search Bar */}
+          <div className='max-w-2xl mx-auto mb-6'>
+            <div className='relative group'>
               <Search className='absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 group-focus-within:text-pink-400 transition-colors' />
               <input
                 type='text'
@@ -130,44 +135,6 @@ export default function Catalogue() {
                 >
                   <X className='w-4 h-4' />
                 </button>
-              )}
-            </div>
-
-            {/* Dropdown Product Type */}
-            <div className='relative w-full sm:w-64'>
-              <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className='w-full flex items-center justify-between px-4 py-3.5 text-sm bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl text-white hover:border-pink-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all duration-300 shadow-lg shadow-black/5'
-              >
-                <span className='truncate text-sm font-medium'>
-                  {selectedProductType}
-                </span>
-                <ChevronDown
-                  className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
-                    isDropdownOpen ? 'rotate-180 text-pink-400' : ''
-                  }`}
-                />
-              </button>
-
-              {isDropdownOpen && (
-                <div className='absolute top-full mt-2 w-full bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200'>
-                  {productTypes.map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => {
-                        setSelectedProductType(type);
-                        setIsDropdownOpen(false);
-                      }}
-                      className={`w-full px-4 py-3 text-left text-sm font-medium transition-all duration-200 ${
-                        selectedProductType === type
-                          ? 'bg-gradient-to-r from-pink-600 to-pink-500 text-white shadow-lg shadow-pink-500/20'
-                          : 'text-gray-300 hover:bg-white/10 hover:text-white'
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
               )}
             </div>
           </div>
@@ -214,11 +181,18 @@ export default function Catalogue() {
             ) : (
               <div className='grid pt-10 grid-cols-2 lg:grid-cols-3 gap-2'>
                 {filteredCatalogues.map((item) => (
-                  <Link
-                    key={item.data.productId} // pastikan ada key
-                    href={`catalogue/${item.data.productName}`}
-                    className='group bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 overflow-hidden border border-gray-700/50 hover:-translate-y-1 cursor-pointer'
+                  <div
+                    key={item.data.productId}
+                    onClick={() => handleNavigation(`catalogue/${item.data.productName}`, item.data.productId)}
+                    className='group relative bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 overflow-hidden border border-gray-700/50 hover:-translate-y-1 cursor-pointer'
                   >
+                    {/* Loading Overlay */}
+                    {navigatingId === item.data.productId && (
+                      <div className="absolute inset-0 z-20 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                        <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
+                      </div>
+                    )}
+                    
                     <div className='relative h-60 md:h-85 overflow-hidden'>
                       <img
                         src={item.data.coverImage}
@@ -256,10 +230,10 @@ export default function Catalogue() {
                         {item.data.productName}
                       </h3>
                       <span className='text-[10px] sm:text-base font-bold text-pink-400 whitespace-nowrap'>
-                        {item.data.basePriceNoPhoto}
+                        {formatPrice(Number(item.data.basePriceNoPhoto))}
                       </span>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}
