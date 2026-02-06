@@ -146,7 +146,7 @@ export default function ProductDetail({ params }: PageProps) {
       {/* Clean & Integrated Header */}
       <header 
         className={cn(
-          'sticky top-0 z-50 transition-all duration-300 ease-in-out',
+          'top-0 z-50 transition-all duration-300 ease-in-out',
           isScrolled 
             ? 'bg-gray-900/80 backdrop-blur-lg border-b border-white/10 py-3' 
             : 'bg-transparent py-5'
