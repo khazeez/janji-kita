@@ -284,7 +284,7 @@ export default function RSVP({ invitationId }: Props) {
           setIsOpen(true);
           setHasOpenedOnce(true);
         }}
-        className='fixed top-6 lg:right-115 right-6 z-[100] group'
+        className='fixed top-6 right-6 z-[100] group'
         aria-label='Buka doa dan ucapan'
       >
         <div className='relative'>
@@ -316,7 +316,11 @@ export default function RSVP({ invitationId }: Props) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className='fixed inset-4 md:inset-8 lg:inset-16 z-[102] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden'
+              className='fixed z-[102] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden
+                inset-2 sm:inset-4
+                md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2
+                md:w-[480px] md:max-w-[90vw] md:h-[85vh] md:max-h-[700px]
+                lg:w-[520px] lg:max-h-[760px]'
             >
               {/* Header */}
               <div className='bg-[#075E54] px-4 py-3 flex items-center justify-between flex-shrink-0'>
@@ -353,7 +357,7 @@ export default function RSVP({ invitationId }: Props) {
               >
                 <div className='p-4 space-y-3'>
                   {messages.length === 0 ? (
-                    <div className='flex flex-col items-center justify-center h-full min-h-[400px] text-center'>
+                    <div className='flex flex-col items-center justify-center h-full min-h-[200px] sm:min-h-[300px] text-center'>
                       <div className='w-20 h-20 bg-white/80 rounded-full flex items-center justify-center mb-4 shadow-md'>
                         <MessageCircle className='w-10 h-10 text-[#075E54]' />
                       </div>

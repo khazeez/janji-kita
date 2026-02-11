@@ -44,15 +44,27 @@ type PreviewMode = 'none' | 'mobile' | 'fullscreen';
 
 function DevicePreview({ children }: { children: React.ReactNode }) {
   return (
-    <div className='flex items-center justify-center w-full h-full overflow-hidden'>
-      <div className='origin-top scale-[0.9] xl:scale-100'>
-        <div className='relative rounded-[36px] border border-white/20 bg-black shadow-2xl'>
-          {/* Speaker */}
-          <div className='absolute top-3 left-1/2 -translate-x-1/2 w-16 h-1.5 bg-white/20 rounded-full z-20' />
+    <div className='flex items-center justify-center w-full h-full overflow-hidden p-2'>
+      <div className='relative h-[96vh] max-h-[920px] aspect-[380/780] flex-shrink-0'>
+        {/* Phone outer frame */}
+        <div className='absolute inset-0 rounded-[44px] border-[3px] border-gray-700/80 bg-black shadow-[0_0_60px_rgba(236,72,153,0.08),0_20px_60px_rgba(0,0,0,0.6)]'>
+          {/* Dynamic Island / Notch */}
+          <div className='absolute top-[2.3%] left-1/2 -translate-x-1/2 w-[26%] h-[3.5%] bg-black rounded-full z-20 flex items-center justify-center'>
+            <div className='w-2 h-2 rounded-full bg-gray-800 ring-1 ring-gray-700' />
+          </div>
+
+          {/* Side buttons (left) */}
+          <div className='absolute -left-[4px] top-[12%] w-[3px] h-[3%] bg-gray-600 rounded-l-sm' />
+          <div className='absolute -left-[4px] top-[17%] w-[3px] h-[5%] bg-gray-600 rounded-l-sm' />
+          <div className='absolute -left-[4px] top-[23%] w-[3px] h-[5%] bg-gray-600 rounded-l-sm' />
+          {/* Side button (right) */}
+          <div className='absolute -right-[4px] top-[19%] w-[3px] h-[6.5%] bg-gray-600 rounded-r-sm' />
 
           {/* Screen */}
-          <div className='w-[360px] h-[740px] rounded-[28px] overflow-hidden bg-black'>
+          <div className='absolute inset-[10px] rounded-[34px] overflow-hidden bg-black'>
             {children}
+            {/* Home Indicator */}
+            <div className='absolute bottom-2 left-1/2 -translate-x-1/2 w-[32%] h-[4px] bg-white/30 rounded-full z-30' />
           </div>
         </div>
       </div>
@@ -215,7 +227,7 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
       {/* ================= ROOT ================= */}
       <div className='flex h-screen bg-gray-900 overflow-hidden'>
         {/* ================= TABS SIDEBAR (Desktop & Tablet) ================= */}
-        <div className='hidden md:flex w-20 border-r border-white/10 flex-col py-4'>
+        <div className='hidden md:flex w-20 border-r border-white/10 flex-col justify-center py-4'>
           {[
             { id: 'basic', label: 'Mempelai', icon: Users },
             { id: 'event', label: 'Acara', icon: Calendar },
@@ -304,7 +316,9 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
           <div className='flex flex-col w-full h-full'>
 
             {/* Preview Body */}
-            <div className='flex-1 relative bg-[url("/pattern-dark.png")]'>
+            <div className='flex-1 relative flex items-center justify-center' style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(236,72,153,0.04) 0%, transparent 70%)' }}>
+              {/* Subtle grid pattern */}
+              <div className='absolute inset-0 opacity-[0.03]' style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
               <DevicePreview>
                 <GlassesDesign data={data} isEditorMode />
               </DevicePreview>
