@@ -1,15 +1,17 @@
 'use client';
 import { InvitationDataUser } from '@/types/interface';
 import { Image as ImageIcon, Trash2, Plus } from 'lucide-react';
+import ImageUploadField from './ImageUploadField';
 
 interface Props {
   data: InvitationDataUser;
   onChange: (data: InvitationDataUser) => void;
+  invitationId: string;
 }
 
-export default function EditorGallery({ data, onChange }: Props) {
+export default function EditorGallery({ data, onChange, invitationId }: Props) {
   const handleAddPhoto = () => {
-    const newGallery = [...data.galleryPhotos, ''];
+    const newGallery = [...(data.galleryPhotos || []), ''];
     onChange({ ...data, galleryPhotos: newGallery });
   };
 
@@ -25,40 +27,37 @@ export default function EditorGallery({ data, onChange }: Props) {
   };
 
   return (
-    <div className='space-y-4'>
-      <h3 className='text-pink-400 font-medium flex items-center gap-2'>
-        <ImageIcon size={16} /> Galeri Foto
-      </h3>
-
-      <div className='grid gap-4'>
-        {data.galleryPhotos.map((photo, index) => (
-          <div key={index} className='flex gap-2 items-center'>
-            <div className='flex-1'>
-               <div className="relative">
-                <ImageIcon size={14} className="absolute left-3 top-2.5 text-gray-500" />
-                <input
-                  type='text'
-                  value={photo}
-                  onChange={(e) => handleChangePhoto(index, e.target.value)}
-                  className='w-full bg-black/20 border border-white/10 rounded pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-pink-500 transition'
-                  placeholder='https://...'
-                />
-              </div>
-            </div>
-             <button
-              onClick={() => handleRemovePhoto(index)}
-              className='p-2 text-red-400 hover:bg-white/5 rounded-lg transition'
-            >
-              <Trash2 size={16} />
-            </button>
+    <div className='space-y-6'>
+      <div className="flex items-center justify-between">
+        <h3 className='text-white font-bold flex items-center gap-2 text-lg'>
+          <div className="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-500">
+            <ImageIcon size={18} />
           </div>
+          Galeri Foto
+        </h3>
+        <span className="text-[10px] bg-white/5 border border-white/10 px-2 py-1 rounded-full text-white/40 font-medium uppercase tracking-wider">
+          {data.galleryPhotos?.length || 0} Foto
+        </span>
+      </div>
+
+      <div className='grid gap-6'>
+        {(data.galleryPhotos || []).map((photo, index) => (
+          <ImageUploadField
+            key={index}
+            label={`Foto #${index + 1}`}
+            value={photo}
+            onChange={(url) => handleChangePhoto(index, url)}
+            invitationId={invitationId}
+            path="gallery"
+          />
         ))}
 
         <button
           onClick={handleAddPhoto}
-          className='flex items-center justify-center gap-2 border border-dashed border-white/20 hover:border-pink-500/50 hover:text-pink-400 p-4 rounded-lg text-sm text-gray-400 dashed transition'
+          className='w-full flex items-center justify-center gap-2 border border-dashed border-white/10 hover:border-pink-500/30 hover:bg-pink-500/5 hover:text-pink-400 py-4 rounded-xl text-sm text-gray-500 transition-all duration-300 group'
         >
-          <Plus size={16} /> Tambah Foto URL
+          <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" /> 
+          Tambah Slot Foto
         </button>
       </div>
     </div>

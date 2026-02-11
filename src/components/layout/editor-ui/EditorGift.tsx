@@ -26,15 +26,16 @@ export default function EditorGift({ data, onChange }: Props) {
               <textarea
                 value={data.address || ''}
                 onChange={(e) => handleChange('address', e.target.value)}
-                className='w-full bg-black/20 border border-white/10 rounded pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-pink-500 transition h-32 resize-none'
+                className='w-full bg-white/[0.03] border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-pink-500/50 focus:bg-white/[0.05] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300 h-32 resize-none'
                 placeholder='Masukkan alamat lengkap untuk pengiriman kado fisik...'
               />
             </div>
         </div>
       </div>
       
-       <div className='bg-yellow-500/10 border border-yellow-500/20 rounded p-4 text-xs text-yellow-200 mt-4'>
-        Catatan: Pengaturan Rekening Bank dan E-Wallet belum tersedia di editor ini. Hubungi admin jika perlu perubahan mendesak.
+       <div className='bg-orange-500/10 border border-orange-500/20 rounded-2xl p-5 text-xs text-orange-200/80 mt-6 leading-relaxed flex gap-3 items-start'>
+         <div className="w-5 h-5 rounded-full bg-orange-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">!</div>
+         <p>Catatan: Pengaturan Rekening Bank dan E-Wallet belum tersedia di editor ini. Hubungi admin jika perlu perubahan mendesak.</p>
       </div>
     </div>
   );

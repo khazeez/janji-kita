@@ -29,7 +29,7 @@ export default function EditorEvent({ events, onChange }: Props) {
                 type='text'
                 value={event.location}
                 onChange={(e) => handleChange(index, 'location', e.target.value)}
-                className='w-full bg-black/20 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-pink-500 transition'
+                className='w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500/50 focus:bg-white/[0.05] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300'
               />
             </div>
 
@@ -38,7 +38,7 @@ export default function EditorEvent({ events, onChange }: Props) {
               <textarea
                 value={event.locationDetail}
                 onChange={(e) => handleChange(index, 'locationDetail', e.target.value)}
-                className='w-full bg-black/20 border border-white/10 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-pink-500 transition h-20 resize-none'
+                className='w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500/50 focus:bg-white/[0.05] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300 h-24 resize-none'
               />
             </div>
 
@@ -50,7 +50,7 @@ export default function EditorEvent({ events, onChange }: Props) {
                   type='text'
                   value={event.mapsUrl}
                   onChange={(e) => handleChange(index, 'mapsUrl', e.target.value)}
-                  className='w-full bg-black/20 border border-white/10 rounded pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-pink-500 transition'
+                  className='w-full bg-white/[0.03] border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500/50 focus:bg-white/[0.05] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300'
                   placeholder='https://goo.gl/maps/...'
                 />
               </div>
@@ -65,7 +65,7 @@ export default function EditorEvent({ events, onChange }: Props) {
                     type='datetime-local'
                     value={event.startTime ? new Date(event.startTime).toISOString().slice(0, 16) : ''}
                     onChange={(e) => handleChange(index, 'startTime', new Date(e.target.value).toISOString())}
-                    className='w-full bg-black/20 border border-white/10 rounded pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-pink-500 transition'
+                    className='w-full bg-white/[0.03] border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500/50 focus:bg-white/[0.05] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300'
                   />
                 </div>
               </div>
@@ -77,7 +77,7 @@ export default function EditorEvent({ events, onChange }: Props) {
                     type='datetime-local'
                     value={event.endTime ? new Date(event.endTime).toISOString().slice(0, 16) : ''}
                     onChange={(e) => handleChange(index, 'endTime', new Date(e.target.value).toISOString())}
-                    className='w-full bg-black/20 border border-white/10 rounded pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-pink-500 transition'
+                    className='w-full bg-white/[0.03] border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500/50 focus:bg-white/[0.05] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300'
                   />
                 </div>
               </div>

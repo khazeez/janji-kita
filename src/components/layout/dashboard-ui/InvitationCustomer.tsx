@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import GlassesDesign from '@/theme/gold/elegan/elegan-1/main';
 import { AllInvitationData } from '@/types/interface';
 import {
@@ -14,10 +14,12 @@ import {
   MessageSquare,
   Quote,
   ArrowLeft,
+  Sparkles,
 } from 'lucide-react';
 import supabase from '@/lib/supabase/client';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Models
 import EditorModels from '@/models/editor';
@@ -43,28 +45,57 @@ type PreviewMode = 'none' | 'mobile' | 'fullscreen';
 ====================================================== */
 
 function DevicePreview({ children }: { children: React.ReactNode }) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [scale, setScale] = React.useState(0.85);
+
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const updateScale = () => {
+      const containerH = container.clientHeight;
+      const containerW = container.clientWidth;
+      // Frame = screen (360x740) + 4px border = 364x744
+      const frameW = 364;
+      const frameH = 720;
+      const scaleH = (containerH - 40) / frameH;
+      const scaleW = (containerW - 40) / frameW;
+      setScale(Math.min(scaleH, scaleW, 1));
+    };
+
+    updateScale();
+    const ro = new ResizeObserver(updateScale);
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, []);
+
   return (
-    <div className='flex items-center justify-center w-full h-full overflow-hidden p-2'>
-      <div className='relative h-[96vh] max-h-[920px] aspect-[380/780] flex-shrink-0'>
-        {/* Phone outer frame */}
-        <div className='absolute inset-0 rounded-[44px] border-[3px] border-gray-700/80 bg-black shadow-[0_0_60px_rgba(236,72,153,0.08),0_20px_60px_rgba(0,0,0,0.6)]'>
-          {/* Dynamic Island / Notch */}
-          <div className='absolute top-[2.3%] left-1/2 -translate-x-1/2 w-[26%] h-[3.5%] bg-black rounded-full z-20 flex items-center justify-center'>
-            <div className='w-2 h-2 rounded-full bg-gray-800 ring-1 ring-gray-700' />
-          </div>
-
+    <div ref={containerRef} className='flex items-center justify-center w-full h-full overflow-hidden'>
+      <div
+        className='flex-shrink-0'
+        style={{ transform: `scale(${scale})`, transformOrigin: 'center center' }}
+      >
+        {/* Fullscreen phone frame — no bezel */}
+        <div className='relative rounded-[40px] border-[3px] border-gray-600/60 bg-black shadow-[0_0_80px_rgba(0,0,0,0.5),0_0_30px_rgba(236,72,153,0.06)]'>
+          
           {/* Side buttons (left) */}
-          <div className='absolute -left-[4px] top-[12%] w-[3px] h-[3%] bg-gray-600 rounded-l-sm' />
-          <div className='absolute -left-[4px] top-[17%] w-[3px] h-[5%] bg-gray-600 rounded-l-sm' />
-          <div className='absolute -left-[4px] top-[23%] w-[3px] h-[5%] bg-gray-600 rounded-l-sm' />
-          {/* Side button (right) */}
-          <div className='absolute -right-[4px] top-[19%] w-[3px] h-[6.5%] bg-gray-600 rounded-r-sm' />
+          <div className='absolute -left-[3px] top-[90px] w-[2.5px] h-[22px] bg-gray-600/80 rounded-l-sm' />
+          <div className='absolute -left-[3px] top-[126px] w-[2.5px] h-[36px] bg-gray-600/80 rounded-l-sm' />
+          <div className='absolute -left-[3px] top-[172px] w-[2.5px] h-[36px] bg-gray-600/80 rounded-l-sm' />
+          {/* Side button (right — power) */}
+          <div className='absolute -right-[3px] top-[148px] w-[2.5px] h-[44px] bg-gray-600/80 rounded-r-sm' />
 
-          {/* Screen */}
-          <div className='absolute inset-[10px] rounded-[34px] overflow-hidden bg-black'>
+          {/* Screen — fullscreen 360×740 */}
+          <div className='w-[360px] h-[740px] rounded-[36px] overflow-hidden bg-black relative'>
             {children}
+
+            {/* Dynamic Island (floating on screen) */}
+            <div className='absolute top-[10px] left-1/2 -translate-x-1/2 w-[90px] h-[24px] bg-black rounded-full z-30 flex items-center justify-center'>
+              <div className='w-[6px] h-[6px] rounded-full bg-gray-900 ring-1 ring-gray-800' />
+            </div>
+
             {/* Home Indicator */}
-            <div className='absolute bottom-2 left-1/2 -translate-x-1/2 w-[32%] h-[4px] bg-white/30 rounded-full z-30' />
+            <div className='absolute bottom-[6px] left-1/2 -translate-x-1/2 w-[100px] h-[4px] bg-white/40 rounded-full z-30' />
           </div>
         </div>
       </div>
@@ -149,57 +180,76 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
 
   // Render content editor berdasarkan active tab
   const renderEditorContent = () => {
-    switch (activeTab) {
-      case 'basic':
-        return (
-          <EditorBasic
-            data={data.invitationDataUser}
-            onChange={(newData) =>
-              setData({ ...data, invitationDataUser: newData })
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -10 }}
+          transition={{ duration: 0.2 }}
+        >
+          {(() => {
+            switch (activeTab) {
+              case 'basic':
+                return (
+                  <EditorBasic
+                    data={data.invitationDataUser}
+                    invitationId={data.invitationId}
+                    onChange={(newData) =>
+                      setData({ ...data, invitationDataUser: newData })
+                    }
+                  />
+                );
+              case 'event':
+                return (
+                  <EditorEvent
+                    events={data.invitationEvent}
+                    onChange={(newEvents) =>
+                      setData({ ...data, invitationEvent: newEvents })
+                    }
+                  />
+                );
+              case 'gallery':
+                return (
+                  <EditorGallery
+                    data={data.invitationDataUser}
+                    invitationId={data.invitationId}
+                    onChange={(newData) =>
+                      setData({ ...data, invitationDataUser: newData })
+                    }
+                  />
+                );
+              case 'gift':
+                return (
+                  <EditorGift
+                    data={data.invitationGift}
+                    onChange={(newGift) =>
+                      setData({ ...data, invitationGift: newGift })
+                    }
+                  />
+                );
+              case 'music':
+              case 'quotes':
+              case 'greeting':
+                return (
+                  <div className='flex flex-col items-center justify-center min-h-[400px] text-center p-8 border border-dashed border-white/10 rounded-2xl bg-white/5'>
+                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                      <Sparkles className="text-white/20" size={32} />
+                    </div>
+                    <p className='text-white font-medium mb-1'>Segera Hadir</p>
+                    <p className='text-gray-500 text-sm max-w-[200px]'>
+                      Fitur {activeTab} sedang dalam pengembangan.
+                    </p>
+                  </div>
+                );
+              default:
+                return null;
             }
-          />
-        );
-      case 'event':
-        return (
-          <EditorEvent
-            events={data.invitationEvent}
-            onChange={(newEvents) =>
-              setData({ ...data, invitationEvent: newEvents })
-            }
-          />
-        );
-      case 'gallery':
-        return (
-          <EditorGallery
-            data={data.invitationDataUser}
-            onChange={(newData) =>
-              setData({ ...data, invitationDataUser: newData })
-            }
-          />
-        );
-      case 'gift':
-        return (
-          <EditorGift
-            data={data.invitationGift}
-            onChange={(newGift) =>
-              setData({ ...data, invitationGift: newGift })
-            }
-          />
-        );
-      case 'music':
-      case 'quotes':
-      case 'greeting':
-        return (
-          <div className='flex flex-col items-center justify-center h-64 text-center p-8 border border-dashed border-white/10 rounded-xl bg-white/5'>
-            <p className='text-gray-400 mb-2'>Fitur ini belum tersedia untuk diedit.</p>
-            <span className='text-xs text-gray-500'>
-              Pengaturan {activeTab} menggunakan default dari tema.
-            </span>
-          </div>
-        );
-      default:
-        return null;
-    }
+          })()}
+        </motion.div>
+      </AnimatePresence>
+    );
   };
 
   if (data.userId && currentUserId && data.userId !== currentUserId) {
@@ -226,8 +276,7 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
       <div className='hidden md:block'>
       {/* ================= ROOT ================= */}
       <div className='flex h-screen bg-gray-900 overflow-hidden'>
-        {/* ================= TABS SIDEBAR (Desktop & Tablet) ================= */}
-        <div className='hidden md:flex w-20 border-r border-white/10 flex-col justify-center py-4'>
+        <div className='hidden md:flex w-24 border-r border-white/5 flex-col justify-center py-6 bg-gray-900/50 backdrop-blur-xl'>
           {[
             { id: 'basic', label: 'Mempelai', icon: Users },
             { id: 'event', label: 'Acara', icon: Calendar },
@@ -238,22 +287,35 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
             { id: 'quotes', label: 'Quotes', icon: Quote },
           ].map((tab) => {
             const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`
-                  py-3 px-2 text-xs flex flex-col items-center justify-center gap-1.5
-                  transition border-l-2
+                  relative py-3 px-2 flex flex-col items-center justify-center
+                  transition-all duration-300 group
                   ${
-                    activeTab === tab.id
-                      ? 'text-pink-400 border-pink-500 bg-pink-500/10'
-                      : 'text-white/50 hover:text-white border-transparent hover:bg-white/5'
+                    isActive
+                      ? 'text-white'
+                      : 'text-gray-500 hover:text-white/80'
                   }
                 `}
               >
-                <Icon size={18} />
-                <span className='text-[10px] leading-tight text-center'>
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTabSidebar"
+                    className="absolute right-0 top-1 bottom-1 w-[3px] bg-pink-500 rounded-l-full shadow-[0_0_12px_rgba(236,72,153,0.5)]"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <div className={`
+                  w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300
+                  ${isActive ? 'bg-pink-500/10 text-pink-500' : 'bg-transparent group-hover:bg-white/5'}
+                `}>
+                  <Icon size={20} className={isActive ? 'animate-pulse-slow' : ''} />
+                </div>
+                <span className={`text-[10px] font-medium tracking-wide transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-60'}`}>
                   {tab.label}
                 </span>
               </button>
@@ -262,26 +324,28 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
         </div>
 
         {/* ================= EDITOR ================= */}
-        <aside className='flex-1 flex flex-col border-r border-white/10 max-w-xl'>
+        <aside className='flex-1 flex flex-col border-r border-white/5 max-w-xl bg-gray-900/40'>
           {/* Header */}
-          <div className='px-4 md:px-6 py-3 md:py-4 border-b border-white/10 flex justify-between items-center'>
+          <div className='px-6 py-5 border-b border-white/5 flex justify-between items-center bg-gray-900/30 backdrop-blur-sm'>
             <div className='min-w-0 flex-1 flex items-center gap-3'>
               <Link
                 href='/dashboard'
-                className='flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 text-white transition'
+                className='flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all border border-white/5 hover:scale-105 active:scale-95'
                 title='Kembali ke Dashboard'
               >
-                <ArrowLeft size={18} />
+                <ArrowLeft size={20} />
               </Link>
 
               <div className='min-w-0'>
-                <h2 className='text-white font-semibold text-sm md:text-base'>
-                  Edit Undangan
+                <h2 className='text-white font-bold text-lg leading-tight tracking-tight'>
+                  Editor
                 </h2>
-                <p className='text-xs text-white/60 truncate'>
-                  {data.invitationDataUser.groomNickName} &{' '}
-                  {data.invitationDataUser.brideNickName}
-                </p>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  <p className='text-[10px] text-white/40 font-medium uppercase tracking-widest'>
+                    {data.invitationDataUser.groomNickName} & {data.invitationDataUser.brideNickName}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -297,10 +361,11 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className='flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white px-3 md:px-4 py-2 rounded text-xs md:text-sm disabled:opacity-50 transition'
+                className='relative group overflow-hidden flex items-center gap-2 bg-pink-600 hover:bg-pink-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50 transition-all shadow-lg shadow-pink-600/20 hover:shadow-pink-500/40 hover:scale-[1.02] active:scale-[0.98]'
               >
-                <Save size={14} />
-                {isSaving ? 'Menyimpan…' : 'Simpan'}
+                <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                <Save size={16} className="relative z-10" />
+                <span className="relative z-10">{isSaving ? 'Menyimpan…' : 'Simpan'}</span>
               </button>
             </div>
           </div>
@@ -312,18 +377,13 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
         </aside>
 
         {/* ================= PREVIEW (RIGHT - Desktop Only) ================= */}
-        <section className='hidden md:flex flex-1 bg-gray-950/50'>
-          <div className='flex flex-col w-full h-full'>
-
-            {/* Preview Body */}
-            <div className='flex-1 relative flex items-center justify-center' style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(236,72,153,0.04) 0%, transparent 70%)' }}>
-              {/* Subtle grid pattern */}
-              <div className='absolute inset-0 opacity-[0.03]' style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-              <DevicePreview>
-                <GlassesDesign data={data} isEditorMode />
-              </DevicePreview>
-            </div>
-          </div>
+        <section className='hidden md:flex flex-1 items-center justify-center bg-gray-950/50 relative overflow-hidden'>
+          {/* Subtle grid pattern */}
+          <div className='absolute inset-0 opacity-[0.03]' style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+          <div className='absolute inset-0' style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(236,72,153,0.04) 0%, transparent 70%)' }} />
+          <DevicePreview>
+            <GlassesDesign data={data} isEditorMode />
+          </DevicePreview>
         </section>
       </div>
       </div>

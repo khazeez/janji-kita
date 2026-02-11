@@ -24,6 +24,7 @@ import ResultScreenSuccsess from '../layout/form-ui/Result';
 import insertData from '@/models/form';
 
 export default function Form1() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isLinkValid, setIsLinkValid] = useState(false);
@@ -96,39 +97,17 @@ export default function Form1() {
   });
 
   useEffect(() => {
-    const getCurrentUser = async () => {
-      try {
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser();
-
-        if (error) {
-          console.error('Error getting user:', error);
-          setErrorMessage(
-            'Gagal mendapatkan data user. Silakan login kembali.'
-          );
-          setShowErrorModal(true);
-          return;
-        }
-
-        if (user) {
-          setUserId(user.id);
-        } else {
-          setErrorMessage(
-            'User tidak ditemukan. Silakan login terlebih dahulu.'
-          );
-          setShowErrorModal(true);
-        }
-      } catch (error) {
-        console.error('Error in getCurrentUser:', error);
-        setErrorMessage('Terjadi kesalahan saat mengambil data user.');
-        setShowErrorModal(true);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/sign-in?callbackUrl=' + encodeURIComponent(window.location.pathname));
+        return;
       }
+      setUserId(session.user.id);
     };
 
-    getCurrentUser();
-  }, []);
+    checkAuth();
+  }, [router]);
 
   // Validasi untuk setiap step
   const isStepValid = useMemo(() => {
@@ -176,7 +155,7 @@ export default function Form1() {
         const hasValidBank = invitationGift.invitationGiftBank.some((bank) =>
           bank.account.some(
             (acc: any) =>
-              acc.bank?.trim() !== '' &&
+              acc.bankName?.trim() !== '' &&
               acc.accountNumber?.trim() !== '' &&
               acc.accountName?.trim() !== ''
           )
@@ -214,7 +193,6 @@ export default function Form1() {
     }
   };
 
-  const router = useRouter();
   const handleBack = () => {
     if (currentStep === 1) {
       router.back();
@@ -430,104 +408,118 @@ export default function Form1() {
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
-    <div className='min-h-screen bg-gray-900 pb-24'>
+    <div className='min-h-screen bg-[#030712] text-white selection:bg-pink-500/30'>
+      {/* Background Decorative Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-pink-500/5 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full" />
+      </div>
+
       {/* Header */}
-      <header className='bg-gray-800 border-b border-gray-700 sticky top-0 z-50'>
-        <div className='max-w-4xl mx-auto px-4 py-2'>
-          <div className='flex items-center justify-between mb-3'>
-            <button
-              onClick={handleBack}
-              // disabled={currentStep === 1}
-              // className={`p-2 rounded-lg transition-colors ${
-              //   currentStep === 1
-              //     ? 'text-gray-600 cursor-not-allowed'
-              //     : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-              // }`}
-              className='text-white'
+      <header className='bg-gray-900/50 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50'>
+        <div className='max-w-3xl mx-auto px-6 py-4'>
+          <div className='flex items-center justify-between mb-5'>
+            <button 
+              onClick={handleBack} 
+              className='w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all border border-white/5'
             >
-              <ArrowLeft size={24} />
+              <ArrowLeft size={20} />
             </button>
-            <h1 className='text-lg font-semibold text-white text-center flex-1'>
-              {getStepTitle()}
-            </h1>
-            <div className='w-10'></div>
+            <div className='text-center'>
+              <h1 className='text-lg font-bold text-white tracking-tight uppercase'>
+                {getStepTitle()}
+              </h1>
+              <p className='text-[10px] text-white/40 font-medium tracking-widest uppercase mt-0.5'>
+                Step {currentStep} of {totalSteps}
+              </p>
+            </div>
+            <div className='w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500 border border-pink-500/20'>
+              <span className="text-xs font-bold">{Math.round(progressPercentage)}%</span>
+            </div>
           </div>
 
-          <div className='w-full bg-gray-700 rounded-full h-2'>
+          <div className='w-full bg-white/5 rounded-full h-1.5 overflow-hidden'>
             <div
-              className='bg-gradient-to-r from-pink-600 to-pink-500 h-2 rounded-full transition-all duration-300'
+              className='bg-gradient-to-r from-pink-600 to-pink-400 h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(236,72,153,0.3)]'
               style={{ width: `${progressPercentage}%` }}
-            ></div>
+            />
           </div>
-          <p className='text-xs text-gray-400 text-center mt-2'>
-            Step {currentStep} dari {totalSteps}
-          </p>
         </div>
       </header>
 
-      {/* Main */}
-      <main className='max-w-4xl mx-auto px-4 py-8'>
-        {/* Step 1: Data Mempelai */}
-        {currentStep === 1 && (
-          <BrideGroomDataInput
-            data={invitationDataUser}
-            onChange={setInvitationDataUser}
-          />
-        )}
+      {/* Main Content */}
+      <main className='max-w-3xl mx-auto px-6 pt-10 pb-32'>
+        <div className="min-h-[400px]">
+          {currentStep === 1 && (
+            <BrideGroomDataInput
+              data={invitationDataUser}
+              onChange={setInvitationDataUser}
+            />
+          )}
 
-        {/* Step 2: Tempat Acara */}
-        {currentStep === 2 && (
-          <VenueDataInput
-            events={invitationEvents}
-            onChange={setInvitationEvents}
-          />
-        )}
+          {currentStep === 2 && (
+            <VenueDataInput
+              events={invitationEvents}
+              onChange={setInvitationEvents}
+            />
+          )}
 
-        {/* Step 3: Gift */}
-        {currentStep === 3 && (
-          <GiftDataInput data={invitationGift} onChange={setInvitationGift} />
-        )}
+          {currentStep === 3 && (
+            <GiftDataInput data={invitationGift} onChange={setInvitationGift} />
+          )}
 
-        {/* Step 4: Link */}
-        {currentStep === 4 && (
-          <LinkDataInput
-            data={invitation as Invitation}
-            onChange={(data) => setInvitation(data)}
-            onValidationChange={setIsLinkValid}
-          />
-        )}
+          {currentStep === 4 && (
+            <LinkDataInput
+              data={invitation as Invitation}
+              onChange={(data) => setInvitation(data)}
+              onValidationChange={setIsLinkValid}
+            />
+          )}
 
-        {/* Step 5: Konfirmasi */}
-        {currentStep === 5 && (
-          <ConfirmationScreen
-            brideGroomData={invitationDataUser}
-            venueData={invitationEvents}
-            giftData={invitationGift}
-            invitationUrl={invitation.invitationUrl || ''}
-          />
-        )}
+          {currentStep === 5 && (
+            <ConfirmationScreen
+              brideGroomData={invitationDataUser}
+              venueData={invitationEvents}
+              giftData={invitationGift}
+              invitationUrl={invitation.invitationUrl || ''}
+            />
+          )}
+        </div>
       </main>
 
-      {/* Footer */}
-      {currentStep <= totalSteps && (
-        <footer className='fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 z-50'>
-          <div className='max-w-4xl mx-auto px-4 py-4'>
-            <button
-              onClick={currentStep === 5 ? handleSubmit : handleNext}
-              disabled={!isStepValid}
-              className={`w-full px-6 py-3 font-semibold rounded-3xl transition-all duration-200 shadow-lg ${
-                isStepValid
-                  ? 'bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white hover:shadow-xl cursor-pointer'
-                  : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              {currentStep === 5 ? 'Submit' : 'Lanjut'}
-            </button>
-          </div>
-        </footer>
-      )}
+      {/* Footer Nav */}
+      <footer className='fixed bottom-0 left-0 right-0 bg-gray-900/70 backdrop-blur-xl border-t border-white/5 z-50'>
+        <div className='max-w-3xl mx-auto px-6 py-4'>
+          <button
+            onClick={currentStep === 5 ? handleSubmit : handleNext}
+            disabled={!isStepValid || isLoading}
+            className={`
+              w-full py-4 px-6 font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2
+              ${isStepValid && !isLoading
+                ? 'bg-pink-600 hover:bg-pink-500 text-white shadow-lg shadow-pink-600/20 hover:shadow-pink-500/40 hover:-translate-y-0.5 active:translate-y-0 translate-y-0'
+                : 'bg-white/5 text-white/20 cursor-not-allowed border border-white/5'
+              }
+            `}
+          >
+            {isLoading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Memproses...</span>
+              </>
+            ) : (
+              <>
+                <span>{currentStep === 5 ? 'Konfirmasi & Kirim' : 'Lanjutkan'}</span>
+                {currentStep < 5 && (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                  </svg>
+                )}
+              </>
+            )}
+          </button>
+        </div>
+      </footer>
 
-      {/* Success Modal */}
       {showSuccessModal && <ResultScreenSuccsess data={invitationId} />}
     </div>
   );

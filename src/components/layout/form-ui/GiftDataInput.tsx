@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Home, CreditCard, Wallet, ChevronDown, Landmark } from 'lucide-react';
 import {
   InvitationGift,
   InvitationGiftBank,
@@ -18,14 +18,14 @@ interface EVMChain {
 }
 
 interface BankAccount {
-  bank: string;
+  bankName: string;
   accountNumber: string;
   accountName: string;
 }
 
 interface WalletAddress {
-  network: string;
-  walletAddress: string;
+  chain: string;
+  address: string;
 }
 
 export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
@@ -50,7 +50,6 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
     { value: 'fantom', label: 'Fantom (FTM)', color: 'text-blue-400' },
   ];
 
-  // Helper to get or create bank entry for owner
   const getBankEntry = (owner: 'BRIDE' | 'GROOM'): InvitationGiftBank => {
     const existing = data.invitationGiftBank.find((b) => b.owner === owner);
     if (existing) return existing;
@@ -66,7 +65,6 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
     return newEntry;
   };
 
-  // Helper to get or create wallet entry for owner
   const getWalletEntry = (owner: 'BRIDE' | 'GROOM'): InvitationGiftWallet => {
     const existing = data.invitationGiftWallet.find((w) => w.owner === owner);
     if (existing) return existing;
@@ -84,7 +82,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
 
   const addBankAccount = (owner: 'BRIDE' | 'GROOM') => {
     const newAccount: BankAccount = {
-      bank: '',
+      bankName: '',
       accountNumber: '',
       accountName: '',
     };
@@ -154,8 +152,8 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
 
   const addWallet = (owner: 'BRIDE' | 'GROOM') => {
     const newWallet: WalletAddress = {
-      walletAddress: '',
-      network: 'ethereum',
+      address: '',
+      chain: 'ethereum',
     };
 
     const existingWalletIndex = data.invitationGiftWallet.findIndex(
@@ -221,380 +219,351 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
     setGiftData({ invitationGiftWallet: updatedWallets });
   };
 
-  // Get accounts for specific owner
   const getBrideAccounts = () => {
     const brideBank = data.invitationGiftBank.find((b) => b.owner === 'BRIDE');
-    return brideBank?.account || [];
+    return (brideBank?.account || []) as BankAccount[];
   };
 
   const getGroomAccounts = () => {
     const groomBank = data.invitationGiftBank.find((b) => b.owner === 'GROOM');
-    return groomBank?.account || [];
+    return (groomBank?.account || []) as BankAccount[];
   };
 
   const getBrideWallets = () => {
     const brideWallet = data.invitationGiftWallet.find(
       (w) => w.owner === 'BRIDE'
     );
-    return brideWallet?.address || [];
+    return (brideWallet?.address || []) as WalletAddress[];
   };
 
   const getGroomWallets = () => {
     const groomWallet = data.invitationGiftWallet.find(
       (w) => w.owner === 'GROOM'
     );
-    return groomWallet?.address || [];
+    return (groomWallet?.address || []) as WalletAddress[];
   };
 
+  const inputClasses = "w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-pink-500/50 focus:bg-white/[0.05] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300";
+  const selectClasses = "w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500/50 focus:bg-[#1a1f2e] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300 appearance-none cursor-pointer";
+
   return (
-    <div className='min-h-screen bg-gray-900 p-6'>
-      <div className='max-w-4xl mx-auto space-y-6'>
-        {/* Alamat Rumah */}
-        <div className='bg-gray-800 rounded-xl p-6 border border-gray-700'>
-          <h3 className='text-lg font-semibold text-white mb-4'>
-            Alamat Rumah
-          </h3>
+    <div className='space-y-10'>
+      {/* Alamat Rumah */}
+      <div className='space-y-6'>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 border border-pink-500/20">
+            <Home size={20} />
+          </div>
           <div>
-            <label className='block text-sm font-medium text-gray-300 mb-2'>
-              Alamat Lengkap
-            </label>
+            <h3 className='text-lg font-bold text-white tracking-tight'>Kirim Kado Ke Rumah</h3>
+            <p className='text-xs text-white/40'>Alamat pengiriman untuk kado fisik</p>
+          </div>
+        </div>
+        
+        <div className='bg-white/[0.02] border border-white/5 rounded-2xl p-6'>
+          <div className="space-y-1.5">
+            <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Alamat Lengkap</label>
             <textarea
               value={data.address || ''}
               onChange={(e) => setGiftData({ address: e.target.value })}
-              className='w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-pink-500 focus:outline-none resize-none'
+              className={`${inputClasses} resize-none`}
               placeholder='Masukkan alamat lengkap untuk pengiriman hadiah'
               rows={3}
             />
           </div>
         </div>
+      </div>
 
-        {/* Rekening Mempelai Wanita */}
-        <div className='bg-gray-800 rounded-xl p-6 border border-gray-700'>
-          <div className='flex items-center justify-between mb-4'>
-            <h3 className='text-lg font-semibold text-pink-400'>
-              Rekening Mempelai Wanita
-            </h3>
-            <button
-              onClick={() => addBankAccount('BRIDE')}
-              className='flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded-lg text-sm transition-colors'
-            >
-              <Plus size={18} />
-              Tambah
-            </button>
+      {/* REKENING & WALLET BRIDE */}
+      <div className='space-y-8'>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 border border-pink-500/20">
+            <CreditCard size={20} />
           </div>
-
-          <div className='space-y-4'>
-            {getBrideAccounts().map((account, index) => (
-              <div
-                key={index}
-                className='bg-gray-700 rounded-lg p-4 space-y-3 relative'
-              >
-                <button
-                  onClick={() => deleteBankAccount('BRIDE', index)}
-                  className='absolute top-4 right-4 text-red-400 hover:text-red-300 transition-colors'
-                >
-                  <Trash2 size={18} />
-                </button>
-                <div>
-                  <label className='block text-xs font-medium text-gray-300 mb-1'>
-                    Nama Bank
-                  </label>
-                  <input
-                    type='text'
-                    value={account.bankName}
-                    onChange={(e) =>
-                      updateBankAccount(
-                        'BRIDE',
-                        index,
-                        'bank',
-                        e.target.value
-                      )
-                    }
-                    className='w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm focus:ring-2 focus:ring-pink-500 focus:outline-none'
-                    placeholder='BCA, Mandiri, BNI'
-                  />
-                </div>
-                <div>
-                  <label className='block text-xs font-medium text-gray-300 mb-1'>
-                    Nomor Rekening
-                  </label>
-                  <input
-                    type='text'
-                    value={account.accountNumber}
-                    onChange={(e) =>
-                      updateBankAccount(
-                        'BRIDE',
-                        index,
-                        'accountNumber',
-                        e.target.value
-                      )
-                    }
-                    className='w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm focus:ring-2 focus:ring-pink-500 focus:outline-none'
-                    placeholder='1234567890'
-                  />
-                </div>
-                <div>
-                  <label className='block text-xs font-medium text-gray-300 mb-1'>
-                    Atas Nama
-                  </label>
-                  <input
-                    type='text'
-                    value={account.accountName}
-                    onChange={(e) =>
-                      updateBankAccount(
-                        'BRIDE',
-                        index,
-                        'accountName',
-                        e.target.value
-                      )
-                    }
-                    className='w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm focus:ring-2 focus:ring-pink-500 focus:outline-none'
-                    placeholder='Nama pemilik'
-                  />
-                </div>
-              </div>
-            ))}
-
-            {getBrideAccounts().length === 0 && (
-              <p className='text-gray-400 text-sm text-center py-4'>
-                Belum ada rekening ditambahkan
-              </p>
-            )}
+          <div>
+            <h3 className='text-lg font-bold text-white tracking-tight'>Mempelai Wanita</h3>
+            <p className='text-xs text-white/40'>Data rekening dan wallet untuk kado digital</p>
           </div>
         </div>
 
-        {/* Wallet Mempelai Wanita */}
-        <div className='bg-gray-800 rounded-xl p-6 border border-gray-700'>
-          <div className='flex items-center justify-between mb-4'>
-            <h3 className='text-lg font-semibold text-pink-400'>
-              Web3 Wallet Mempelai Wanita
-            </h3>
-            <button
-              onClick={() => addWallet('BRIDE')}
-              className='flex items-center gap-2 px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white rounded-lg text-sm transition-colors'
-            >
-              <Plus size={18} />
-              Tambah
-            </button>
-          </div>
-
-          <div className='space-y-4'>
-            {getBrideWallets().map((wallet, index) => (
-              <div
-                key={index}
-                className='bg-gray-700 rounded-lg p-4 space-y-3 relative'
+        <div className="grid gap-6">
+          {/* Bank Accounts */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between ml-1">
+              <span className="text-[10px] font-bold text-white/30 uppercase tracking-[2px]">Rekening Bank</span>
+              <button
+                onClick={() => addBankAccount('BRIDE')}
+                className="text-[10px] font-bold text-pink-500 hover:text-pink-400 flex items-center gap-1.5 transition-colors uppercase tracking-wider"
               >
-                <button
-                  onClick={() => deleteWallet('BRIDE', index)}
-                  className='absolute top-4 right-4 text-red-400 hover:text-red-300 transition-colors'
-                >
-                  <Trash2 size={18} />
-                </button>
-                <div>
-                  <label className='block text-xs font-medium text-gray-300 mb-1'>
-                    Chain / Network
-                  </label>
-                  <select
-                    value={wallet.chain}
-                    onChange={(e) =>
-                      updateWallet('BRIDE', index, 'network', e.target.value)
-                    }
-                    className='w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm focus:ring-2 focus:ring-pink-500 focus:outline-none'
+                <Plus size={12} /> Tambah Bank
+              </button>
+            </div>
+
+            <div className="grid gap-4">
+              {getBrideAccounts().map((account, index) => (
+                <div key={index} className='relative bg-white/[0.02] border border-white/5 rounded-2xl p-6 group transition-all hover:bg-white/[0.04]'>
+                  <button
+                    onClick={() => deleteBankAccount('BRIDE', index)}
+                    className='absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-red-400/50 hover:text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 rounded-lg transition-all'
                   >
-                    {evmChains.map((chain) => (
-                      <option key={chain.value} value={chain.value}>
-                        {chain.label}
-                      </option>
-                    ))}
-                  </select>
+                    <Trash2 size={14} />
+                  </button>
+
+                  <div className="grid gap-4">
+                    <div className="space-y-1.5">
+                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Nama Bank</label>
+                      <div className="relative">
+                        <Landmark size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                        <input
+                          type='text'
+                          value={account.bankName}
+                          onChange={(e) => updateBankAccount('BRIDE', index, 'bankName', e.target.value)}
+                          className={`${inputClasses} pl-10`}
+                          placeholder='BCA, Mandiri, BNI'
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Nomor Rekening</label>
+                        <input
+                          type='text'
+                          value={account.accountNumber}
+                          onChange={(e) => updateBankAccount('BRIDE', index, 'accountNumber', e.target.value)}
+                          className={inputClasses}
+                          placeholder='1234567890'
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Atas Nama</label>
+                        <input
+                          type='text'
+                          value={account.accountName}
+                          onChange={(e) => updateBankAccount('BRIDE', index, 'accountName', e.target.value)}
+                          className={inputClasses}
+                          placeholder='Nama pemilik'
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label className='block text-xs font-medium text-gray-300 mb-1'>
-                    Alamat Wallet
-                  </label>
-                  <input
-                    type='text'
-                    value={wallet.address}
-                    onChange={(e) =>
-                      updateWallet('BRIDE', index, 'walletAddress', e.target.value)
-                    }
-                    className='w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm focus:ring-2 focus:ring-pink-500 focus:outline-none font-mono'
-                    placeholder='0x...'
-                  />
+              ))}
+              {getBrideAccounts().length === 0 && (
+                <div className="py-6 bg-white/[0.01] border border-dashed border-white/5 rounded-2xl text-center">
+                  <p className="text-xs text-white/20 font-medium">Belum ada rekening bank</p>
                 </div>
-              </div>
-            ))}
-
-            {getBrideWallets().length === 0 && (
-              <p className='text-gray-400 text-sm text-center py-4'>
-                Belum ada wallet ditambahkan
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Rekening Mempelai Pria */}
-        <div className='bg-gray-800 rounded-xl p-6 border border-gray-700'>
-          <div className='flex items-center justify-between mb-4'>
-            <h3 className='text-lg font-semibold text-blue-400'>
-              Rekening Mempelai Pria
-            </h3>
-            <button
-              onClick={() => addBankAccount('GROOM')}
-              className='flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm transition-colors'
-            >
-              <Plus size={18} />
-              Tambah
-            </button>
+              )}
+            </div>
           </div>
 
-          <div className='space-y-4'>
-            {getGroomAccounts().map((account, index) => (
-              <div
-                key={index}
-                className='bg-gray-700 rounded-lg p-4 space-y-3 relative'
+          {/* Wallets */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between ml-1">
+              <span className="text-[10px] font-bold text-white/30 uppercase tracking-[2px]">Web3 Wallet</span>
+              <button
+                onClick={() => addWallet('BRIDE')}
+                className="text-[10px] font-bold text-pink-500 hover:text-pink-400 flex items-center gap-1.5 transition-colors uppercase tracking-wider"
               >
-                <button
-                  onClick={() => deleteBankAccount('GROOM', index)}
-                  className='absolute top-4 right-4 text-red-400 hover:text-red-300 transition-colors'
-                >
-                  <Trash2 size={18} />
-                </button>
-                <div>
-                  <label className='block text-xs font-medium text-gray-300 mb-1'>
-                    Nama Bank
-                  </label>
-                  <input
-                    type='text'
-                    value={account.bankName}
-                    onChange={(e) =>
-                      updateBankAccount(
-                        'GROOM',
-                        index,
-                        'bank',
-                        e.target.value
-                      )
-                    }
-                    className='w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none'
-                    placeholder='BCA, Mandiri, BNI'
-                  />
-                </div>
-                <div>
-                  <label className='block text-xs font-medium text-gray-300 mb-1'>
-                    Nomor Rekening
-                  </label>
-                  <input
-                    type='text'
-                    value={account.accountNumber}
-                    onChange={(e) =>
-                      updateBankAccount(
-                        'GROOM',
-                        index,
-                        'accountNumber',
-                        e.target.value
-                      )
-                    }
-                    className='w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none'
-                    placeholder='1234567890'
-                  />
-                </div>
-                <div>
-                  <label className='block text-xs font-medium text-gray-300 mb-1'>
-                    Atas Nama
-                  </label>
-                  <input
-                    type='text'
-                    value={account.accountName}
-                    onChange={(e) =>
-                      updateBankAccount(
-                        'GROOM',
-                        index,
-                        'accountName',
-                        e.target.value
-                      )
-                    }
-                    className='w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none'
-                    placeholder='Nama pemilik'
-                  />
-                </div>
-              </div>
-            ))}
+                <Plus size={12} /> Tambah Wallet
+              </button>
+            </div>
 
-            {getGroomAccounts().length === 0 && (
-              <p className='text-gray-400 text-sm text-center py-4'>
-                Belum ada rekening ditambahkan
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Wallet Mempelai Pria */}
-        <div className='bg-gray-800 rounded-xl p-6 border border-gray-700'>
-          <div className='flex items-center justify-between mb-4'>
-            <h3 className='text-lg font-semibold text-blue-400'>
-              Web3 Wallet Mempelai Pria
-            </h3>
-            <button
-              onClick={() => addWallet('GROOM')}
-              className='flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm transition-colors'
-            >
-              <Plus size={18} />
-              Tambah
-            </button>
-          </div>
-
-          <div className='space-y-4'>
-            {getGroomWallets().map((wallet, index) => (
-              <div
-                key={index}
-                className='bg-gray-700 rounded-lg p-4 space-y-3 relative'
-              >
-                <button
-                  onClick={() => deleteWallet('GROOM', index)}
-                  className='absolute top-4 right-4 text-red-400 hover:text-red-300 transition-colors'
-                >
-                  <Trash2 size={18} />
-                </button>
-                <div>
-                  <label className='block text-xs font-medium text-gray-300 mb-1'>
-                    Chain / Network
-                  </label>
-                  <select
-                    value={wallet.chain}
-                    onChange={(e) =>
-                      updateWallet('GROOM', index, 'network', e.target.value)
-                    }
-                    className='w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none'
+            <div className="grid gap-4">
+              {getBrideWallets().map((wallet, index) => (
+                <div key={index} className='relative bg-white/[0.02] border border-white/5 rounded-2xl p-6 group transition-all hover:bg-white/[0.04]'>
+                  <button
+                    onClick={() => deleteWallet('BRIDE', index)}
+                    className='absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-red-400/50 hover:text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 rounded-lg transition-all'
                   >
-                    {evmChains.map((chain) => (
-                      <option key={chain.value} value={chain.value}>
-                        {chain.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className='block text-xs font-medium text-gray-300 mb-1'>
-                    Alamat Wallet
-                  </label>
-                  <input
-                    type='text'
-                    value={wallet.address}
-                    onChange={(e) =>
-                      updateWallet('GROOM', index, 'walletAddress', e.target.value)
-                    }
-                    className='w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono'
-                    placeholder='0x...'
-                  />
-                </div>
-              </div>
-            ))}
+                    <Trash2 size={14} />
+                  </button>
 
-            {getGroomWallets().length === 0 && (
-              <p className='text-gray-400 text-sm text-center py-4'>
-                Belum ada wallet ditambahkan
-              </p>
-            )}
+                  <div className="grid gap-4">
+                    <div className="space-y-1.5">
+                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Chain / Network</label>
+                      <div className="relative">
+                        <select
+                          value={wallet.chain}
+                          onChange={(e) => updateWallet('BRIDE', index, 'chain', e.target.value)}
+                          className={selectClasses}
+                        >
+                          {evmChains.map((chain) => (
+                            <option key={chain.value} value={chain.value}>{chain.label}</option>
+                          ))}
+                        </select>
+                        <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Alamat Wallet</label>
+                      <div className="relative">
+                        <Wallet size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                        <input
+                          type='text'
+                          value={wallet.address}
+                          onChange={(e) => updateWallet('BRIDE', index, 'address', e.target.value)}
+                          className={`${inputClasses} pl-10 font-mono`}
+                          placeholder='0x...'
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {getBrideWallets().length === 0 && (
+                <div className="py-6 bg-white/[0.01] border border-dashed border-white/5 rounded-2xl text-center">
+                  <p className="text-xs text-white/20 font-medium">Belum ada crypto wallet</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="h-px bg-white/5 mx-2" />
+
+      {/* REKENING & WALLET GROOM */}
+      <div className='space-y-8'>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
+            <CreditCard size={20} />
+          </div>
+          <div>
+            <h3 className='text-lg font-bold text-white tracking-tight'>Mempelai Pria</h3>
+            <p className='text-xs text-white/40'>Data rekening dan wallet untuk kado digital</p>
+          </div>
+        </div>
+
+        <div className="grid gap-6">
+          {/* Bank Accounts */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between ml-1">
+              <span className="text-[10px] font-bold text-white/30 uppercase tracking-[2px]">Rekening Bank</span>
+              <button
+                onClick={() => addBankAccount('GROOM')}
+                className="text-[10px] font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1.5 transition-colors uppercase tracking-wider"
+              >
+                <Plus size={12} /> Tambah Bank
+              </button>
+            </div>
+
+            <div className="grid gap-4">
+              {getGroomAccounts().map((account, index) => (
+                <div key={index} className='relative bg-white/[0.02] border border-white/5 rounded-2xl p-6 group transition-all hover:bg-white/[0.04]'>
+                  <button
+                    onClick={() => deleteBankAccount('GROOM', index)}
+                    className='absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-red-400/50 hover:text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 rounded-lg transition-all'
+                  >
+                    <Trash2 size={14} />
+                  </button>
+
+                  <div className="grid gap-4">
+                    <div className="space-y-1.5">
+                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Nama Bank</label>
+                      <div className="relative">
+                        <Landmark size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                        <input
+                          type='text'
+                          value={account.bankName}
+                          onChange={(e) => updateBankAccount('GROOM', index, 'bankName', e.target.value)}
+                          className={`${inputClasses} pl-10`}
+                          placeholder='BCA, Mandiri, BNI'
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Nomor Rekening</label>
+                        <input
+                          type='text'
+                          value={account.accountNumber}
+                          onChange={(e) => updateBankAccount('GROOM', index, 'accountNumber', e.target.value)}
+                          className={inputClasses}
+                          placeholder='1234567890'
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Atas Nama</label>
+                        <input
+                          type='text'
+                          value={account.accountName}
+                          onChange={(e) => updateBankAccount('GROOM', index, 'accountName', e.target.value)}
+                          className={inputClasses}
+                          placeholder='Nama pemilik'
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {getGroomAccounts().length === 0 && (
+                <div className="py-6 bg-white/[0.01] border border-dashed border-white/5 rounded-2xl text-center">
+                  <p className="text-xs text-white/20 font-medium">Belum ada rekening bank</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Wallets */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between ml-1">
+              <span className="text-[10px] font-bold text-white/30 uppercase tracking-[2px]">Web3 Wallet</span>
+              <button
+                onClick={() => addWallet('GROOM')}
+                className="text-[10px] font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1.5 transition-colors uppercase tracking-wider"
+              >
+                <Plus size={12} /> Tambah Wallet
+              </button>
+            </div>
+
+            <div className="grid gap-4">
+              {getGroomWallets().map((wallet, index) => (
+                <div key={index} className='relative bg-white/[0.02] border border-white/5 rounded-2xl p-6 group transition-all hover:bg-white/[0.04]'>
+                  <button
+                    onClick={() => deleteWallet('GROOM', index)}
+                    className='absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-red-400/50 hover:text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 rounded-lg transition-all'
+                  >
+                    <Trash2 size={14} />
+                  </button>
+
+                  <div className="grid gap-4">
+                    <div className="space-y-1.5">
+                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Chain / Network</label>
+                      <div className="relative">
+                        <select
+                          value={wallet.chain}
+                          onChange={(e) => updateWallet('GROOM', index, 'chain', e.target.value)}
+                          className={selectClasses}
+                        >
+                          {evmChains.map((chain) => (
+                            <option key={chain.value} value={chain.value}>{chain.label}</option>
+                          ))}
+                        </select>
+                        <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Alamat Wallet</label>
+                      <div className="relative">
+                        <Wallet size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                        <input
+                          type='text'
+                          value={wallet.address}
+                          onChange={(e) => updateWallet('GROOM', index, 'address', e.target.value)}
+                          className={`${inputClasses} pl-10 font-mono`}
+                          placeholder='0x...'
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {getGroomWallets().length === 0 && (
+                <div className="py-6 bg-white/[0.01] border border-dashed border-white/5 rounded-2xl text-center">
+                  <p className="text-xs text-white/20 font-medium">Belum ada crypto wallet</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
