@@ -98,96 +98,14 @@ class EditorModels {
     try {
       if (!gift.giftId) throw new Error('Gift ID is required');
 
-      // 1. Update Address
-      if (gift.address) {
-        const { error } = await supabase
-          .from('INVITATION_GIFT')
-          .update({
-            ADDRESS: gift.address,
-            UPDATED_AT: new Date().toISOString(),
-          })
-          .eq('GIFT_ID', gift.giftId);
-        
-        if (error) throw error;
-      }
-
-      // 2. Upsert Banks
-      if (gift.invitationGiftBank) {
-        for (const bank of gift.invitationGiftBank) {
-          const bankData: any = {
-            GIFT_ID: gift.giftId,
-            // Pack details into ACCOUNT JSON column
-            ACCOUNT: {
-                bankName: bank.bankName,
-                account: bank.account,
-                accountHolder: bank.accountHolder
-            },
-            OWNER: bank.owner,
-            UPDATED_AT: new Date().toISOString(),
-          };
-
-          if (bank.giftBankId && !bank.giftBankId.startsWith('new-')) {
-            // Update existing
-            await supabase
-              .from('INVITATION_GIFT_BANK')
-              .update(bankData)
-              .eq('GIFT_BANK_ID', bank.giftBankId);
-          } else {
-            // Insert new
-            await supabase.from('INVITATION_GIFT_BANK').insert(bankData);
-          }
-        }
-      }
-
-      // 3. Upsert Wallets
-      if (gift.invitationGiftWallet) {
-        for (const wallet of gift.invitationGiftWallet) {
-          const walletData: any = {
-            GIFT_ID: gift.giftId,
-            // Pack details into ADDRESS JSON column
-            ADDRESS: {
-                walletName: wallet.walletName,
-                account: wallet.account,
-                accountHolder: wallet.accountHolder
-            },
-            OWNER: wallet.owner,
-            UPDATED_AT: new Date().toISOString(),
-          };
-
-          if (wallet.giftWalletId && !wallet.giftWalletId.startsWith('new-')) {
-            // Update
-            await supabase
-              .from('INVITATION_GIFT_WALLET')
-              .update(walletData)
-              .eq('GIFT_WALLET_ID', wallet.giftWalletId);
-          } else {
-            // Insert
-            await supabase.from('INVITATION_GIFT_WALLET').insert(walletData);
-          }
-        }
-      }
-
-      // Fetch fresh data to return
       const { data, error } = await supabase
         .from('INVITATION_GIFT')
-        .select(`
-          GIFT_ID,
-          INVITATION_ID,
-          ADDRESS,
-          INVITATION_GIFT_BANK!INVITATION_GIFT_BANK_GIFT_ID_fkey(
-            GIFT_BANK_ID,
-            GIFT_ID,
-            ACCOUNT,
-            OWNER
-          ),
-          INVITATION_GIFT_WALLET!INVITATION_GIFT_WALLET_GIFT_ID_fkey(
-            GIFT_WALLET_ID,
-            GIFT_ID,
-            ADDRESS,
-            OWNER
-          )
-        `)
+        .update({
+          ADDRESS: gift.address,
+          UPDATED_AT: new Date().toISOString(),
+        })
         .eq('GIFT_ID', gift.giftId)
+        .select()
         .single();
 
       if (error) throw error;

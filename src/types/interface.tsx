@@ -157,25 +157,21 @@ export interface InvitationGift {
 }
 
 export interface InvitationGiftBank {
-  giftBankId?: string;
-  giftId?: string;
-  bankName: string;
-  account: string;
-  accountHolder: string;
+  giftBankId: string;
+  giftId: string;
+  account: any[];
   owner: 'BRIDE' | 'GROOM';
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface InvitationGiftWallet {
-  giftWalletId?: string;
-  giftId?: string;
-  walletName: string;
-  account: string;
-  accountHolder: string;
+  giftWalletId: string;
+  giftId: string;
+  address: any[];
   owner: 'BRIDE' | 'GROOM';
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type PaymentStatus =

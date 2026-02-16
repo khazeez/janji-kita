@@ -43,65 +43,13 @@ export function transformInvitationResponse(
 }
 
 export function transformDataInvitationResponse(dbResponse: any): AllInvitationData {
-  const data = transformKeys(dbResponse) as AllInvitationData;
-
-  // Fix Gift Banks: Unpack JSON from 'account' column
-  if (data.invitationGift?.invitationGiftBank) {
-      data.invitationGift.invitationGiftBank = data.invitationGift.invitationGiftBank.map((bank: any) => {
-          if (bank.account && typeof bank.account === 'object' && !Array.isArray(bank.account)) {
-              return { ...bank, ...bank.account };
-          }
-          if (Array.isArray(bank.account) && bank.account.length > 0) {
-              return { ...bank, ...bank.account[0] };
-          }
-          return bank;
-      });
-  }
-
-  // Fix Gift Wallets: Unpack JSON from 'address' column
-  if (data.invitationGift?.invitationGiftWallet) {
-      data.invitationGift.invitationGiftWallet = data.invitationGift.invitationGiftWallet.map((wallet: any) => {
-          if (wallet.address && typeof wallet.address === 'object' && !Array.isArray(wallet.address)) {
-              return { ...wallet, ...wallet.address };
-          }
-          if (Array.isArray(wallet.address) && wallet.address.length > 0) {
-               return { ...wallet, ...wallet.address[0] };
-          }
-          return wallet;
-      });
-  }
-
-  return data;
+  return transformKeys(dbResponse) as AllInvitationData;
 }
 
-export function transformInvitationGiftResponse(dbResponse: any): InvitationGift {
-  const data = transformKeys(dbResponse) as InvitationGift;
-
-  if (data.invitationGiftBank) {
-      data.invitationGiftBank = data.invitationGiftBank.map((bank: any) => {
-          if (bank.account && typeof bank.account === 'object' && !Array.isArray(bank.account)) {
-              return { ...bank, ...bank.account };
-          }
-          if (Array.isArray(bank.account) && bank.account.length > 0) {
-              return { ...bank, ...bank.account[0] };
-          }
-          return bank;
-      });
-  }
-
-  if (data.invitationGiftWallet) {
-      data.invitationGiftWallet = data.invitationGiftWallet.map((wallet: any) => {
-          if (wallet.address && typeof wallet.address === 'object' && !Array.isArray(wallet.address)) {
-              return { ...wallet, ...wallet.address };
-          }
-          if (Array.isArray(wallet.address) && wallet.address.length > 0) {
-               return { ...wallet, ...wallet.address[0] };
-          }
-          return wallet;
-      });
-  }
-
-  return data;
+export function transformInvitationGiftResponse(
+  dbResponse: any
+): InvitationGift {
+  return transformKeys(dbResponse) as InvitationGift;
 }
 
 export function transformInvitationGiftBankResponse(
