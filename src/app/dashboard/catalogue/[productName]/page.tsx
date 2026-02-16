@@ -135,6 +135,21 @@ export default function DashboardProductDetail({ params }: PageProps) {
   const galleryImages = [selectedItem.coverImage, selectedItem.coverImage]; // Placeholder duplicate for demo
   const features = (Array.isArray(selectedItem?.features) ? selectedItem?.features : []) as string[];
 
+  const handlePreview = () => {
+    if (!selectedItem) return;
+
+    // Simple mechanism to determine preview slug
+    const pName = selectedItem.productName.toLowerCase();
+    let slug = 'glasses'; // Default fallback
+
+    if (pName.includes('adat') || pName.includes('nusantara') || pName.includes('jawa')) {
+      slug = 'nusantara';
+    }
+
+    // Open preview in new tab
+    window.open(`/theme/${slug}`, '_blank');
+  };
+
   return (
     <div className="space-y-6 pb-20 lg:pb-0">
       {/* Navigation Header */}
@@ -323,7 +338,10 @@ export default function DashboardProductDetail({ params }: PageProps) {
                   PAKAI DESAIN INI
                 </button>
                 
-                <button className="w-full py-3 bg-transparent hover:bg-gray-700/50 text-gray-400 hover:text-white rounded-2xl font-bold transition-all border border-transparent hover:border-gray-700 flex items-center justify-center gap-2">
+                <button 
+                  onClick={handlePreview}
+                  className="w-full py-3 bg-transparent hover:bg-gray-700/50 text-gray-400 hover:text-white rounded-2xl font-bold transition-all border border-transparent hover:border-gray-700 flex items-center justify-center gap-2"
+                >
                    <ExternalLink className="w-4 h-4" />
                    Lihat Preview Template
                 </button>
