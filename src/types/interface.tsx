@@ -124,6 +124,7 @@ export interface InvitationDataUser {
   // Gallery & Story
   galleryPhotos: any[];
   loveStory: any[];
+  audioUrl?: string;
 
   // Meta
   isDeleted: boolean;
@@ -156,21 +157,25 @@ export interface InvitationGift {
 }
 
 export interface InvitationGiftBank {
-  giftBankId: string;
-  giftId: string;
-  account: any[];
+  giftBankId?: string;
+  giftId?: string;
+  bankName: string;
+  account: string;
+  accountHolder: string;
   owner: 'BRIDE' | 'GROOM';
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface InvitationGiftWallet {
-  giftWalletId: string;
-  giftId: string;
-  address: any[];
+  giftWalletId?: string;
+  giftId?: string;
+  walletName: string;
+  account: string;
+  accountHolder: string;
   owner: 'BRIDE' | 'GROOM';
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export type PaymentStatus =

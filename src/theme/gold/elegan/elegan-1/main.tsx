@@ -39,9 +39,13 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
   const [currentImage, setCurrentImage] = useState(0);
 
   // Use user photos if available, otherwise default
-  const backgroundImages = data.invitationDataUser.galleryPhotos && data.invitationDataUser.galleryPhotos.length > 0
-    ? data.invitationDataUser.galleryPhotos
-    : defaultBackgroundImages;
+  // Filter out empty strings first
+  const validUserPhotos = (data.invitationDataUser.galleryPhotos || []).filter(
+    (p) => p && p.trim() !== ''
+  );
+
+  const backgroundImages =
+    validUserPhotos.length > 0 ? validUserPhotos : defaultBackgroundImages;
 
   // Ref to keep track of images without triggering effect re-runs or HMR errors
   const backgroundImagesRef = useRef(backgroundImages);
@@ -67,7 +71,7 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
     const audio = audioRef.current;
     if (!audio) return;
     isPlaying ? audio.play().catch(() => {}) : audio.pause();
-  }, [isPlaying]);
+  }, [isPlaying, data.invitationDataUser.audioUrl]);
 
   return (
     <div
@@ -80,7 +84,7 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
           <div className='absolute inset-0 z-0'>
             {backgroundImages.map((img, i) => (
               <img
-                key={img}
+                key={`${img}-${i}`}
                 src={img}
                 alt=''
                 className={`
@@ -152,7 +156,7 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
           </button>
         )}
 
-        <audio ref={audioRef} src='/audio/anugerah-terindah.mp3' loop />
+        <audio ref={audioRef} src={data.invitationDataUser.audioUrl || '/audio/anugerah-terindah.mp3'} loop />
       </div>
     </div>
   );

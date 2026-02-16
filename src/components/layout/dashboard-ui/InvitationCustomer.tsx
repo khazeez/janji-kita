@@ -29,6 +29,7 @@ import EditorBasic from '../editor-ui/EditorBasic';
 import EditorEvent from '../editor-ui/EditorEvent';
 import EditorGallery from '../editor-ui/EditorGallery';
 import EditorGift from '../editor-ui/EditorGift';
+import EditorMusic from '../editor-ui/EditorMusic';
 
 /* ======================================================
    TYPES
@@ -230,6 +231,15 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
                   />
                 );
               case 'music':
+                return (
+                  <EditorMusic
+                    data={data.invitationDataUser}
+                    invitationId={data.invitationId}
+                    onChange={(newData) =>
+                      setData({ ...data, invitationDataUser: newData })
+                    }
+                  />
+                );
               case 'quotes':
               case 'greeting':
                 return (

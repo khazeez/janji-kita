@@ -95,8 +95,9 @@ export const mockInvitationData: AllInvitationData = {
         giftBankId: "bank-1", 
         giftId: "mock-gift", 
         account: "1234567890", 
-        owner: "Romeo", 
+        owner: "GROOM", 
         bankName: "BCA",
+        accountHolder: "Romeo Montague",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       },
@@ -106,8 +107,9 @@ export const mockInvitationData: AllInvitationData = {
         giftWalletId: "wallet-1", 
         giftId: "mock-gift", 
         account: "08123456789", 
-        owner: "Romeo", 
+        owner: "GROOM", 
         walletName: "OVO",
+        accountHolder: "Romeo Montague",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       }

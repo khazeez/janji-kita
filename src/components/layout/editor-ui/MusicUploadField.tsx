@@ -1,52 +1,59 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Upload, Loader2, X, Image as ImageIcon } from 'lucide-react';
-import { convertToWebP } from '@/lib/imageConverter';
+import React, { useState, useRef } from 'react';
+import { Upload, Loader2, X, Music } from 'lucide-react';
 import { uploadToR2, deleteFromR2 } from '@/lib/uploadToR2';
 import { toast } from 'sonner';
 
-interface ImageUploadFieldProps {
+interface MusicUploadFieldProps {
   label: string;
   value: string;
   onChange: (url: string) => void;
   invitationId: string;
-  path: string; // e.g. "bride-groom" or "gallery"
-  fileName?: string; // specific filename if needed
+  fileName?: string;
 }
 
-export default function ImageUploadField({
+export default function MusicUploadField({
   label,
   value,
   onChange,
   invitationId,
-  path,
   fileName,
-}: ImageUploadFieldProps) {
+}: MusicUploadFieldProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const handleUpload = async (file: File) => {
     if (!file) return;
 
+    // Validate if it is an audio file
+    if (!file.type.startsWith('audio/')) {
+        toast.error('File harus berupa audio/musik');
+        return;
+    }
+
+    // Limit file size (e.g. 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+        toast.error('Ukuran file maksimal 10MB');
+        return;
+    }
+
     try {
       setIsUploading(true);
       
-      // 1. Convert to WebP
-      const compressedBase64 = await convertToWebP(file, 0.8, 1200, 1200);
-      const blob = await (await fetch(compressedBase64)).blob();
+      // Prepare Path
+      const extension = file.name.split('.').pop() || 'mp3';
+      const actualFileName = fileName || `music-${Date.now()}.${extension}`;
+      const fullPath = `invitations/${invitationId}/music/${actualFileName}`;
 
-      // 2. Prepare Path
-      const actualFileName = fileName || `img-${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
-      const fullPath = `invitations/${invitationId}/${path}/${actualFileName}`;
-
-      // 3. Upload to R2
-      const url = await uploadToR2(blob, fullPath);
+      // Upload to R2 directly (no conversion needed for audio usually, unless user wants to)
+      const url = await uploadToR2(file, fullPath, file.type);
       
       onChange(url);
-      toast.success('Foto berhasil diupload');
+      toast.success('Musik berhasil diupload');
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Gagal upload foto');
+      toast.error('Gagal upload musik');
     } finally {
       setIsUploading(false);
     }
@@ -62,7 +69,11 @@ export default function ImageUploadField({
 
       await deleteFromR2(key);
       onChange('');
-      toast.success('Foto dihapus');
+      if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.src = "";
+      }
+      toast.success('Musik dihapus');
     } catch (error) {
       console.error('Delete error:', error);
       // Even if delete fails (e.g. file not found), still clear the field
@@ -79,13 +90,12 @@ export default function ImageUploadField({
           <div className="relative flex-1">
             <input
               type="text"
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
+              value={value ? 'Musik Terpasang' : ''}
               readOnly
-              className="w-full bg-white/[0.03] border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white/50 focus:outline-none cursor-not-allowed"
-              placeholder="Upload foto..."
+              className="w-full bg-white/[0.03] border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white/50 focus:outline-none cursor-not-allowed placeholder:text-white/20"
+              placeholder="Upload musik..."
             />
-            <ImageIcon size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" />
+            <Music size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20" />
           </div>
 
           <label className={`
@@ -100,7 +110,7 @@ export default function ImageUploadField({
             <input
               type="file"
               className="hidden"
-              accept="image/*"
+              accept="audio/*"
               disabled={isUploading}
               onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -121,8 +131,14 @@ export default function ImageUploadField({
         </div>
 
         {value && (
-          <div className="mt-2 relative w-20 h-20 rounded-lg overflow-hidden border border-white/10">
-            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+          <div className="mt-3 bg-white/5 rounded-xl p-3 border border-white/5 flex items-center gap-3">
+             <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-500">
+                <Music size={20} />
+             </div>
+             <div className="flex-1 min-w-0">
+                <p className="text-sm text-white font-medium truncate">Preview Musik</p>
+                <audio ref={audioRef} controls src={value} className="w-full h-8 mt-1 opacity-80 scale-[0.95] origin-left" />
+             </div>
           </div>
         )}
       </div>
