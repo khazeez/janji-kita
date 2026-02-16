@@ -340,7 +340,7 @@ export default function SendInvitationBulk() {
           </button>
         </div>
       ) : (
-        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div className="grid lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
           {/* Left: Contact Management */}
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             <div className="bg-gray-800/50 border border-gray-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-4 sm:space-y-6">
@@ -481,7 +481,7 @@ export default function SendInvitationBulk() {
           </div>
 
           {/* Right: Template & Send */}
-          <div className="space-y-4 sm:space-y-6">
+          <div className=" lg:col-span-3 space-y-4 sm:space-y-6">
             {/* Message Template */}
             <div className="bg-gray-800/50 border border-gray-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-4 sm:space-y-6">
               <div className="flex items-center gap-2.5 sm:gap-3 pb-3 sm:pb-4 border-b border-gray-700/50">
@@ -543,7 +543,7 @@ export default function SendInvitationBulk() {
               ) : (
                 <>
                   <Send className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                  KIRIM KE {contacts.length} KONTAK
+                  <span className="text-xs sm:text-sm">Kirim ke {contacts.length} kontak</span>
                 </>
               )}
             </button>
