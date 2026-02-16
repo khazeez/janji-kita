@@ -467,7 +467,7 @@ export default function InvitationComponents({ data, trx }: Props) {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleNavigation('invitation/send', `share-${invitation.invitationId}`)}
+                              onClick={() => handleNavigation('/dashboard/invitation/send', `share-${invitation.invitationId}`)}
                               disabled={!!navigatingId}
                               className='flex-1 bg-gradient-to-r from-pink-700 to-pink-500 hover:from-pink-700 hover:to-rose-700 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-pink-500/50 border border-pink-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
                             >
