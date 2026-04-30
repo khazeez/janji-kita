@@ -200,7 +200,6 @@ export default function DashboardLayout({
               <Link
                 key={item.id}
                 href={item.href}
-                prefetch={false}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors relative ${
                   isActive
                     ? 'bg-pink-600 text-white'
@@ -255,7 +254,6 @@ export default function DashboardLayout({
               <Link
                 key={item.id}
                 href={item.href}
-                prefetch={false}
                 className={`flex flex-col items-center gap-1 px-3 py-2 relative ${
                   isActive ? 'text-pink-500' : 'text-gray-400'
                 }`}

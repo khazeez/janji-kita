@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
@@ -17,9 +17,14 @@ import {
   Calendar,
   MousePointer2
 } from 'lucide-react';
-import { getProductByName } from '@/models/invitations';
+import { useProductByName } from '@/hooks/useData';
 import { Product } from '@/types/interface';
-import supabase from '@/lib/supabase/client';
+
+interface PageProps {
+  params: Promise<{
+    productName: string;
+  }>;
+}
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('id-ID', {
@@ -34,45 +39,15 @@ const cn = (...classes: (string | boolean | undefined | null)[]) => {
   return classes.filter(Boolean).join(' ');
 };
 
-interface PageProps {
-  params: Promise<{
-    productName: string;
-  }>;
-}
-
 export default function DashboardProductDetail({ params }: PageProps) {
   const { productName } = use(params);
   const router = useRouter();
-  const [selectedItem, setSelectedItem] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+  const { data: productResult, isLoading, error } = useProductByName(productName);
+  
+  const selectedItem = productResult?.data as Product | null;
   const [withPhoto, setWithPhoto] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchProduct = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await getProductByName(productName);
-        if (error || !data) {
-          setError('Produk tidak ditemukan');
-        } else {
-          setSelectedItem(data as Product);
-        }
-      } catch (err) {
-        console.error(err);
-        setError('Terjadi kesalahan saat memuat produk');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (productName) {
-      fetchProduct();
-    }
-  }, [productName]);
 
   const handleBack = () => {
     router.push('/dashboard/catalogue');
@@ -104,7 +79,7 @@ export default function DashboardProductDetail({ params }: PageProps) {
     router.push(`/create/${selectedItem.productId}`);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-[400px] flex flex-col items-center justify-center space-y-4">
         <Loader2 className="w-10 h-10 text-pink-500 animate-spin" />
@@ -120,7 +95,7 @@ export default function DashboardProductDetail({ params }: PageProps) {
             <Info className="w-8 h-8 text-red-500" />
          </div>
          <h2 className="text-xl font-bold mb-2 text-white">Oops! Terjadi Kesalahan</h2>
-         <p className="text-gray-400 mb-6 max-w-sm">{error || 'Produk tidak ditemukan di database kami.'}</p>
+         <p className="text-gray-400 mb-6 max-w-sm">{error?.message || 'Produk tidak ditemukan di database kami.'}</p>
          <button 
            onClick={handleBack} 
            className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2.5 rounded-xl transition-all border border-gray-700 flex items-center gap-2"
@@ -132,21 +107,19 @@ export default function DashboardProductDetail({ params }: PageProps) {
     );
   }
 
-  const galleryImages = [selectedItem.coverImage, selectedItem.coverImage]; // Placeholder duplicate for demo
+  const galleryImages = [selectedItem.coverImage, selectedItem.coverImage];
   const features = (Array.isArray(selectedItem?.features) ? selectedItem?.features : []) as string[];
 
   const handlePreview = () => {
     if (!selectedItem) return;
 
-    // Simple mechanism to determine preview slug
     const pName = selectedItem.productName.toLowerCase();
-    let slug = 'glasses'; // Default fallback
+    let slug = 'glasses';
 
     if (pName.includes('adat') || pName.includes('nusantara') || pName.includes('jawa')) {
       slug = 'nusantara';
     }
 
-    // Open preview in new tab
     window.open(`/theme/${slug}`, '_blank');
   };
 
@@ -187,6 +160,7 @@ export default function DashboardProductDetail({ params }: PageProps) {
               src={galleryImages[activeImage]}
               alt={selectedItem.productName}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
             />
             
             {/* Overlay Controls */}
@@ -216,7 +190,7 @@ export default function DashboardProductDetail({ params }: PageProps) {
                     : "border-gray-700 hover:border-gray-500 opacity-60 hover:opacity-100"
                 )}
               >
-                <img src={img} alt="" className="w-full h-full object-cover" />
+                <img src={img} alt="" className="w-full h-full object-cover" loading="lazy" />
               </button>
             ))}
           </div>

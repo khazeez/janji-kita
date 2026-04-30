@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { 
   ArrowLeft, 
   Send, 
@@ -21,8 +21,7 @@ import {
   FileText
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import supabase from '@/lib/supabase/client';
-import { getDataInvitationUserByUserId } from '@/models/invitations';
+import { useUserInvitations, useCurrentUser } from '@/hooks/useData';
 import { AllInvitationData } from '@/types/interface';
 import * as XLSX from 'xlsx';
 
@@ -105,10 +104,11 @@ export default function SendInvitationBulk() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const [invitations, setInvitations] = useState<AllInvitationData[]>([]);
+  const { data: user, isLoading: loadingUser } = useCurrentUser();
+  const { data: invitations, isLoading: loadingInvitations } = useUserInvitations(user?.id);
+  
   const [selectedInvitation, setSelectedInvitation] = useState<AllInvitationData | null>(null);
   const [showInvitationDropdown, setShowInvitationDropdown] = useState(false);
-  const [loading, setLoading] = useState(true);
   
   const [inputMode, setInputMode] = useState<InputMode>('manual');
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -126,25 +126,12 @@ export default function SendInvitationBulk() {
   const [isSending, setIsSending] = useState(false);
   const [sendProgress, setSendProgress] = useState(0);
 
-  useEffect(() => {
-    async function loadInvitations() {
-      setLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user?.id) {
-        const data = await getDataInvitationUserByUserId(session.user.id);
-        if (data && Array.isArray(data) && data.length > 0) {
-          const publishedInvitations = data.filter((inv: AllInvitationData) => inv.invitationStatus === 'published');
-          setInvitations(publishedInvitations);
-          if (publishedInvitations.length > 0) {
-            setSelectedInvitation(publishedInvitations[0]);
-          }
-        }
-      }
-      setLoading(false);
-    }
-    loadInvitations();
-  }, []);
+  const invList = (invitations || []) as AllInvitationData[];
+  const publishedInvitations = invList.filter((inv) => inv.invitationStatus === 'published');
+
+  if (!selectedInvitation && publishedInvitations.length > 0) {
+    setSelectedInvitation(publishedInvitations[0]);
+  }
 
   const generateLink = (guestName: string) => {
     if (!selectedInvitation) return '';
@@ -266,7 +253,7 @@ export default function SendInvitationBulk() {
     setSendProgress(0);
   };
 
-  if (loading) {
+  if (loadingUser || loadingInvitations) {
     return (
       <div className="min-h-[300px] flex items-center justify-center">
         <div className="text-center space-y-3">
@@ -295,7 +282,7 @@ export default function SendInvitationBulk() {
         </div>
 
         {/* Invitation Selector */}
-        {invitations.length > 0 && (
+        {publishedInvitations.length > 0 && (
           <div className="relative">
             <button 
               onClick={() => setShowInvitationDropdown(!showInvitationDropdown)}
@@ -309,7 +296,7 @@ export default function SendInvitationBulk() {
 
             {showInvitationDropdown && (
               <div className="absolute top-full left-0 sm:right-0 sm:left-auto mt-1 w-full sm:w-auto sm:min-w-[200px] bg-gray-800 border border-gray-700 rounded-lg sm:rounded-xl shadow-2xl z-50 overflow-hidden">
-                {invitations.map((inv) => (
+                {publishedInvitations.map((inv) => (
                   <button
                     key={inv.invitationId}
                     onClick={() => {
@@ -327,7 +314,7 @@ export default function SendInvitationBulk() {
         )}
       </div>
 
-      {invitations.length === 0 ? (
+      {publishedInvitations.length === 0 ? (
         <div className="bg-gray-800/30 border border-dashed border-gray-700 rounded-2xl sm:rounded-3xl p-8 sm:p-12 text-center">
           <MessageCircle className="w-10 h-10 sm:w-12 sm:h-12 text-gray-600 mx-auto mb-3 sm:mb-4" />
           <h3 className="text-base sm:text-lg font-semibold text-white mb-1.5 sm:mb-2">Belum ada undangan aktif</h3>

@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, X, Heart, Star, Loader2, Filter, Grid, List as ListIcon } from 'lucide-react';
-import { getProductInvitation } from '@/models/invitations';
+import { Search, X, Heart, Star, Loader2 } from 'lucide-react';
+import { useProducts, useCurrentUser, useFavorites, toggleFavoriteProduct } from '@/hooks/useData';
 import { Product } from '@/types/interface';
 
 interface CatalogueItem {
@@ -14,32 +14,19 @@ const segments: string[] = ['All', 'Platinum', 'Gold', 'Silver', 'Bronze'];
 
 export default function DashboardCatalogue() {
   const router = useRouter();
+  const { data: products, isLoading } = useProducts();
+  const { data: user } = useCurrentUser();
+  const { data: favorites = [] } = useFavorites(user?.id);
   const [selectedSegment, setSelectedSegment] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [catalogues, setCatalogues] = useState<CatalogueItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const data: Product[] = await getProductInvitation();
-        const wrappedData: CatalogueItem[] = data
-          .filter(Boolean)
-          .map((item) => ({ data: item }));
+  const catalogues: CatalogueItem[] = (products || [])
+    .filter(Boolean)
+    .map((item: Product) => ({ data: item }));
 
-        setCatalogues(wrappedData);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-        setCatalogues([]);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const favoriteIds = new Set(favorites.map((p: Product) => p.productId));
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -54,6 +41,21 @@ export default function DashboardCatalogue() {
     if (navigatingId) return;
     setNavigatingId(id);
     router.push(url);
+  };
+
+  const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
+    e.stopPropagation();
+    if (!user) {
+      router.push('/sign-in');
+      return;
+    }
+    if (togglingId) return;
+    setTogglingId(productId);
+    try {
+      await toggleFavoriteProduct(user.id, productId);
+    } finally {
+      setTogglingId(null);
+    }
   };
 
   const filteredCatalogues = catalogues.filter((item) => {
@@ -141,7 +143,7 @@ export default function DashboardCatalogue() {
       </div>
 
       {/* Catalogue Grid */}
-      {loading ? (
+      {isLoading ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
           <Loader2 className="w-10 h-10 text-pink-500 animate-spin" />
           <p className="text-gray-400 animate-pulse">Memuat koleksi tema...</p>
@@ -164,71 +166,83 @@ export default function DashboardCatalogue() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredCatalogues.map((item) => (
-            <div
-              key={item.data.productId}
-              onClick={() => handleNavigation(`/dashboard/catalogue/${item.data.productName}`, item.data.productId)}
-              className="group relative bg-gray-800/40 border border-gray-700/50 rounded-2xl overflow-hidden hover:border-pink-500/50 transition-all duration-500 cursor-pointer hover:shadow-2xl hover:shadow-pink-500/10"
-            >
-              {/* Image Container */}
-              <div className="relative aspect-[4/5] overflow-hidden">
-                <img
-                  src={item.data.coverImage}
-                  alt={item.data.productName}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                
-                {/* Segment Tag */}
-                <div className="absolute top-3 left-3">
-                  <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg uppercase tracking-wider ${getSegmentColor(item.data.segmentation)}`}>
-                    {item.data.segmentation}
-                  </span>
-                </div>
+          {filteredCatalogues.map((item) => {
+            const isFav = favoriteIds.has(item.data.productId);
+            return (
+              <div
+                key={item.data.productId}
+                onClick={() => handleNavigation(`/dashboard/catalogue/${item.data.productName}`, item.data.productId)}
+                className="group relative bg-gray-800/40 border border-gray-700/50 rounded-2xl overflow-hidden hover:border-pink-500/50 transition-all duration-500 cursor-pointer hover:shadow-2xl hover:shadow-pink-500/10"
+              >
+                {/* Image Container */}
+                <div className="relative aspect-[4/5] overflow-hidden">
+                  <img
+                    src={item.data.coverImage}
+                    alt={item.data.productName}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                  
+                  {/* Segment Tag */}
+                  <div className="absolute top-3 left-3">
+                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg uppercase tracking-wider ${getSegmentColor(item.data.segmentation)}`}>
+                      {item.data.segmentation}
+                    </span>
+                  </div>
 
-                {/* Favorite Button (Placeholder UI) */}
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300">
-                  <button className="p-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-white hover:bg-pink-600 hover:border-pink-500 transition-all">
-                    <Heart className="w-4 h-4" />
-                  </button>
-                </div>
+                  {/* Favorite Button */}
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300">
+                    <button 
+                      onClick={(e) => handleToggleFavorite(e, item.data.productId)}
+                      className={`p-2 backdrop-blur-md rounded-xl border transition-all ${
+                        isFav
+                          ? 'bg-pink-600 border-pink-500 text-white'
+                          : 'bg-white/10 border-white/20 text-white hover:bg-pink-600 hover:border-pink-500'
+                      } ${togglingId === item.data.productId ? 'animate-pulse' : ''}`}
+                      title={isFav ? 'Hapus dari favorit' : 'Tambah ke favorit'}
+                    >
+                      <Heart className="w-4 h-4" fill={isFav ? 'currentColor' : 'none'} />
+                    </button>
+                  </div>
 
-                {/* Type Badge */}
-                <div className="absolute bottom-3 left-3">
-                   <span className="text-[10px] font-medium text-white bg-gray-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
-                    {item.data.productType}
-                  </span>
-                </div>
-              </div>
-
-              {/* Info Container */}
-              <div className="p-4 space-y-3">
-                <div className="flex justify-between items-start gap-2">
-                  <h3 className="font-bold text-white group-hover:text-pink-400 transition-colors line-clamp-1">
-                    {item.data.productName}
-                  </h3>
-                  <div className="flex items-center gap-1 text-yellow-400">
-                    <Star className="w-3.5 h-3.5 fill-current" />
-                    <span className="text-xs font-bold">4.9</span>
+                  {/* Type Badge */}
+                  <div className="absolute bottom-3 left-3">
+                     <span className="text-[10px] font-medium text-white bg-gray-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
+                      {item.data.productType}
+                    </span>
                   </div>
                 </div>
-                
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs text-gray-400 italic">Mulai dari</span>
-                  <span className="text-pink-500 font-bold group-hover:scale-105 transition-transform">
-                    {formatPrice(item.data.basePriceNoPhoto)}
-                  </span>
-                </div>
-              </div>
 
-              {/* Navigation Loading Overlay */}
-              {navigatingId === item.data.productId && (
-                <div className="absolute inset-0 z-20 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center">
-                  <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
+                {/* Info Container */}
+                <div className="p-4 space-y-3">
+                  <div className="flex justify-between items-start gap-2">
+                    <h3 className="font-bold text-white group-hover:text-pink-400 transition-colors line-clamp-1">
+                      {item.data.productName}
+                    </h3>
+                    <div className="flex items-center gap-1 text-yellow-400">
+                      <Star className="w-3.5 h-3.5 fill-current" />
+                      <span className="text-xs font-bold">4.9</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-xs text-gray-400 italic">Mulai dari</span>
+                    <span className="text-pink-500 font-bold group-hover:scale-105 transition-transform">
+                      {formatPrice(item.data.basePriceNoPhoto)}
+                    </span>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {/* Navigation Loading Overlay */}
+                {navigatingId === item.data.productId && (
+                  <div className="absolute inset-0 z-20 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
