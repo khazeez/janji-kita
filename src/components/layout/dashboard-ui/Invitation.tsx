@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AllInvitationData } from '@/types/interface';
@@ -23,6 +23,18 @@ export default function InvitationComponents({ data }: Props) {
   const router = useRouter();
   const [showEditWarning, setShowEditWarning] = useState(false);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
+  const [activatingId, setActivatingId] = useState<string | null>(null);
+  const [filterTab, setFilterTab] = useState<string>('all');
+
+  const filteredData = useMemo(() => {
+    if (filterTab === 'all') return data;
+    return data.filter((inv) => {
+      if (filterTab === 'active') return inv.invitationStatus === 'published';
+      if (filterTab === 'needs_activation') return inv.invitationStatus === 'draft';
+      if (filterTab === 'expired') return inv.invitationStatus === 'expired';
+      return true;
+    });
+  }, [data, filterTab]);
 
   const handleNavigation = (url: string, id: string) => {
     setNavigatingId(id);
@@ -30,11 +42,20 @@ export default function InvitationComponents({ data }: Props) {
   };
 
   const getStatusConfig = (invitation: AllInvitationData) => {
+    const getFallbackExpiry = () => {
+      const base = invitation.publishedAt
+        ? new Date(invitation.publishedAt)
+        : new Date(invitation.createdAt);
+      const d = new Date(base);
+      d.setMonth(d.getMonth() + 6);
+      return d;
+    };
+
     // Cek status expired dari database
     if (invitation.invitationStatus === 'expired') {
       const expiryDate = invitation.expiredAt
         ? new Date(invitation.expiredAt)
-        : new Date(invitation.createdAt);
+        : getFallbackExpiry();
 
       return {
         label: 'Kadaluarsa',
@@ -66,10 +87,8 @@ export default function InvitationComponents({ data }: Props) {
       }
     }
 
-    // Fallback: hitung dari createdAt + 6 bulan
-    const createdAt = new Date(invitation.createdAt);
-    const expiryDate = new Date(createdAt);
-    expiryDate.setMonth(expiryDate.getMonth() + 6);
+    // Fallback: hitung dari publishedAt + 6 bulan
+    const expiryDate = getFallbackExpiry();
     const now = new Date();
     const isExpired = now > expiryDate;
 
@@ -113,6 +132,7 @@ export default function InvitationComponents({ data }: Props) {
   };
 
   const handleActivation = async (invitationId: string) => {
+    setActivatingId(invitationId);
     try {
       const res = await fetch('/api/midtrans/token', {
         method: 'POST',
@@ -121,27 +141,38 @@ export default function InvitationComponents({ data }: Props) {
       });
 
       if (!res.ok) {
-        throw new Error('Checkout failed');
+        const err = await res.json().catch(() => ({ message: 'Checkout failed' }));
+        throw new Error(err.message || 'Checkout failed');
       }
 
       const { snapToken } = await res.json();
 
       // @ts-ignore
       window.snap.pay(snapToken, {
-        onSuccess: () => {
-          console.log('Payment success');
+        onSuccess: async () => {
+          await fetch('/api/midtrans/success', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ invitationId }),
+          });
+          window.dispatchEvent(new CustomEvent('update-counts'));
+          window.location.reload();
         },
         onPending: () => {
+          setActivatingId(null);
           console.log('Payment pending');
         },
         onError: () => {
+          setActivatingId(null);
           console.log('Payment failed');
         },
         onClose: () => {
+          setActivatingId(null);
           console.log('Popup closed');
         },
       });
     } catch (error) {
+      setActivatingId(null);
       console.error('Activation error:', error);
     }
   };
@@ -197,7 +228,7 @@ export default function InvitationComponents({ data }: Props) {
             <h2 className='lg:text-2xl text-xl font-bold text-white'>
               Undangan Saya
             </h2>
-            <p className='text-xs text-gray-600 leading-tight tracking-wide'>{data.length} undangan</p>
+            <p className='text-xs text-gray-600 leading-tight tracking-wide'>{filteredData.length} undangan</p>
           </div>
 
           <div className="lg:text-2xl text-xl border border-b-2 border-l-2 p-0 px-3 rounded-sm">
@@ -207,7 +238,29 @@ export default function InvitationComponents({ data }: Props) {
           </div>
         </div>
 
-        {data.length === 0 ? (
+        {/* Filter Tabs */}
+        <div className='flex gap-2 mb-6 overflow-x-auto'>
+          {[
+            { key: 'all', label: 'Semua' },
+            { key: 'active', label: 'Aktif' },
+            { key: 'needs_activation', label: 'Butuh Aktivasi' },
+            { key: 'expired', label: 'Kadaluarsa' },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setFilterTab(tab.key)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 whitespace-nowrap ${
+                filterTab === tab.key
+                  ? 'bg-gray-700 text-white border border-gray-600'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800 border border-transparent'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {filteredData.length === 0 ? (
           <div className='rounded-2xl py-5 pb-10  backdrop-blur-sm px-2 lg:px-4'>
             <div className='text-center pb-10'>
               <span className='relative inline-block text-pink-500'>
@@ -321,20 +374,31 @@ export default function InvitationComponents({ data }: Props) {
           </div>
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-            {data.map((invitation) => {
+            {filteredData.map((invitation) => {
               const statusConfig = getStatusConfig(invitation);
               const StatusIcon = statusConfig.icon;
               const isExpired = statusConfig.expired;
+              const cardColor = invitation.invitationStatus === 'draft' ? 'yellow' : 'green';
+              const heartColor = isExpired
+                ? 'text-gray-600/20'
+                : cardColor === 'yellow'
+                  ? 'text-yellow-500/10 group-hover:text-yellow-500/20'
+                  : 'text-green-500/10 group-hover:text-green-500/20';
+              const titleHoverColor = isExpired
+                ? 'text-gray-500'
+                : 'text-white ' + (cardColor === 'yellow' ? 'group-hover:text-yellow-400' : 'group-hover:text-green-400');
+              const cardBorderColor = isExpired
+                ? 'bg-gray-800/50 border-gray-700 opacity-60 cursor-not-allowed'
+                : 'bg-gray-800/80 border-gray-700 ' + (cardColor === 'yellow' ? 'hover:border-yellow-500/50' : 'hover:border-green-500/50') + ' hover:shadow-xl cursor-pointer group';
+              const gradientBarColor = isExpired
+                ? 'bg-gray-600'
+                : cardColor === 'yellow' ? 'bg-gradient-to-r from-yellow-700 to-yellow-400' : 'bg-gradient-to-r from-green-700 to-green-400';
 
               return (
-                <div
-                  key={invitation.invitationId}
-                  className={`border rounded-2xl overflow-hidden transition-all duration-300 ${
-                    isExpired
-                      ? 'bg-gray-800/50 border-gray-700 opacity-60 cursor-not-allowed'
-                      : 'bg-gray-800/80 border-gray-700 hover:border-pink-500/50 hover:shadow-xl cursor-pointer group'
-                  }`}
-                >
+                  <div
+                    key={invitation.invitationId}
+                    className={'border rounded-2xl overflow-hidden transition-all duration-300 ' + cardBorderColor}
+                  >
                   {/* Image/Header dengan gradient border effect */}
                   <div className='relative h-48 bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 overflow-hidden'>
                     {/* Decorative gradient overlay */}
@@ -344,22 +408,14 @@ export default function InvitationComponents({ data }: Props) {
                     <div className='absolute inset-0 flex items-center justify-center'>
                       <Heart
                         size={80}
-                        className={`${
-                          isExpired
-                            ? 'text-gray-600/20'
-                            : 'text-pink-500/10 group-hover:text-pink-500/20'
-                        } transition-all duration-300`}
+                        className={heartColor + ' transition-all duration-300'}
                         strokeWidth={1}
                       />
                     </div>
 
                     {/* Top gradient accent */}
                     <div
-                      className={`h-1 ${
-                        isExpired
-                          ? 'bg-gray-600'
-                          : 'bg-gradient-to-r from-pink-700 to-pink-400'
-                      }`}
+                      className={'h-1 ' + gradientBarColor}
                     ></div>
 
                     {/* Status Badge */}
@@ -380,17 +436,14 @@ export default function InvitationComponents({ data }: Props) {
                   <div className='p-6'>
                     {/* Title */}
                     <h3
-                      className={`font-bold text-xl mb-3 transition-colors ${
-                        isExpired
-                          ? 'text-gray-500'
-                          : 'text-white group-hover:text-pink-400'
-                      }`}
+                      className={'font-bold text-xl mb-3 transition-colors ' + titleHoverColor}
                     >
                       Wedding {invitation.invitationDataUser.groomNickName} &{' '}
                       {invitation.invitationDataUser.brideNickName}
                     </h3>
 
                     {/* Expiry Info with icon */}
+                    {invitation.invitationStatus !== 'draft' && (
                     <div className='flex items-center gap-2 mb-5'>
                       <Clock size={14} className='text-gray-500' />
                       <p className='text-gray-500 text-xs'>
@@ -408,6 +461,7 @@ export default function InvitationComponents({ data }: Props) {
                         )}
                       </p>
                     </div>
+                    )}
 
                     {/* Action Buttons */}
                     {!isExpired && (
@@ -433,13 +487,25 @@ export default function InvitationComponents({ data }: Props) {
                               onClick={() =>
                                 handleActivation(invitation.invitationId)
                               }
-                              className='flex-1 bg-gradient-to-r from-pink-700 to-pink-500 hover:from-pink-700 hover:to-rose-700 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-pink-500/50 border border-pink-500/20'
+                              disabled={
+                                activatingId === invitation.invitationId
+                              }
+                              className='flex-1 bg-gradient-to-r from-yellow-700 to-yellow-500 hover:from-yellow-700 hover:to-amber-600 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-yellow-500/50 border border-yellow-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
                             >
-                              <Zap
-                                size={16}
-                                className='group-hover/btn:scale-110 transition-transform'
-                              />
-                              Aktivasi
+                              {activatingId === invitation.invitationId ? (
+                                <Loader2
+                                  size={16}
+                                  className='animate-spin'
+                                />
+                              ) : (
+                                <Zap
+                                  size={16}
+                                  className='group-hover/btn:scale-110 transition-transform'
+                                />
+                              )}
+                              {activatingId === invitation.invitationId
+                                ? 'Memproses...'
+                                : 'Aktivasi'}
                             </button>
                           </div>
                         ) : (
@@ -462,7 +528,7 @@ export default function InvitationComponents({ data }: Props) {
                             <button
                               onClick={() => handleNavigation('/dashboard/invitation/send', `share-${invitation.invitationId}`)}
                               disabled={!!navigatingId}
-                              className='flex-1 bg-gradient-to-r from-pink-700 to-pink-500 hover:from-pink-700 hover:to-rose-700 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-pink-500/50 border border-pink-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
+                              className='flex-1 bg-gradient-to-r from-green-700 to-green-500 hover:from-green-700 hover:to-emerald-600 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-green-500/50 border border-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
                             >
                               {navigatingId === `share-${invitation.invitationId}` ? (
                                 <Loader2 size={16} className="animate-spin" />

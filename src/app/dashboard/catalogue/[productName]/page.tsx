@@ -583,9 +583,9 @@ export default function DashboardProductDetail({ params }: PageProps) {
           className="fixed inset-0 z-[100] overflow-y-auto bg-gray-950/95"
           onClick={() => setShowPreview(false)}
         >
-          {/* Close button — fixed top-right */}
+          {/* Close button — fixed top-left */}
           <button
-            className="fixed top-4 right-4 z-50 p-2.5 rounded-full bg-gray-800 hover:bg-gray-700 text-white transition-all border border-gray-700 shadow-xl"
+            className="fixed top-4 left-4 z-50 p-2.5 rounded-full bg-gray-800 hover:bg-gray-700 text-white transition-all border border-gray-700 shadow-xl"
             onClick={() => setShowPreview(false)}
           >
             <X className="w-4 h-4" />

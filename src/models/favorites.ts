@@ -1,7 +1,8 @@
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getAdminClient } from '@/lib/supabase/admin';
 
 export async function getFavoritesByUserId(userId: string) {
-  const { data, error } = await supabaseAdmin
+  const admin = getAdminClient();
+  const { data, error } = await admin
     .from('USER_FAVORITES')
     .select(`
       FAVORITE_ID,
@@ -26,7 +27,8 @@ export async function getFavoritesByUserId(userId: string) {
 }
 
 export async function addFavorite(userId: string, productId: string) {
-  const { data, error } = await supabaseAdmin
+  const admin = getAdminClient();
+  const { data, error } = await admin
     .from('USER_FAVORITES')
     .insert({ USER_ID: userId, PRODUCT_ID: productId })
     .select()
@@ -37,7 +39,8 @@ export async function addFavorite(userId: string, productId: string) {
 }
 
 export async function removeFavorite(userId: string, productId: string) {
-  const { error } = await supabaseAdmin
+  const admin = getAdminClient();
+  const { error } = await admin
     .from('USER_FAVORITES')
     .delete()
     .eq('USER_ID', userId)

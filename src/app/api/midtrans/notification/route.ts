@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import { getAdminClient } from '@/lib/supabase/admin';
 import crypto from 'crypto';
 
 function verifySignature(body: Record<string, any>, serverKey: string): boolean {
@@ -40,6 +40,7 @@ export async function POST(req: Request) {
     const paymentType = body.payment_type;
     const transactionId = body.transaction_id;
 
+    const supabase = getAdminClient();
     const updateData: Record<string, any> = {
       PAYMENT_STATUS: paymentStatus,
       PAYMENT_METHOD: paymentType?.toUpperCase() || null,
@@ -51,14 +52,43 @@ export async function POST(req: Request) {
     else if (paymentStatus === 'REFUNDED') updateData.REFUNDED_AT = new Date().toISOString();
     else if (paymentStatus === 'EXPIRED') updateData.EXPIRED_AT = new Date().toISOString();
 
-    const { error } = await supabaseAdmin
+    const { error } = await supabase
       .from('TRANSACTIONS')
       .update(updateData)
-      .eq('GATEWAY_ORDER_ID', orderId);
+      .eq('TRANSACTION_ID', orderId);
 
     if (error) {
       console.error('Error updating transaction:', error);
       return NextResponse.json({ error: 'Failed to update' }, { status: 500 });
+    }
+
+    // When payment is PAID, also update the invitation status to 'published'
+    if (paymentStatus === 'PAID') {
+      const { data: trx } = await supabase
+        .from('TRANSACTIONS')
+        .select('INVITATION_ID')
+        .eq('TRANSACTION_ID', orderId)
+        .single();
+
+      if (trx?.INVITATION_ID) {
+        const now = new Date();
+        const expiredAt = new Date(now);
+        expiredAt.setMonth(expiredAt.getMonth() + 6);
+
+        const { error: invError } = await supabase
+          .from('INVITATION')
+          .update({
+            INVITATION_STATUS: 'published',
+            PUBLISHED_AT: now.toISOString(),
+            EXPIRED_AT: expiredAt.toISOString(),
+            UPDATED_AT: now.toISOString(),
+          })
+          .eq('INVITATION_ID', trx.INVITATION_ID);
+
+        if (invError) {
+          console.error('Error updating invitation status:', invError);
+        }
+      }
     }
 
     return NextResponse.json({ status: 'ok' });

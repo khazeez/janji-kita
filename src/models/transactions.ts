@@ -1,5 +1,4 @@
-// models/transactions.ts
-import { supabaseAdmin } from '@/lib/supabase/admin'; // ⬅️ Use admin client
+import { getAdminClient } from '@/lib/supabase/admin';
 
 interface CreateTransactionPayload {
   trx: {
@@ -15,7 +14,8 @@ interface CreateTransactionPayload {
 }
 
 export async function createTransaction({ trx }: CreateTransactionPayload) {
-  const { data, error } = await supabaseAdmin // ⬅️ Changed from supabase to supabaseAdmin
+  const admin = getAdminClient();
+  const { data, error } = await admin
     .from('TRANSACTIONS')
     .insert({
       USER_ID: trx.userId,
@@ -39,7 +39,8 @@ export async function createTransaction({ trx }: CreateTransactionPayload) {
 }
 
 export async function getTransactionsByUserId(userId: string) {
-  const { data, error } = await supabaseAdmin
+  const admin = getAdminClient();
+  const { data, error } = await admin
     .from('TRANSACTIONS')
     .select(`
       TRANSACTION_ID,
@@ -60,19 +61,14 @@ export async function getTransactionsByUserId(userId: string) {
       REFUNDED_AT,
       EXPIRED_AT,
       CREATED_AT,
-      UPDATED_AT,
-      PRODUCT!TRANSACTIONS_PRODUCT_ID_fkey(
-        PRODUCT_NAME,
-        COVER_IMAGE,
-        TIER
-      )
+      UPDATED_AT
     `)
     .eq('USER_ID', userId)
     .order('CREATED_AT', { ascending: false });
 
   if (error) {
     console.error('Error fetching transactions:', error);
-    return null;
+    throw new Error(error.message);
   }
 
   return data;

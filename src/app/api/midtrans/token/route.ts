@@ -4,11 +4,18 @@ import { getDataInvitationUserById } from '@/models/invitations';
 import { createTransaction } from '@/models/transactions';
 import { createClient } from '@/lib/supabase/server';
 
-const snap = new Midtrans.Snap({
-  isProduction: process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true',
-  serverKey: process.env.MIDTRANS_SERVER_KEY!,
-  clientKey: process.env.MIDTRANS_CLIENT_KEY!,
-});
+let _snap: Midtrans.Snap | null = null;
+
+function getSnap() {
+  if (!_snap) {
+    _snap = new Midtrans.Snap({
+      isProduction: process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true',
+      serverKey: process.env.MIDTRANS_SERVER_KEY!,
+      clientKey: process.env.MIDTRANS_CLIENT_KEY!,
+    });
+  }
+  return _snap;
+}
 
 export async function POST(req: Request) {
   const supabase = await createClient();
@@ -45,7 +52,7 @@ export async function POST(req: Request) {
     let amount = data?.product.basePriceWithPhoto;
     let finalAmount = data?.product.basePriceNoPhoto;
 
-    const gatewayOrderId = `INV-${invitationId}-${Date.now()}`;
+    const gatewayOrderId = `INV-${Date.now()}`;
 
     const trx = await createTransaction({
       trx: {
@@ -59,9 +66,11 @@ export async function POST(req: Request) {
       },
     });
 
-    const snapTransaction = await snap.createTransaction({
+    const orderId = trx.TRANSACTION_ID;
+
+    const snapTransaction = await getSnap().createTransaction({
       transaction_details: {
-        order_id: trx.TRANSACTION_ID,
+        order_id: orderId,
         gross_amount: Number(trx.FINAL_AMOUNT),
       },
       item_details: [
@@ -81,10 +90,10 @@ export async function POST(req: Request) {
       snapToken: snapTransaction.token,
       redirectUrl: snapTransaction.redirect_url,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Checkout error:', error);
     return NextResponse.json(
-      { message: 'Failed to create checkout' },
+      { message: error?.message || 'Failed to create checkout' },
       { status: 500 }
     );
   }

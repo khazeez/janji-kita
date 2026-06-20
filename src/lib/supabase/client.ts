@@ -1,13 +1,20 @@
-// supabaseClient.ts
 import { createBrowserClient } from '@supabase/ssr';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+let _supabase: SupabaseClient | null = null;
 
-if (!url || !key) {
-  throw new Error('Supabase environment variables are not set');
+function getClient(): SupabaseClient {
+  if (!_supabase) {
+    _supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
+    ) as unknown as SupabaseClient;
+  }
+  return _supabase;
 }
 
-const supabase = createBrowserClient(url, key);
-
-export default supabase;
+export default new Proxy<SupabaseClient>({} as SupabaseClient, {
+  get(_, prop) {
+    return Reflect.get(getClient(), prop);
+  },
+});

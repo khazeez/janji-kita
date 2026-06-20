@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useCurrentUser } from '@/hooks/useData';
 import {
   CreditCard,
   CheckCircle,
@@ -12,7 +13,8 @@ import {
   Receipt,
   Package,
   ArrowUpDown,
-  RefreshCw
+  RefreshCw,
+  AlertCircle
 } from 'lucide-react';
 
 interface TransactionData {
@@ -35,52 +37,48 @@ interface TransactionData {
   EXPIRED_AT: string | null;
   CREATED_AT: string;
   UPDATED_AT: string;
-  PRODUCT: {
-    PRODUCT_NAME: string;
-    COVER_IMAGE: string;
-    TIER: string;
-  } | null;
 }
 
 type StatusFilter = 'ALL' | 'PAID' | 'PENDING' | 'INITIATED' | 'FAILED' | 'EXPIRED' | 'CANCELLED' | 'REFUNDED';
 
-async function fetchTransactions(userId: string): Promise<TransactionData[]> {
-  const res = await fetch('/api/transactions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId }),
-  });
-  const result = await res.json();
-  return result.data || [];
-}
-
 export default function TransactionPage() {
+  const { data: user, isLoading: loadingUser } = useCurrentUser();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
-
-  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   async function loadTransactions() {
+    if (!user?.id) return;
     setLoading(true);
+    setError(null);
     try {
-      const res = await fetch('/api/transactions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (res.status === 401) return;
+      const res = await fetch('/api/transactions');
       const result = await res.json();
-      if (result.data) {
-        setTransactions(result.data);
+      if (res.status === 401) {
+        setError('Sesi login tidak ditemukan. Silakan login ulang.');
+        return;
       }
+      if (!res.ok) {
+        throw new Error(result.error || `Gagal memuat (${res.status})`);
+      }
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      setTransactions(result.data || []);
     } catch (error) {
       console.error('Failed to fetch transactions:', error);
+      setError(error instanceof Error ? error.message : 'Gagal memuat transaksi');
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (user) loadTransactions();
+  }, [user]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -124,7 +122,6 @@ export default function TransactionPage() {
   const filteredTransactions = transactions
     .filter(trx => {
       const matchesSearch =
-        trx.PRODUCT?.PRODUCT_NAME?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         trx.GATEWAY_ORDER_ID.toLowerCase().includes(searchQuery.toLowerCase()) ||
         trx.TRANSACTION_ID.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesStatus = statusFilter === 'ALL' || trx.PAYMENT_STATUS === statusFilter;
@@ -145,12 +142,29 @@ export default function TransactionPage() {
       .reduce((acc, t) => acc + t.FINAL_AMOUNT, 0),
   };
 
-  if (loading) {
+  if (loadingUser || loading) {
     return (
       <div className="min-h-[300px] flex items-center justify-center">
         <div className="text-center space-y-3">
           <Loader2 className="w-8 h-8 text-pink-500 animate-spin mx-auto" />
           <p className="text-gray-400 text-xs">Memuat transaksi...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-[300px] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <AlertCircle className="w-10 h-10 text-red-400 mx-auto" />
+          <p className="text-gray-300 font-medium">{error}</p>
+          <button
+            onClick={loadTransactions}
+            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition-colors"
+          >
+            Coba Lagi
+          </button>
         </div>
       </div>
     );
@@ -236,6 +250,14 @@ export default function TransactionPage() {
             >
               <ArrowUpDown className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
+
+            <button
+              onClick={loadTransactions}
+              className="p-2 sm:p-2.5 bg-gray-900/50 border border-gray-700/50 rounded-lg sm:rounded-xl text-gray-400 hover:text-white hover:bg-gray-800 transition-colors flex-shrink-0"
+              title="Refresh"
+            >
+              <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
           </div>
         </div>
 
@@ -259,18 +281,9 @@ export default function TransactionPage() {
                   <div className="flex gap-3 sm:gap-4">
                     {/* Product Image */}
                     <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl overflow-hidden bg-gray-900 flex-shrink-0 border border-gray-700/50">
-                      {trx.PRODUCT?.COVER_IMAGE ? (
-                        <img
-                          src={trx.PRODUCT.COVER_IMAGE}
-                          alt={trx.PRODUCT.PRODUCT_NAME}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Package className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
-                        </div>
-                      )}
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
+                      </div>
                     </div>
 
                     {/* Info */}
@@ -278,7 +291,7 @@ export default function TransactionPage() {
                       <div className="flex items-start justify-between gap-2 sm:gap-4">
                         <div className="min-w-0">
                           <h3 className="text-xs sm:text-sm lg:text-base font-bold text-white truncate">
-                            {trx.PRODUCT?.PRODUCT_NAME || 'Produk'}
+                            Undangan Digital
                           </h3>
                           <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 truncate">
                             {trx.GATEWAY_ORDER_ID}
@@ -304,7 +317,7 @@ export default function TransactionPage() {
                           </span>
                         )}
 
-                        <span className="text-gray-700 hidden sm:block">•</span>
+                        <span className="text-gray-700 hidden sm:block">&bull;</span>
 
                         <span className="text-[10px] sm:text-xs text-gray-500">
                           {new Date(trx.CREATED_AT).toLocaleDateString('id-ID', {
@@ -318,7 +331,7 @@ export default function TransactionPage() {
 
                         {trx.PAYMENT_METHOD && (
                           <>
-                            <span className="text-gray-700 hidden sm:block">•</span>
+                            <span className="text-gray-700 hidden sm:block">&bull;</span>
                             <span className="text-[10px] sm:text-xs text-gray-500">
                               {formatPaymentMethod(trx.PAYMENT_METHOD)}
                             </span>
