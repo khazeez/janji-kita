@@ -41,5 +41,5 @@ export default function Invitations() {
     </div>
   );
 
-  return <Invitation data={data || []}  trx={data}/>;
+  return <Invitation data={data || []} />;
 }

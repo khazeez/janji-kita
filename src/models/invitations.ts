@@ -487,13 +487,13 @@ export async function getInvitation(userId: string) {
 
 export async function getInvitationById(invitationId: string) {
   if (!invitationId) {
-    throw new Error('getInvitation requires userId');
+    throw new Error('getInvitationById requires invitationId');
   }
 
   const { data, error } = await supabase
     .from('INVITATION')
     .select('*')
-    .eq('USER_ID', invitationId);
+    .eq('INVITATION_ID', invitationId);
 
   if (error) {
     throw new Error(error.message);

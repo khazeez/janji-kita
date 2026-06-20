@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, X, Heart, Star, Loader2, Filter, Grid, List as ListIcon } from 'lucide-react';
+import { Search, X, Heart, Star, Loader2 } from 'lucide-react';
 import { getProductInvitation } from '@/models/invitations';
 import { Product } from '@/types/interface';
 
@@ -19,6 +19,8 @@ export default function DashboardCatalogue() {
   const [catalogues, setCatalogues] = useState<CatalogueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,16 +32,62 @@ export default function DashboardCatalogue() {
           .map((item) => ({ data: item }));
 
         setCatalogues(wrappedData);
-        setLoading(false);
       } catch (error) {
         console.error(error);
         setCatalogues([]);
-        setLoading(false);
       }
+
+      try {
+        const res = await fetch('/api/favorites');
+        if (res.ok) {
+          const result = await res.json();
+          if (result.data) {
+            setFavoriteIds(new Set(result.data.map((f: any) => f.PRODUCT.PRODUCT_ID)));
+          }
+        }
+      } catch {
+      }
+
+      setLoading(false);
     };
 
     fetchData();
   }, []);
+
+  const toggleFavorite = useCallback(async (productId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (togglingId) return;
+
+    setTogglingId(productId);
+    const isFavorite = favoriteIds.has(productId);
+
+    try {
+      if (isFavorite) {
+        const res = await fetch('/api/favorites', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId }),
+        });
+        if (res.ok) {
+          setFavoriteIds((prev) => { const next = new Set(prev); next.delete(productId); return next; });
+          window.dispatchEvent(new CustomEvent('update-counts'));
+        }
+      } else {
+        const res = await fetch('/api/favorites', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId }),
+        });
+        if (res.ok) {
+          setFavoriteIds((prev) => { const next = new Set(prev); next.add(productId); return next; });
+          window.dispatchEvent(new CustomEvent('update-counts'));
+        }
+      }
+    } catch {
+    } finally {
+      setTogglingId(null);
+    }
+  }, [favoriteIds, togglingId]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -98,7 +146,7 @@ export default function DashboardCatalogue() {
       </div>
 
       {/* Filters & Search */}
-      <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700/50 rounded-2xl p-4 sm:p-6 space-y-4 shadow-xl">
+      <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4 sm:p-6 space-y-4">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search Bar */}
           <div className="relative flex-1">
@@ -108,7 +156,7 @@ export default function DashboardCatalogue() {
               placeholder="Cari nama atau tema undangan..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-10 py-2.5 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all"
+              className="w-full pl-10 pr-10 py-2.5 bg-gray-900 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-500/50 transition-all"
             />
             {searchQuery && (
               <button
@@ -129,8 +177,8 @@ export default function DashboardCatalogue() {
                 onClick={() => setSelectedSegment(segment)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                   selectedSegment === segment
-                    ? 'bg-pink-600 text-white shadow-lg shadow-pink-600/20'
-                    : 'bg-gray-900/50 text-gray-400 hover:text-white hover:bg-gray-800 border border-gray-700/50'
+                    ? 'bg-pink-600 text-white'
+                    : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 border border-gray-700'
                 }`}
               >
                 {segment}
@@ -147,7 +195,7 @@ export default function DashboardCatalogue() {
           <p className="text-gray-400 animate-pulse">Memuat koleksi tema...</p>
         </div>
       ) : filteredCatalogues.length === 0 ? (
-        <div className="bg-gray-800/30 border border-dashed border-gray-700 rounded-3xl p-12 text-center">
+        <div className="bg-gray-800 border border-dashed border-gray-700 rounded-3xl p-12 text-center">
           <div className="bg-gray-800 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Search className="w-8 h-8 text-gray-600" />
           </div>
@@ -168,7 +216,7 @@ export default function DashboardCatalogue() {
             <div
               key={item.data.productId}
               onClick={() => handleNavigation(`/dashboard/catalogue/${item.data.productName}`, item.data.productId)}
-              className="group relative bg-gray-800/40 border border-gray-700/50 rounded-2xl overflow-hidden hover:border-pink-500/50 transition-all duration-500 cursor-pointer hover:shadow-2xl hover:shadow-pink-500/10"
+              className="group relative bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden hover:border-pink-500/50 transition-all duration-500 cursor-pointer hover:shadow-2xl hover:shadow-pink-500/10"
             >
               {/* Image Container */}
               <div className="relative aspect-[4/5] overflow-hidden">
@@ -186,16 +234,28 @@ export default function DashboardCatalogue() {
                   </span>
                 </div>
 
-                {/* Favorite Button (Placeholder UI) */}
+                {/* Favorite Button */}
                 <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300">
-                  <button className="p-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-white hover:bg-pink-600 hover:border-pink-500 transition-all">
-                    <Heart className="w-4 h-4" />
+                  <button
+                    onClick={(e) => toggleFavorite(item.data.productId, e)}
+                    disabled={togglingId === item.data.productId}
+                    className={`p-2 rounded-xl border transition-all ${
+                      favoriteIds.has(item.data.productId)
+                        ? 'bg-pink-600 border-pink-500 text-white'
+                        : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-pink-600 hover:border-pink-500 hover:text-white'
+                    }`}
+                  >
+                    {togglingId === item.data.productId ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Heart className={`w-4 h-4 ${favoriteIds.has(item.data.productId) ? 'fill-current' : ''}`} />
+                    )}
                   </button>
                 </div>
 
                 {/* Type Badge */}
                 <div className="absolute bottom-3 left-3">
-                   <span className="text-[10px] font-medium text-white bg-gray-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
+                   <span className="text-[10px] font-medium text-gray-300 bg-gray-800 px-2.5 py-1 rounded-lg border border-gray-700">
                     {item.data.productType}
                   </span>
                 </div>

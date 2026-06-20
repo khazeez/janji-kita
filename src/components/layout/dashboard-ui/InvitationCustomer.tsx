@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import GlassesDesign from '@/theme/gold/elegan/elegan-1/main';
+import AdatDesign from '@/theme/gold/traditional/main';
 import { AllInvitationData } from '@/types/interface';
 import {
   Save,
@@ -146,6 +147,17 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
       </div>
     );
   }
+
+  const renderTheme = (themeData: AllInvitationData, isEditor: boolean) => {
+    const productName = themeData.product?.productName || '';
+    switch (productName) {
+      case 'Adat':
+      case 'Traditional':
+        return <AdatDesign data={themeData} isEditorMode={isEditor} />;
+      default:
+        return <GlassesDesign data={themeData} isEditorMode={isEditor} />;
+    }
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -392,7 +404,7 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
           <div className='absolute inset-0 opacity-[0.03]' style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
           <div className='absolute inset-0' style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(236,72,153,0.04) 0%, transparent 70%)' }} />
           <DevicePreview>
-            <GlassesDesign data={data} isEditorMode />
+            {renderTheme(data, true)}
           </DevicePreview>
         </section>
       </div>
@@ -463,7 +475,7 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
           {/* Device Frame Container */}
           <div className='relative w-full h-full flex items-center justify-center p-4 animate-in zoom-in-95 duration-300'>
             <div className="w-full max-w-[360px] h-full shadow-2xl overflow-hidden rounded-[28px] bg-black">
-               <GlassesDesign data={data} isEditorMode />
+               {renderTheme(data, true)}
             </div>
           </div>
         </div>
@@ -479,7 +491,7 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
             ✕ Close Preview
           </button>
 
-          <GlassesDesign data={data} />
+          {renderTheme(data, false)}
         </div>
       )}
     </>

@@ -408,20 +408,20 @@ export default function Form1() {
   const progressPercentage = (currentStep / totalSteps) * 100;
 
   return (
-    <div className='min-h-screen bg-[#030712] text-white selection:bg-pink-500/30'>
+    <div className='min-h-screen bg-gray-900 text-white selection:bg-pink-500/30'>
       {/* Background Decorative Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-pink-500/5 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/5 blur-[120px] rounded-full" />
       </div>
 
       {/* Header */}
-      <header className='bg-gray-900/50 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50'>
+      <header className='bg-gray-800 border-b border-gray-700 sticky top-0 z-50'>
         <div className='max-w-3xl mx-auto px-6 py-4'>
           <div className='flex items-center justify-between mb-5'>
             <button 
               onClick={handleBack} 
-              className='w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-all border border-white/5'
+              className='w-10 h-10 flex items-center justify-center rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-all border border-gray-700'
             >
               <ArrowLeft size={20} />
             </button>
@@ -429,16 +429,16 @@ export default function Form1() {
               <h1 className='text-lg font-bold text-white tracking-tight uppercase'>
                 {getStepTitle()}
               </h1>
-              <p className='text-[10px] text-white/40 font-medium tracking-widest uppercase mt-0.5'>
+              <p className='text-[10px] text-gray-500 font-medium tracking-widest uppercase mt-0.5'>
                 Step {currentStep} of {totalSteps}
               </p>
             </div>
-            <div className='w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500 border border-pink-500/20'>
+            <div className='w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400 border border-pink-500/20'>
               <span className="text-xs font-bold">{Math.round(progressPercentage)}%</span>
             </div>
           </div>
 
-          <div className='w-full bg-white/5 rounded-full h-1.5 overflow-hidden'>
+          <div className='w-full bg-gray-700 rounded-full h-1.5 overflow-hidden'>
             <div
               className='bg-gradient-to-r from-pink-600 to-pink-400 h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(236,72,153,0.3)]'
               style={{ width: `${progressPercentage}%` }}
@@ -488,7 +488,7 @@ export default function Form1() {
       </main>
 
       {/* Footer Nav */}
-      <footer className='fixed bottom-0 left-0 right-0 bg-gray-900/70 backdrop-blur-xl border-t border-white/5 z-50'>
+      <footer className='fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 z-50'>
         <div className='max-w-3xl mx-auto px-6 py-4'>
           <button
             onClick={currentStep === 5 ? handleSubmit : handleNext}
@@ -497,7 +497,7 @@ export default function Form1() {
               w-full py-4 px-6 font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2
               ${isStepValid && !isLoading
                 ? 'bg-pink-600 hover:bg-pink-500 text-white shadow-lg shadow-pink-600/20 hover:shadow-pink-500/40 hover:-translate-y-0.5 active:translate-y-0 translate-y-0'
-                : 'bg-white/5 text-white/20 cursor-not-allowed border border-white/5'
+                : 'bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700'
               }
             `}
           >

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { createClient } from '@/lib/supabase/server';
 
 const client = new S3Client({
   region: 'auto',
@@ -11,11 +12,16 @@ const client = new S3Client({
 });
 
 export async function DELETE(req: Request) {
+  const supabase = await createClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const { key } = body;
-
-    console.log('Delete request for key:', key);
 
     if (!key || typeof key !== 'string') {
       return NextResponse.json(
@@ -33,35 +39,15 @@ export async function DELETE(req: Request) {
 
     await client.send(command);
 
-    console.log('Delete successful for key:', sanitizedKey);
-
     return NextResponse.json(
       { success: true, message: 'File deleted successfully', key: sanitizedKey },
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'DELETE, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
-      }
+      { status: 200 }
     );
   } catch (error) {
     console.error('Delete error:', error);
-
     return NextResponse.json(
-      {
-        success: false,
-        error: 'Failed to delete file',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { 
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+      { success: false, error: 'Failed to delete file' },
+      { status: 500 }
     );
   }
 }

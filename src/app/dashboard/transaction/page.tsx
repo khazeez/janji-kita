@@ -9,15 +9,11 @@ import {
   AlertTriangle,
   Loader2,
   Search,
-  ChevronDown,
   Receipt,
   Package,
-  ExternalLink,
-  Filter,
   ArrowUpDown,
   RefreshCw
 } from 'lucide-react';
-import supabase from '@/lib/supabase/client';
 
 interface TransactionData {
   TRANSACTION_ID: string;
@@ -61,24 +57,21 @@ export default function TransactionPage() {
 
   async function loadTransactions() {
     setLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (session?.user?.id) {
-      try {
-        const res = await fetch('/api/transactions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: session.user.id }),
-        });
-        const result = await res.json();
-        if (result.data) {
-          setTransactions(result.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch transactions:', error);
+    try {
+      const res = await fetch('/api/transactions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (res.status === 401) return;
+      const result = await res.json();
+      if (result.data) {
+        setTransactions(result.data);
       }
+    } catch (error) {
+      console.error('Failed to fetch transactions:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   const formatCurrency = (amount: number) => {

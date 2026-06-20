@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { getDataInvitationUser } from '@/models';
 import InvitationPublic from '@/components/layout/dashboard-ui/InvitationPublic';
 import type { Metadata } from 'next';
+import { cache } from 'react';
 
 interface PageProps {
   params: Promise<{
@@ -9,16 +10,15 @@ interface PageProps {
   }>;
 }
 
-// Generate dynamic metadata
+const getCachedInvitation = cache(async (slug: string) => {
+  return getDataInvitationUser(slug.toLowerCase());
+});
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-
-  // Fetch data untuk metadata
-  const data = await getDataInvitationUser(slug.toLowerCase());
-  console.log(data);
-  
+  const data = await getCachedInvitation(slug);
 
   if (!data) {
     return {
@@ -43,15 +43,12 @@ export async function generateMetadata({
 export default async function InvitationPublicPage({ params }: PageProps) {
   const { slug } = await params;
 
-  // Validasi slug
   if (!slug || slug.trim() === '') {
     notFound();
   }
 
-  // Fetch data
-  const data = await getDataInvitationUser(slug.toLowerCase());
+  const data = await getCachedInvitation(slug);
 
-  // Jika data tidak ditemukan, trigger 404
   if (!data) {
     notFound();
   }

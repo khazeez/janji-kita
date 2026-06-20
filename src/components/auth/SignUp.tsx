@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { signUpWithEmail, signUpWithGoogle } from '@/lib/auth';
+import { signUpWithEmail, signInWithGoogle } from '@/lib/auth';
 
 interface FormErrors {
   name?: string;
@@ -105,7 +105,7 @@ export default function SignUp() {
     setIsLoading(true);
     setErrors({});
     try {
-      const { error } = await signUpWithGoogle();
+      const { error } = await signInWithGoogle();
       if (error) {
         setErrors({ general: 'Gagal login dengan Google. Silakan coba lagi.' });
         setIsLoading(false);

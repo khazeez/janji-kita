@@ -53,7 +53,7 @@ export default function VenueDataInput({ events, onChange }: Props) {
     onChange(updatedEvents);
   };
 
-  const inputClasses = "w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-pink-500/50 focus:bg-white/[0.05] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300";
+  const inputClasses = "w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-pink-500/50 focus:bg-gray-700 focus:ring-4 focus:ring-pink-500/10 transition-all duration-300";
 
   return (
     <div className='space-y-10'>
@@ -66,15 +66,15 @@ export default function VenueDataInput({ events, onChange }: Props) {
             </div>
             <div>
               <h3 className='text-lg font-bold text-white tracking-tight'>Akad Nikah</h3>
-              <p className='text-xs text-white/40'>Informasi detail waktu dan lokasi akad</p>
+              <p className='text-xs text-gray-500'>Informasi detail waktu dan lokasi akad</p>
             </div>
           </div>
 
-          <div className='grid gap-5 bg-white/[0.02] border border-white/5 rounded-2xl p-6'>
+          <div className='grid gap-5 bg-gray-800 border border-gray-700 rounded-2xl p-6'>
             <div className="space-y-1.5">
               <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Nama Tempat</label>
               <div className="relative">
-                <MapPin size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                <MapPin size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                 <input
                   type='text'
                   value={akadEvent.location}
@@ -111,7 +111,7 @@ export default function VenueDataInput({ events, onChange }: Props) {
               <div className="space-y-1.5">
                 <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Waktu Mulai</label>
                 <div className="relative">
-                  <Clock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                  <Clock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                   <input
                     type='datetime-local'
                     value={akadEvent.startTime}
@@ -123,7 +123,7 @@ export default function VenueDataInput({ events, onChange }: Props) {
               <div className="space-y-1.5">
                 <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Waktu Selesai</label>
                 <div className="relative">
-                  <Clock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                  <Clock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                   <input
                     type='datetime-local'
                     value={akadEvent.endTime}
@@ -146,21 +146,21 @@ export default function VenueDataInput({ events, onChange }: Props) {
             </div>
             <div>
               <h3 className='text-lg font-bold text-white tracking-tight'>Resepsi</h3>
-              <p className='text-xs text-white/40'>Informasi detail waktu dan lokasi resepsi</p>
+              <p className='text-xs text-gray-500'>Informasi detail waktu dan lokasi resepsi</p>
             </div>
           </div>
           <button
             type='button'
             onClick={addResepsi}
-            className='flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-xl text-xs font-bold transition-all border border-white/5'
+            className='flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white rounded-xl text-xs font-bold transition-all border border-gray-700'
           >
             <Plus size={14} /> Tambah
           </button>
         </div>
 
         {resepsiEvents.length === 0 ? (
-          <div className='flex flex-col items-center justify-center py-10 px-6 bg-white/[0.01] border border-dashed border-white/5 rounded-2xl text-center group transition-colors hover:border-white/10'>
-            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/20 mb-3 group-hover:scale-110 transition-transform">
+          <div className='flex flex-col items-center justify-center py-10 px-6 bg-gray-800 border border-dashed border-gray-700 rounded-2xl text-center group transition-colors hover:border-gray-500'>
+            <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-gray-600 mb-3 group-hover:scale-110 transition-transform">
               <Calendar size={24} />
             </div>
             <p className='text-sm text-white/30 font-medium'>Belum ada data resepsi</p>
@@ -176,7 +176,7 @@ export default function VenueDataInput({ events, onChange }: Props) {
             {resepsiEvents.map((resepsi, index) => (
               <div
                 key={resepsi.eventId}
-                className='relative grid gap-5 bg-white/[0.02] border border-white/5 rounded-2xl p-6 group'
+                className='relative grid gap-5 bg-gray-800 border border-gray-700 rounded-2xl p-6 group'
               >
                 <div className='flex items-center justify-between mb-2'>
                   <span className='px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded-lg'>
@@ -194,7 +194,7 @@ export default function VenueDataInput({ events, onChange }: Props) {
                 <div className="space-y-1.5">
                   <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Nama Tempat</label>
                   <div className="relative">
-                    <MapPin size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                    <MapPin size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                     <input
                       type='text'
                       value={resepsi.location}
@@ -231,7 +231,7 @@ export default function VenueDataInput({ events, onChange }: Props) {
                   <div className="space-y-1.5">
                     <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Waktu Mulai</label>
                     <div className="relative">
-                      <Clock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                      <Clock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                       <input
                         type='datetime-local'
                         value={resepsi.startTime}
@@ -243,7 +243,7 @@ export default function VenueDataInput({ events, onChange }: Props) {
                   <div className="space-y-1.5">
                     <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Waktu Selesai</label>
                     <div className="relative">
-                      <Clock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                      <Clock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                       <input
                         type='datetime-local'
                         value={resepsi.endTime}

@@ -32,16 +32,10 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [favoriteCount, setFavoriteCount] = useState(0);
+  const [transactionCount, setTransactionCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Data notifikasi
-  const notifications = {
-    cart: 3,
-    payment: 2,
-    progress: 1,
-  };
 
   // Get user data
   useEffect(() => {
@@ -63,6 +57,34 @@ export default function DashboardLayout({
 
     getUserData();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchCounts = async () => {
+      try {
+        const [favRes, trxRes] = await Promise.all([
+          fetch('/api/favorites'),
+          fetch('/api/transactions'),
+        ]);
+        if (favRes.ok) {
+          const fav = await favRes.json();
+          setFavoriteCount(fav.data?.length ?? 0);
+        }
+        if (trxRes.ok) {
+          const trx = await trxRes.json();
+          setTransactionCount(trx.data?.length ?? 0);
+        }
+      } catch {}
+    };
+    fetchCounts();
+    const interval = setInterval(fetchCounts, 30000);
+    const handleUpdate = () => fetchCounts();
+    window.addEventListener('update-counts', handleUpdate);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('update-counts', handleUpdate);
+    };
+  }, [user]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -126,14 +148,14 @@ export default function DashboardLayout({
       label: 'Favorite',
       icon: Star,
       href: '/dashboard/favorite',
-      badge: notifications.cart,
+      badge: favoriteCount,
     },
     {
       id: 'payment',
       label: 'Transaksi',
       icon: CreditCard,
       href: '/dashboard/transaction',
-      badge: notifications.payment,
+      badge: transactionCount,
     },
     {
       id: 'attendance',
@@ -165,84 +187,100 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className='flex h-screen bg-gray-900 text-white overflow-hidden'>
-      {/* Sidebar Desktop */}
-      <aside
-        className={`hidden lg:flex flex-col bg-gray-800 border-r border-gray-700 transition-all duration-300 ${
-          sidebarCollapsed ? 'w-20' : 'w-64'
-        }`}
-      >
-        <div className='p-4 border-b border-gray-700'>
-          {!sidebarCollapsed && (
-            <Link className='text-3xl font-bold ml-5 text-white' href='/'>
-              Janji<span className='text-pink-500'>Kita</span>
-            </Link>
-          )}
+    <div className='flex flex-col h-screen bg-gray-900 text-white overflow-hidden'>
+      {/* Header Desktop & Mobile */}
+      <header className='bg-gray-800 border-b border-gray-700 flex-shrink-0 relative'>
+        {/* Mobile row: logo + account */}
+        <div className='flex items-center justify-between px-4 py-3 lg:hidden'>
+          <Link className='text-xl font-bold text-white' href='/'>
+            Janji<span className='text-pink-500'>Kita</span>
+          </Link>
+          <div className='relative'>
+            <button
+              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              className='flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-700 hover:bg-gray-600 transition-all border border-gray-600'
+            >
+              <div className='w-7 h-7 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-400 text-xs font-bold'>
+                {getFirstName()[0]}
+              </div>
+              <ChevronDown size={14} className={`text-gray-400 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
         </div>
 
-        <button
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className='w-full py-3 flex items-center justify-center border-b-1 border-t-1 border-gray-700 text-gray-400 hover:text-white hover:bg-gray-700 transition-colors'
-        >
-          {sidebarCollapsed ? (
-            <ChevronRight size={20} />
-          ) : (
-            <ChevronLeft size={20} />
-          )}
-        </button>
+        {/* Desktop row: logo + nav + account */}
+        <div className='hidden lg:flex items-center justify-between px-8 py-3'>
+          <Link className='text-2xl font-bold text-white flex-shrink-0' href='/'>
+            Janji<span className='text-pink-500'>Kita</span>
+          </Link>
+          <nav className='flex items-center gap-1'>
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  prefetch={false}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-colors text-sm font-medium ${
+                    isActive
+                      ? 'bg-pink-600 text-white'
+                      : 'text-gray-400 hover:bg-gray-700 hover:text-gray-200'
+                  }`}
+                >
+                  <Icon size={18} />
+                  <span>{item.label}</span>
+                  {item.badge != null && item.badge > 0 && (
+                    <span className='bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 ml-1'>
+                      {item.badge > 99 ? '99+' : item.badge}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+          <div className='relative flex-shrink-0'>
+            <button
+              onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              className='flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-700 hover:bg-gray-600 transition-all border border-gray-600'
+            >
+              <div className='w-7 h-7 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-400 text-xs font-bold'>
+                {getFirstName()[0]}
+              </div>
+              <div className='hidden sm:block text-left'>
+                <p className='text-sm font-medium text-white leading-tight'>{getFirstName()}</p>
+                <p className='text-[10px] text-gray-400 leading-tight truncate max-w-[120px]'>{user?.email}</p>
+              </div>
+              <ChevronDown size={14} className={`text-gray-400 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+        </div>
 
-        <nav className='flex-1 p-4 space-y-2 overflow-y-auto scrollbar-hide'>
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-
-            return (
-              <Link
-                key={item.id}
-                href={item.href}
-                prefetch={false}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors relative ${
-                  isActive
-                    ? 'bg-pink-600 text-white'
-                    : 'text-gray-300 hover:bg-gray-700'
-                } ${sidebarCollapsed ? 'justify-center' : ''}`}
-                title={sidebarCollapsed ? item.label : ''}
-              >
-                <Icon size={20} />
-                {sidebarCollapsed && <Badge count={item.badge} />}
-                {!sidebarCollapsed && (
-                  <>
-                    <span className='flex-1'>{item.label}</span>
-                    {item.badge && item.badge > 0 && (
-                      <span className='bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5'>
-                        {item.badge > 99 ? '99+' : item.badge}
-                      </span>
-                    )}
-                  </>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className='p-4 border-t border-gray-700'>
-          <button
-            onClick={handleLogout}
-            className='w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-gray-700 rounded-lg transition-colors'
+        {/* Profile Dropdown */}
+        {profileDropdownOpen && (
+          <div
+            ref={dropdownRef}
+            className='absolute right-4 lg:right-6 top-full mt-1 w-56 bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl py-2 z-50'
           >
-            <LogOut size={20} />
-            {!sidebarCollapsed && <span>Logout</span>}
-          </button>
-        </div>
-      </aside>
+            <div className='px-4 py-3 border-b border-gray-700'>
+              <p className='text-sm font-medium text-white'>{user?.user_metadata?.full_name || 'User'}</p>
+              <p className='text-xs text-gray-400 truncate'>{user?.email}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className='w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-gray-700 transition-colors text-sm'
+            >
+              <LogOut size={16} />
+              Logout
+            </button>
+          </div>
+        )}
+      </header>
 
-      {/* Main Content Area */}
-      <div className='flex-1 flex flex-col overflow-hidden'>
-        {/* Main Content */}
-        <main className='flex-1 overflow-y-auto scrollbar-hide p-4'>
-          {children}
-        </main>
-      </div>
+      {/* Main Content */}
+      <main className='flex-1 overflow-y-auto scrollbar-hide px-4 lg:px-8 py-6 pb-20 lg:pb-8 max-w-7xl mx-auto w-full'>
+        {children}
+      </main>
 
       {/* Bottom Nav Mobile */}
       <nav className='lg:hidden fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-700 px-2 py-2 z-40'>
@@ -268,6 +306,7 @@ export default function DashboardLayout({
           })}
         </div>
       </nav>
+
     </div>
   );
 }

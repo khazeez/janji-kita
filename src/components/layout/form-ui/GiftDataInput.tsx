@@ -243,8 +243,8 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
     return (groomWallet?.address || []) as WalletAddress[];
   };
 
-  const inputClasses = "w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-pink-500/50 focus:bg-white/[0.05] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300";
-  const selectClasses = "w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500/50 focus:bg-[#1a1f2e] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300 appearance-none cursor-pointer";
+  const inputClasses = "w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-pink-500/50 focus:bg-gray-700 focus:ring-4 focus:ring-pink-500/10 transition-all duration-300";
+  const selectClasses = "w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500/50 focus:bg-[#1a1f2e] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300 appearance-none cursor-pointer";
 
   return (
     <div className='space-y-10'>
@@ -256,11 +256,11 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
           </div>
           <div>
             <h3 className='text-lg font-bold text-white tracking-tight'>Kirim Kado Ke Rumah</h3>
-            <p className='text-xs text-white/40'>Alamat pengiriman untuk kado fisik</p>
+            <p className='text-xs text-gray-500'>Alamat pengiriman untuk kado fisik</p>
           </div>
         </div>
         
-        <div className='bg-white/[0.02] border border-white/5 rounded-2xl p-6'>
+        <div className='bg-gray-800 border border-gray-700 rounded-2xl p-6'>
           <div className="space-y-1.5">
             <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Alamat Lengkap</label>
             <textarea
@@ -282,7 +282,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
           </div>
           <div>
             <h3 className='text-lg font-bold text-white tracking-tight'>Mempelai Wanita</h3>
-            <p className='text-xs text-white/40'>Data rekening dan wallet untuk kado digital</p>
+            <p className='text-xs text-gray-500'>Data rekening dan wallet untuk kado digital</p>
           </div>
         </div>
 
@@ -301,7 +301,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
 
             <div className="grid gap-4">
               {getBrideAccounts().map((account, index) => (
-                <div key={index} className='relative bg-white/[0.02] border border-white/5 rounded-2xl p-6 group transition-all hover:bg-white/[0.04]'>
+                <div key={index} className='relative bg-gray-800 border border-gray-700 rounded-2xl p-6 group transition-all hover:bg-gray-700'>
                   <button
                     onClick={() => deleteBankAccount('BRIDE', index)}
                     className='absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-red-400/50 hover:text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 rounded-lg transition-all'
@@ -311,9 +311,9 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
 
                   <div className="grid gap-4">
                     <div className="space-y-1.5">
-                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Nama Bank</label>
+                      <label className='block text-[10px] font-bold text-gray-600 uppercase tracking-wider ml-1'>Nama Bank</label>
                       <div className="relative">
-                        <Landmark size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                        <Landmark size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                         <input
                           type='text'
                           value={account.bankName}
@@ -325,7 +325,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Nomor Rekening</label>
+                        <label className='block text-[10px] font-bold text-gray-600 uppercase tracking-wider ml-1'>Nomor Rekening</label>
                         <input
                           type='text'
                           value={account.accountNumber}
@@ -335,7 +335,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Atas Nama</label>
+                        <label className='block text-[10px] font-bold text-gray-600 uppercase tracking-wider ml-1'>Atas Nama</label>
                         <input
                           type='text'
                           value={account.accountName}
@@ -349,8 +349,8 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
                 </div>
               ))}
               {getBrideAccounts().length === 0 && (
-                <div className="py-6 bg-white/[0.01] border border-dashed border-white/5 rounded-2xl text-center">
-                  <p className="text-xs text-white/20 font-medium">Belum ada rekening bank</p>
+                <div className="py-6 bg-gray-800 border border-dashed border-gray-700 rounded-2xl text-center">
+                  <p className="text-xs text-gray-600 font-medium">Belum ada rekening bank</p>
                 </div>
               )}
             </div>
@@ -370,7 +370,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
 
             <div className="grid gap-4">
               {getBrideWallets().map((wallet, index) => (
-                <div key={index} className='relative bg-white/[0.02] border border-white/5 rounded-2xl p-6 group transition-all hover:bg-white/[0.04]'>
+                <div key={index} className='relative bg-gray-800 border border-gray-700 rounded-2xl p-6 group transition-all hover:bg-gray-700'>
                   <button
                     onClick={() => deleteWallet('BRIDE', index)}
                     className='absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-red-400/50 hover:text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 rounded-lg transition-all'
@@ -380,7 +380,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
 
                   <div className="grid gap-4">
                     <div className="space-y-1.5">
-                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Chain / Network</label>
+                      <label className='block text-[10px] font-bold text-gray-600 uppercase tracking-wider ml-1'>Chain / Network</label>
                       <div className="relative">
                         <select
                           value={wallet.chain}
@@ -391,13 +391,13 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
                             <option key={chain.value} value={chain.value}>{chain.label}</option>
                           ))}
                         </select>
-                        <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" />
+                        <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" />
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Alamat Wallet</label>
+                      <label className='block text-[10px] font-bold text-gray-600 uppercase tracking-wider ml-1'>Alamat Wallet</label>
                       <div className="relative">
-                        <Wallet size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                        <Wallet size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                         <input
                           type='text'
                           value={wallet.address}
@@ -411,8 +411,8 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
                 </div>
               ))}
               {getBrideWallets().length === 0 && (
-                <div className="py-6 bg-white/[0.01] border border-dashed border-white/5 rounded-2xl text-center">
-                  <p className="text-xs text-white/20 font-medium">Belum ada crypto wallet</p>
+                <div className="py-6 bg-gray-800 border border-dashed border-gray-700 rounded-2xl text-center">
+                  <p className="text-xs text-gray-600 font-medium">Belum ada crypto wallet</p>
                 </div>
               )}
             </div>
@@ -420,7 +420,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
         </div>
       </div>
 
-      <div className="h-px bg-white/5 mx-2" />
+      <div className="h-px bg-gray-800 mx-2" />
 
       {/* REKENING & WALLET GROOM */}
       <div className='space-y-8'>
@@ -430,7 +430,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
           </div>
           <div>
             <h3 className='text-lg font-bold text-white tracking-tight'>Mempelai Pria</h3>
-            <p className='text-xs text-white/40'>Data rekening dan wallet untuk kado digital</p>
+            <p className='text-xs text-gray-500'>Data rekening dan wallet untuk kado digital</p>
           </div>
         </div>
 
@@ -449,7 +449,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
 
             <div className="grid gap-4">
               {getGroomAccounts().map((account, index) => (
-                <div key={index} className='relative bg-white/[0.02] border border-white/5 rounded-2xl p-6 group transition-all hover:bg-white/[0.04]'>
+                <div key={index} className='relative bg-gray-800 border border-gray-700 rounded-2xl p-6 group transition-all hover:bg-gray-700'>
                   <button
                     onClick={() => deleteBankAccount('GROOM', index)}
                     className='absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-red-400/50 hover:text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 rounded-lg transition-all'
@@ -459,9 +459,9 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
 
                   <div className="grid gap-4">
                     <div className="space-y-1.5">
-                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Nama Bank</label>
+                      <label className='block text-[10px] font-bold text-gray-600 uppercase tracking-wider ml-1'>Nama Bank</label>
                       <div className="relative">
-                        <Landmark size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                        <Landmark size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                         <input
                           type='text'
                           value={account.bankName}
@@ -473,7 +473,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Nomor Rekening</label>
+                        <label className='block text-[10px] font-bold text-gray-600 uppercase tracking-wider ml-1'>Nomor Rekening</label>
                         <input
                           type='text'
                           value={account.accountNumber}
@@ -483,7 +483,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Atas Nama</label>
+                        <label className='block text-[10px] font-bold text-gray-600 uppercase tracking-wider ml-1'>Atas Nama</label>
                         <input
                           type='text'
                           value={account.accountName}
@@ -497,8 +497,8 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
                 </div>
               ))}
               {getGroomAccounts().length === 0 && (
-                <div className="py-6 bg-white/[0.01] border border-dashed border-white/5 rounded-2xl text-center">
-                  <p className="text-xs text-white/20 font-medium">Belum ada rekening bank</p>
+                <div className="py-6 bg-gray-800 border border-dashed border-gray-700 rounded-2xl text-center">
+                  <p className="text-xs text-gray-600 font-medium">Belum ada rekening bank</p>
                 </div>
               )}
             </div>
@@ -518,7 +518,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
 
             <div className="grid gap-4">
               {getGroomWallets().map((wallet, index) => (
-                <div key={index} className='relative bg-white/[0.02] border border-white/5 rounded-2xl p-6 group transition-all hover:bg-white/[0.04]'>
+                <div key={index} className='relative bg-gray-800 border border-gray-700 rounded-2xl p-6 group transition-all hover:bg-gray-700'>
                   <button
                     onClick={() => deleteWallet('GROOM', index)}
                     className='absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-red-400/50 hover:text-red-400 bg-red-500/5 hover:bg-red-500/10 border border-red-500/10 rounded-lg transition-all'
@@ -528,7 +528,7 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
 
                   <div className="grid gap-4">
                     <div className="space-y-1.5">
-                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Chain / Network</label>
+                      <label className='block text-[10px] font-bold text-gray-600 uppercase tracking-wider ml-1'>Chain / Network</label>
                       <div className="relative">
                         <select
                           value={wallet.chain}
@@ -539,13 +539,13 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
                             <option key={chain.value} value={chain.value}>{chain.label}</option>
                           ))}
                         </select>
-                        <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none" />
+                        <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" />
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className='block text-[10px] font-bold text-white/20 uppercase tracking-wider ml-1'>Alamat Wallet</label>
+                      <label className='block text-[10px] font-bold text-gray-600 uppercase tracking-wider ml-1'>Alamat Wallet</label>
                       <div className="relative">
-                        <Wallet size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                        <Wallet size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                         <input
                           type='text'
                           value={wallet.address}
@@ -559,8 +559,8 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
                 </div>
               ))}
               {getGroomWallets().length === 0 && (
-                <div className="py-6 bg-white/[0.01] border border-dashed border-white/5 rounded-2xl text-center">
-                  <p className="text-xs text-white/20 font-medium">Belum ada crypto wallet</p>
+                <div className="py-6 bg-gray-800 border border-dashed border-gray-700 rounded-2xl text-center">
+                  <p className="text-xs text-gray-600 font-medium">Belum ada crypto wallet</p>
                 </div>
               )}
             </div>

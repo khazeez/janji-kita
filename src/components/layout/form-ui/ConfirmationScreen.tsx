@@ -83,13 +83,13 @@ export default function ConfirmationScreen({
           <SectionIcon icon={Heart} colorClass="text-pink-400" bgClass="bg-pink-500/10" />
           <div>
             <h3 className='text-lg font-bold text-white tracking-tight'>Data Mempelai</h3>
-            <p className='text-xs text-white/40'>Informasi utama pasangan mempelai</p>
+            <p className='text-xs text-gray-500'>Informasi utama pasangan mempelai</p>
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Mempelai Wanita */}
-          <div className='bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-5 relative overflow-hidden group'>
+          <div className='bg-gray-800 border border-gray-700 rounded-2xl p-6 space-y-5 relative overflow-hidden group'>
              <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/5 blur-3xl rounded-full translate-x-10 -translate-y-10 group-hover:scale-110 transition-transform duration-700" />
              <div className="flex items-center gap-3">
                <div className="w-8 h-8 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-400 border border-pink-500/20">
@@ -99,28 +99,28 @@ export default function ConfirmationScreen({
              </div>
              <div className="space-y-3">
                <div className="flex flex-col">
-                 <span className="text-[10px] font-bold text-white/20 uppercase tracking-wider">Nama Lengkap</span>
+                 <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">Nama Lengkap</span>
                  <span className="text-white font-semibold">{brideGroomData.brideFullName || '-'}</span>
                </div>
                <div className="grid grid-cols-2 gap-4">
                  <div className="flex flex-col">
-                   <span className="text-[10px] font-bold text-white/20 uppercase tracking-wider">Panggilan</span>
+                   <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">Panggilan</span>
                    <span className="text-white font-medium">{brideGroomData.brideNickName || '-'}</span>
                  </div>
                  <div className="flex flex-col">
-                   <span className="text-[10px] font-bold text-white/20 uppercase tracking-wider">Instagram</span>
+                   <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">Instagram</span>
                    <span className="text-pink-400/80 font-medium">{brideGroomData.brideInstagram ? `@${brideGroomData.brideInstagram}` : '-'}</span>
                  </div>
                </div>
                <div className="flex flex-col">
-                 <span className="text-[10px] font-bold text-white/20 uppercase tracking-wider">Nama Orang Tua</span>
-                 <span className="text-white/70 text-sm italic">{brideGroomData.brideParentName || '-'}</span>
+                 <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">Nama Orang Tua</span>
+                 <span className="text-gray-400 text-sm italic">{brideGroomData.brideParentName || '-'}</span>
                </div>
              </div>
           </div>
 
           {/* Mempelai Pria */}
-          <div className='bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-5 relative overflow-hidden group'>
+          <div className='bg-gray-800 border border-gray-700 rounded-2xl p-6 space-y-5 relative overflow-hidden group'>
              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl rounded-full translate-x-10 -translate-y-10 group-hover:scale-110 transition-transform duration-700" />
              <div className="flex items-center gap-3">
                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
@@ -130,22 +130,22 @@ export default function ConfirmationScreen({
              </div>
              <div className="space-y-3">
                <div className="flex flex-col">
-                 <span className="text-[10px] font-bold text-white/20 uppercase tracking-wider">Nama Lengkap</span>
+                 <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">Nama Lengkap</span>
                  <span className="text-white font-semibold">{brideGroomData.groomFullName || '-'}</span>
                </div>
                <div className="grid grid-cols-2 gap-4">
                  <div className="flex flex-col">
-                   <span className="text-[10px] font-bold text-white/20 uppercase tracking-wider">Panggilan</span>
+                   <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">Panggilan</span>
                    <span className="text-white font-medium">{brideGroomData.groomNickName || '-'}</span>
                  </div>
                  <div className="flex flex-col">
-                   <span className="text-[10px] font-bold text-white/20 uppercase tracking-wider">Instagram</span>
+                   <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">Instagram</span>
                    <span className="text-blue-400/80 font-medium">{brideGroomData.groomInstagram ? `@${brideGroomData.groomInstagram}` : '-'}</span>
                  </div>
                </div>
                <div className="flex flex-col">
-                 <span className="text-[10px] font-bold text-white/20 uppercase tracking-wider">Nama Orang Tua</span>
-                 <span className="text-white/70 text-sm italic">{brideGroomData.groomParentName || '-'}</span>
+                 <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">Nama Orang Tua</span>
+                 <span className="text-gray-400 text-sm italic">{brideGroomData.groomParentName || '-'}</span>
                </div>
              </div>
           </div>
@@ -158,14 +158,14 @@ export default function ConfirmationScreen({
           <SectionIcon icon={MapPin} colorClass="text-blue-400" bgClass="bg-blue-500/10" />
           <div>
             <h3 className='text-lg font-bold text-white tracking-tight'>Rangkaian Acara</h3>
-            <p className='text-xs text-white/40'>Jadwal dan lokasi pelaksanaan acara</p>
+            <p className='text-xs text-gray-500'>Jadwal dan lokasi pelaksanaan acara</p>
           </div>
         </div>
 
         <div className="grid gap-4">
           {/* Akad Nikah */}
           {akadEvent && (
-            <div className='bg-white/[0.02] border border-white/5 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6'>
+            <div className='bg-gray-800 border border-gray-700 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6'>
               <div className="space-y-4 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="px-2 py-0.5 rounded-md bg-pink-500/10 text-pink-400 text-[10px] font-bold uppercase tracking-widest border border-pink-500/20">Akad Nikah</span>
@@ -176,7 +176,7 @@ export default function ConfirmationScreen({
                       <div className="mt-0.5 text-white/30"><MapPin size={14} /></div>
                       <div>
                         <p className="text-sm font-bold text-white">{akadEvent.location}</p>
-                        <p className="text-xs text-white/40 leading-relaxed">{akadEvent.locationDetail}</p>
+                        <p className="text-xs text-gray-500 leading-relaxed">{akadEvent.locationDetail}</p>
                       </div>
                     </div>
                     {akadEvent.mapsUrl && (
@@ -204,7 +204,7 @@ export default function ConfirmationScreen({
 
           {/* Resepsi Events */}
           {resepsiEvents.map((resepsi, index) => (
-             <div key={resepsi.eventId} className='bg-white/[0.02] border border-white/5 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6'>
+             <div key={resepsi.eventId} className='bg-gray-800 border border-gray-700 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6'>
               <div className="space-y-4 flex-1">
                 <div className="flex items-center gap-2">
                   <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 text-[10px] font-bold uppercase tracking-widest border border-blue-500/20">
@@ -217,7 +217,7 @@ export default function ConfirmationScreen({
                       <div className="mt-0.5 text-white/30"><MapPin size={14} /></div>
                       <div>
                         <p className="text-sm font-bold text-white">{resepsi.location}</p>
-                        <p className="text-xs text-white/40 leading-relaxed">{resepsi.locationDetail}</p>
+                        <p className="text-xs text-gray-500 leading-relaxed">{resepsi.locationDetail}</p>
                       </div>
                     </div>
                     {resepsi.mapsUrl && (
@@ -251,52 +251,52 @@ export default function ConfirmationScreen({
           <SectionIcon icon={CreditCard} colorClass="text-emerald-400" bgClass="bg-emerald-500/10" />
           <div>
             <h3 className='text-lg font-bold text-white tracking-tight'>Informasi Kado</h3>
-            <p className='text-xs text-white/40'>Tujuan pengiriman hadiah fisik & digital</p>
+            <p className='text-xs text-gray-500'>Tujuan pengiriman hadiah fisik & digital</p>
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Alamat Fisik */}
-          <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-4">
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6 space-y-4">
              <div className="flex items-center gap-2">
                <Home size={14} className="text-emerald-400" />
-               <h4 className="text-xs font-bold text-white/40 uppercase tracking-widest">Alamat Pengiriman</h4>
+               <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Alamat Pengiriman</h4>
              </div>
-             <div className="bg-white/5 rounded-xl p-4">
+             <div className="bg-gray-800 rounded-xl p-4">
                <p className="text-sm text-white/80 leading-relaxed">{giftData.address || 'Hanya kado digital'}</p>
              </div>
           </div>
 
           {/* Accounts Summary */}
-          <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 space-y-4">
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6 space-y-4">
              <div className="flex items-center gap-2">
                <CreditCard size={14} className="text-emerald-400" />
-               <h4 className="text-xs font-bold text-white/40 uppercase tracking-widest">Digital Accounts</h4>
+               <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Digital Accounts</h4>
              </div>
              <div className="space-y-3">
                {[...getBrideBank()?.account || [], ...getGroomBank()?.account || []].slice(0, 2).map((acc: any, i) => (
-                 <div key={i} className="flex justify-between items-center bg-white/5 px-4 py-2.5 rounded-xl border border-white/5">
+                 <div key={i} className="flex justify-between items-center bg-gray-800 px-4 py-2.5 rounded-xl border border-gray-700">
                    <div className="flex flex-col">
-                     <span className="text-[10px] font-bold text-white/20 uppercase">{acc.bankName}</span>
+                     <span className="text-[10px] font-bold text-gray-600 uppercase">{acc.bankName}</span>
                      <span className="text-xs text-white font-medium">{acc.accountNumber}</span>
                    </div>
-                   <Landmark size={14} className="text-white/20" />
+                   <Landmark size={14} className="text-gray-600" />
                  </div>
                ))}
                {[...getBrideWallet()?.address || [], ...getGroomWallet()?.address || []].slice(0, 1).map((w: any, i) => (
-                  <div key={i} className="flex justify-between items-center bg-white/5 px-4 py-3 rounded-xl border border-white/5">
+                  <div key={i} className="flex justify-between items-center bg-gray-800 px-4 py-3 rounded-xl border border-gray-700">
                     <div className="flex flex-col flex-1 min-w-0 pr-4">
-                      <span className="text-[10px] font-bold text-white/20 uppercase">{getChainLabel(w.chain)}</span>
+                      <span className="text-[10px] font-bold text-gray-600 uppercase">{getChainLabel(w.chain)}</span>
                       <span className="text-[10px] text-white/60 font-mono truncate">{w.address}</span>
                     </div>
-                    <Wallet size={14} className="text-white/20 flex-shrink-0" />
+                    <Wallet size={14} className="text-gray-600 flex-shrink-0" />
                   </div>
                ))}
                {(!getBrideBank()?.account.length && !getGroomBank()?.account.length && !getBrideWallet()?.address.length && !getGroomWallet()?.address.length) && (
-                 <p className="text-xs text-white/20 text-center py-2 italic">Tidak ada rekening terdaftar</p>
+                 <p className="text-xs text-gray-600 text-center py-2 italic">Tidak ada rekening terdaftar</p>
                )}
                {([...getBrideBank()?.account || [], ...getGroomBank()?.account || []].length + [...getBrideWallet()?.address || [], ...getGroomWallet()?.address || []].length > 3) && (
-                 <p className="text-[10px] text-white/40 text-center uppercase tracking-widest font-bold">+ data lainnya</p>
+                 <p className="text-[10px] text-gray-500 text-center uppercase tracking-widest font-bold">+ data lainnya</p>
                )}
              </div>
           </div>
@@ -312,9 +312,9 @@ export default function ConfirmationScreen({
               <Link2 size={18} className="text-purple-400" />
               <h3 className='text-lg font-bold text-white tracking-tight'>Link Undangan Publik</h3>
             </div>
-            <p className='text-sm text-white/40'>Inilah link yang akan Anda sebarkan kepada tamu undangan</p>
+            <p className='text-sm text-gray-500'>Inilah link yang akan Anda sebarkan kepada tamu undangan</p>
           </div>
-          <div className='bg-[#030712] border border-white/10 px-6 py-4 rounded-2xl shadow-2xl group-hover:border-purple-500/30 transition-all'>
+          <div className='bg-gray-900 border border-gray-600 px-6 py-4 rounded-2xl shadow-2xl group-hover:border-purple-500/30 transition-all'>
             <p className='text-purple-400 font-bold tracking-tight text-xl'>
               janjikita.art/<span className="text-white">{invitationUrl}</span>
             </p>

@@ -116,30 +116,6 @@ export async function signInWithEmail(email: string, password: string) {
   }
 }
 
-// Sign up with Google (uses PKCE flow automatically)
-export async function signUpWithGoogle() {
-  try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-      },
-    });
-
-    if (error) throw error;
-
-    return { error: null };
-  } catch (error: any) {
-    console.error('Google sign up error:', error);
-    return { error: error.message };
-  }
-}
-
-// Sign in with Google (uses PKCE flow automatically)
 export async function signInWithGoogle() {
   try {
     const { data, error } = await supabase.auth.signInWithOAuth({

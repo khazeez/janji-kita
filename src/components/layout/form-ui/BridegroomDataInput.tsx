@@ -11,7 +11,7 @@ export default function BrideGroomDataInput({ data, onChange }: BrideGroomInputP
     onChange({ ...data, [field]: value });
   };
 
-  const inputClasses = "w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-pink-500/50 focus:bg-white/[0.05] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300";
+  const inputClasses = "w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-pink-500/50 focus:bg-gray-800 focus:ring-4 focus:ring-pink-500/10 transition-all duration-300";
 
   return (
     <div className='space-y-10'>
@@ -23,11 +23,11 @@ export default function BrideGroomDataInput({ data, onChange }: BrideGroomInputP
           </div>
           <div>
             <h3 className='text-lg font-bold text-white tracking-tight'>Mempelai Pria</h3>
-            <p className='text-xs text-white/40'>Lengkapi data calon mempelai pria</p>
+            <p className='text-xs text-gray-500'>Lengkapi data calon mempelai pria</p>
           </div>
         </div>
 
-        <div className='grid gap-5 bg-white/[0.02] border border-white/5 rounded-2xl p-6'>
+        <div className='grid gap-5 bg-gray-800 border border-gray-700 rounded-2xl p-6'>
           <div className="space-y-1.5">
             <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Nama Lengkap</label>
             <input
@@ -53,7 +53,7 @@ export default function BrideGroomDataInput({ data, onChange }: BrideGroomInputP
             <div className="space-y-1.5">
               <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Instagram</label>
               <div className="relative">
-                <Instagram size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                <Instagram size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                 <input
                   type='text'
                   value={data.groomInstagram || ''}
@@ -86,11 +86,11 @@ export default function BrideGroomDataInput({ data, onChange }: BrideGroomInputP
           </div>
           <div>
             <h3 className='text-lg font-bold text-white tracking-tight'>Mempelai Wanita</h3>
-            <p className='text-xs text-white/40'>Lengkapi data calon mempelai wanita</p>
+            <p className='text-xs text-gray-500'>Lengkapi data calon mempelai wanita</p>
           </div>
         </div>
 
-        <div className='grid gap-5 bg-white/[0.02] border border-white/5 rounded-2xl p-6'>
+        <div className='grid gap-5 bg-gray-800 border border-gray-700 rounded-2xl p-6'>
           <div className="space-y-1.5">
             <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Nama Lengkap</label>
             <input
@@ -116,7 +116,7 @@ export default function BrideGroomDataInput({ data, onChange }: BrideGroomInputP
             <div className="space-y-1.5">
               <label className='block text-xs font-semibold text-white/50 uppercase tracking-wider ml-1'>Instagram</label>
               <div className="relative">
-                <Instagram size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" />
+                <Instagram size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
                 <input
                   type='text'
                   value={data.brideInstagram || ''}

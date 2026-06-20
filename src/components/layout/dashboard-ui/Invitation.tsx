@@ -2,31 +2,24 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { AllInvitationData, Transactions } from '@/types/interface';
+import { AllInvitationData } from '@/types/interface';
 import {
-  Package,
   CheckCircle,
   Sparkles,
   Heart,
-  Share2,
-  CreditCard,
-  Eye,
   PencilLineIcon,
   Clock,
-  Zap,
   Calendar,
   Loader2,
+  Zap,
+  Share2,
 } from 'lucide-react';
-import { createTransaction } from '@/models/transactions';
 
 type Props = {
   data: AllInvitationData[];
-  trx: Transactions;
 };
 
-export const runtime = 'edge';
-
-export default function InvitationComponents({ data, trx }: Props) {
+export default function InvitationComponents({ data }: Props) {
   const router = useRouter();
   const [showEditWarning, setShowEditWarning] = useState(false);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);

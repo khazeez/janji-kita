@@ -176,20 +176,20 @@ export default function PhotoInput({
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-3 ml-1">
-          <div className={`w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center ${iconColor}`}>
+          <div className={`w-8 h-8 rounded-lg bg-gray-800 border border-gray-600 flex items-center justify-center ${iconColor}`}>
             <User size={16} />
           </div>
           <div>
             <h4 className="text-sm font-bold text-white tracking-tight">{title}</h4>
-            <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider">{subtitle}</p>
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{subtitle}</p>
           </div>
         </div>
 
-        <div className="relative group aspect-[4/5] rounded-2xl overflow-hidden bg-white/[0.02] border-2 border-dashed border-white/5 transition-all hover:border-pink-500/20">
+        <div className="relative group aspect-[4/5] rounded-2xl overflow-hidden bg-gray-800 border-2 border-dashed border-gray-700 transition-all hover:border-pink-500/20">
           {photo ? (
             <>
               {isLoading && (
-                <div className='absolute inset-0 bg-gray-950/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 text-center gap-4'>
+                <div className='absolute inset-0 bg-gray-950/80  z-20 flex flex-col items-center justify-center p-6 text-center gap-4'>
                   <div className="relative">
                     <div className="w-12 h-12 rounded-full border-t-2 border-pink-500 animate-spin" />
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -210,7 +210,7 @@ export default function PhotoInput({
                 <button
                   onClick={() => handleSingleUpload(field, null)}
                   disabled={isLoading}
-                  className='w-full py-2.5 bg-red-500/90 hover:bg-red-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all backdrop-blur-md'
+                  className='w-full py-2.5 bg-red-500/90 hover:bg-red-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all '
                 >
                   <X size={14} /> Hapus Foto
                 </button>
@@ -218,7 +218,7 @@ export default function PhotoInput({
             </>
           ) : (
             <label className={`absolute inset-0 flex flex-col items-center justify-center cursor-pointer p-6 transition-all ${
-              isLoading ? 'bg-white/5 cursor-not-allowed' : 'hover:bg-white/[0.04]'
+              isLoading ? 'bg-gray-800 cursor-not-allowed' : 'hover:bg-gray-700'
             }`}>
               {isLoading ? (
                 <div className="flex flex-col items-center gap-4">
@@ -229,7 +229,7 @@ export default function PhotoInput({
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-4 text-center">
-                  <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center text-white/20 border border-white/10 group-hover:scale-110 group-hover:text-pink-500 group-hover:border-pink-500/20 transition-all duration-500">
+                  <div className="w-16 h-16 rounded-3xl bg-gray-800 flex items-center justify-center text-gray-600 border border-gray-600 group-hover:scale-110 group-hover:text-pink-500 group-hover:border-pink-500/20 transition-all duration-500">
                     <Camera size={32} />
                   </div>
                   <div className="space-y-1">
@@ -281,7 +281,7 @@ export default function PhotoInput({
             </div>
             <div>
               <h3 className='text-lg font-bold text-white tracking-tight'>Galeri Undangan</h3>
-              <p className='text-xs text-white/40'>Upload momen kebahagiaan Anda ({data.gallery?.length || 0}/15)</p>
+              <p className='text-xs text-gray-500'>Upload momen kebahagiaan Anda ({data.gallery?.length || 0}/15)</p>
             </div>
           </div>
           {(data.gallery?.length || 0) < 15 && (
@@ -304,9 +304,9 @@ export default function PhotoInput({
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {data.gallery?.map((url, i) => (
-            <div key={i} className="relative group aspect-square rounded-2xl overflow-hidden bg-white/[0.02] border border-white/5 transition-all hover:border-pink-500/20">
+            <div key={i} className="relative group aspect-square rounded-2xl overflow-hidden bg-gray-800 border border-gray-700 transition-all hover:border-pink-500/20">
               {deletingIndex === i ? (
-                <div className='absolute inset-0 bg-gray-950/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-2 text-center gap-2'>
+                <div className='absolute inset-0 bg-gray-950/80  z-20 flex flex-col items-center justify-center p-2 text-center gap-2'>
                   <Loader2 className="w-6 h-6 animate-spin text-white" />
                   <span className='text-[10px] font-bold text-white uppercase tracking-wider'>Hapus...</span>
                 </div>
@@ -319,7 +319,7 @@ export default function PhotoInput({
                   />
                   <button
                     onClick={() => removeGalleryPhoto(i)}
-                    className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all backdrop-blur-md"
+                    className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all "
                   >
                     <X size={14} />
                   </button>
@@ -329,16 +329,16 @@ export default function PhotoInput({
           ))}
           
           {(data.gallery?.length || 0) < 15 && (
-            <label className={`group relative aspect-square rounded-2xl border-2 border-dashed border-white/5 flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.02] hover:border-purple-500/20 transition-all ${
+            <label className={`group relative aspect-square rounded-2xl border-2 border-dashed border-gray-700 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-800 hover:border-purple-500/20 transition-all ${
               loadingField === 'gallery' ? 'opacity-50 cursor-not-allowed' : ''
             }`}>
               {loadingField === 'gallery' ? (
                 <div className="flex flex-col items-center gap-3">
-                  <div className="w-8 h-8 rounded-full border-2 border-t-purple-500 border-white/10 animate-spin" />
+                  <div className="w-8 h-8 rounded-full border-2 border-t-purple-500 border-gray-600 animate-spin" />
                   <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider">{uploadProgress?.message}</span>
                 </div>
               ) : (
-                <div className="flex flex-col items-center gap-2 text-center text-white/20 group-hover:text-purple-400 transition-colors">
+                <div className="flex flex-col items-center gap-2 text-center text-gray-600 group-hover:text-purple-400 transition-colors">
                   <Upload size={24} />
                   <span className="text-[10px] font-bold uppercase tracking-widest">Upload</span>
                 </div>
