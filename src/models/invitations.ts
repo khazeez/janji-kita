@@ -136,7 +136,7 @@ export async function getDataInvitationUser(slug: string) {
   }
 
   const dataCamelCase = transformDataInvitationResponse(data);
-  console.log('DB RESPONSE: ', dataCamelCase);
+
 
   return dataCamelCase;
 }
@@ -239,7 +239,7 @@ export async function getDataInvitationUserById(id: string) {
   
 
   const dataCamelCase = transformDataInvitationResponse(data);
-  console.log('DB RESPONSE: ', dataCamelCase);
+
 
   return dataCamelCase;
 }
@@ -340,7 +340,7 @@ export async function getDataInvitationUserByUserId(userId: string) {
   }
 
   const dataCamelCase = transformDataInvitationResponse(data ?? []);
-  console.log('DB RESPONSE: ', dataCamelCase);
+
 
   return dataCamelCase;
 }

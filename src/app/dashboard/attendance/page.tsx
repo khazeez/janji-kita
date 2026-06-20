@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   Users, 
   UserCheck, 
@@ -10,52 +10,21 @@ import {
   Loader2,
   ChevronDown,
 } from 'lucide-react';
-import supabase from '@/lib/supabase/client';
-import { getDataInvitationUserByUserId, getGuestBook } from '@/models/invitations';
+import { useUserInvitations, useGuestBook } from '@/hooks/useData';
 import { GuestBook, AllInvitationData } from '@/types/interface';
+import { useCurrentUser } from '@/hooks/useData';
 
 export default function GuestManagement() {
-  const [invitations, setInvitations] = useState<AllInvitationData[]>([]);
+  const { data: user, isLoading: loadingUser } = useCurrentUser();
+  const { data: invitations, isLoading: loadingInvitations } = useUserInvitations(user?.id);
+  
   const [selectedInvitation, setSelectedInvitation] = useState<AllInvitationData | null>(null);
-  const [guests, setGuests] = useState<GuestBook[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [fetchingGuests, setFetchingGuests] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ATTENDING' | 'NOT_ATTENDING' | 'MAYBE'>('ALL');
   const [showInvitationDropdown, setShowInvitationDropdown] = useState(false);
 
-  useEffect(() => {
-    async function loadInvitations() {
-      setLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user?.id) {
-        const data = await getDataInvitationUserByUserId(session.user.id);
-        if (data && Array.isArray(data) && data.length > 0) {
-          setInvitations(data);
-          setSelectedInvitation(data[0]);
-        }
-      }
-      setLoading(false);
-    }
-    loadInvitations();
-  }, []);
-
-  useEffect(() => {
-    async function loadGuests() {
-      if (!selectedInvitation) return;
-      
-      setFetchingGuests(true);
-      const result = await getGuestBook(selectedInvitation.invitationId);
-      if (result.success) {
-        setGuests(result.data || []);
-      } else {
-        setGuests([]);
-      }
-      setFetchingGuests(false);
-    }
-    loadGuests();
-  }, [selectedInvitation]);
+  const { data: guestBookResult, isLoading: fetchingGuests } = useGuestBook(selectedInvitation?.invitationId);
+  const guests: GuestBook[] = guestBookResult?.data || [];
 
   const stats = {
     total: guests.length,
@@ -124,6 +93,10 @@ export default function GuestManagement() {
     link.click();
   };
 
+  const loading = loadingUser || loadingInvitations;
+
+  const invList = (invitations || []) as AllInvitationData[];
+
   if (loading) {
     return (
       <div className="min-h-[300px] flex items-center justify-center">
@@ -145,7 +118,7 @@ export default function GuestManagement() {
         </div>
 
         {/* Invitation Selector */}
-        {invitations.length > 0 && (
+        {invList.length > 0 && (
           <div className="relative">
             <button 
               onClick={() => setShowInvitationDropdown(!showInvitationDropdown)}
@@ -162,7 +135,7 @@ export default function GuestManagement() {
 
             {showInvitationDropdown && (
               <div className="absolute top-full left-0 sm:right-0 sm:left-auto mt-1 w-full sm:w-auto sm:min-w-[220px] bg-gray-800 border border-gray-700 rounded-lg sm:rounded-xl shadow-2xl z-50 overflow-hidden">
-                {invitations.map((inv) => (
+                {invList.map((inv) => (
                   <button
                     key={inv.invitationId}
                     onClick={() => {

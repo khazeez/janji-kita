@@ -102,13 +102,13 @@ export default function Saved() {
 
   if (favorites.length === 0) {
     return (
-      <div className='flex flex-col items-center justify-center min-h-[400px]'>
-        <Heart className='w-16 h-16 md:w-24 md:h-24 text-gray-600 mb-4' />
-        <h2 className='text-xl md:text-2xl font-bold text-white mb-2 text-center px-4'>
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <Heart className="w-16 h-16 text-gray-600 mb-4" />
+        <h2 className="text-xl font-bold text-white mb-2 text-center px-4">
           Belum Ada Tema Favorit
         </h2>
-        <p className='text-sm md:text-base text-gray-400 mb-6 text-center px-4'>
-          Mulai tambahkan tema favoritmu dengan klik icon hati
+        <p className="text-sm text-gray-400 mb-6 text-center px-4">
+          Mulai tambahkan tema favoritmu dengan klik icon hati di katalog
         </p>
         <button
           onClick={() => router.push('/dashboard/catalogue')}
@@ -197,4 +197,12 @@ export default function Saved() {
       </div>
     </div>
   );
+}
+
+function getProductSlug(product: Product): string {
+  const pName = product.productName.toLowerCase();
+  if (pName.includes('adat') || pName.includes('nusantara') || pName.includes('jawa')) {
+    return 'nusantara';
+  }
+  return 'glasses';
 }

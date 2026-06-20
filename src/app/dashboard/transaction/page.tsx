@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   CreditCard,
   CheckCircle,
@@ -44,16 +44,22 @@ interface TransactionData {
 
 type StatusFilter = 'ALL' | 'PAID' | 'PENDING' | 'INITIATED' | 'FAILED' | 'EXPIRED' | 'CANCELLED' | 'REFUNDED';
 
+async function fetchTransactions(userId: string): Promise<TransactionData[]> {
+  const res = await fetch('/api/transactions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId }),
+  });
+  const result = await res.json();
+  return result.data || [];
+}
+
 export default function TransactionPage() {
-  const [transactions, setTransactions] = useState<TransactionData[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
-  useEffect(() => {
-    loadTransactions();
-  }, []);
+  const [userId, setUserId] = useState<string | null>(null);
 
   async function loadTransactions() {
     setLoading(true);
@@ -256,6 +262,7 @@ export default function TransactionPage() {
                           src={trx.PRODUCT.COVER_IMAGE}
                           alt={trx.PRODUCT.PRODUCT_NAME}
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">

@@ -14,10 +14,11 @@ const segments: string[] = ['All', 'Platinum', 'Gold', 'Silver', 'Bronze'];
 
 export default function DashboardCatalogue() {
   const router = useRouter();
+  const { data: products, isLoading } = useProducts();
+  const { data: user } = useCurrentUser();
+  const { data: favorites = [] } = useFavorites(user?.id);
   const [selectedSegment, setSelectedSegment] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [catalogues, setCatalogues] = useState<CatalogueItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -102,6 +103,21 @@ export default function DashboardCatalogue() {
     if (navigatingId) return;
     setNavigatingId(id);
     router.push(url);
+  };
+
+  const handleToggleFavorite = async (e: React.MouseEvent, productId: string) => {
+    e.stopPropagation();
+    if (!user) {
+      router.push('/sign-in');
+      return;
+    }
+    if (togglingId) return;
+    setTogglingId(productId);
+    try {
+      await toggleFavoriteProduct(user.id, productId);
+    } finally {
+      setTogglingId(null);
+    }
   };
 
   const filteredCatalogues = catalogues.filter((item) => {
@@ -189,7 +205,7 @@ export default function DashboardCatalogue() {
       </div>
 
       {/* Catalogue Grid */}
-      {loading ? (
+      {isLoading ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
           <Loader2 className="w-10 h-10 text-pink-500 animate-spin" />
           <p className="text-gray-400 animate-pulse">Memuat koleksi tema...</p>
@@ -261,34 +277,35 @@ export default function DashboardCatalogue() {
                 </div>
               </div>
 
-              {/* Info Container */}
-              <div className="p-4 space-y-3">
-                <div className="flex justify-between items-start gap-2">
-                  <h3 className="font-bold text-white group-hover:text-pink-400 transition-colors line-clamp-1">
-                    {item.data.productName}
-                  </h3>
-                  <div className="flex items-center gap-1 text-yellow-400">
-                    <Star className="w-3.5 h-3.5 fill-current" />
-                    <span className="text-xs font-bold">4.9</span>
+                {/* Info Container */}
+                <div className="p-4 space-y-3">
+                  <div className="flex justify-between items-start gap-2">
+                    <h3 className="font-bold text-white group-hover:text-pink-400 transition-colors line-clamp-1">
+                      {item.data.productName}
+                    </h3>
+                    <div className="flex items-center gap-1 text-yellow-400">
+                      <Star className="w-3.5 h-3.5 fill-current" />
+                      <span className="text-xs font-bold">4.9</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-xs text-gray-400 italic">Mulai dari</span>
+                    <span className="text-pink-500 font-bold group-hover:scale-105 transition-transform">
+                      {formatPrice(item.data.basePriceNoPhoto)}
+                    </span>
                   </div>
                 </div>
-                
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs text-gray-400 italic">Mulai dari</span>
-                  <span className="text-pink-500 font-bold group-hover:scale-105 transition-transform">
-                    {formatPrice(item.data.basePriceNoPhoto)}
-                  </span>
-                </div>
-              </div>
 
-              {/* Navigation Loading Overlay */}
-              {navigatingId === item.data.productId && (
-                <div className="absolute inset-0 z-20 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center">
-                  <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
-                </div>
-              )}
-            </div>
-          ))}
+                {/* Navigation Loading Overlay */}
+                {navigatingId === item.data.productId && (
+                  <div className="absolute inset-0 z-20 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
