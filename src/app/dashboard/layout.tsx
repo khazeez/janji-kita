@@ -278,7 +278,7 @@ export default function DashboardLayout({
       </header>
 
       {/* Main Content */}
-      <main className='flex-1 overflow-y-auto scrollbar-hide px-4 lg:px-8 py-6 pb-20 lg:pb-8 max-w-7xl mx-auto w-full'>
+      <main className='flex-1 overflow-y-auto scrollbar-hide px-4 lg:px-10 py-6 lg:py-8 pb-24 lg:pb-10 w-full lg:w-[70%] mx-auto'>
         {children}
       </main>
 

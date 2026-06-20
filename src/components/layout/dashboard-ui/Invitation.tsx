@@ -13,6 +13,7 @@ import {
   Loader2,
   Zap,
   Share2,
+  Package,
 } from 'lucide-react';
 
 type Props = {
@@ -238,7 +239,8 @@ export default function InvitationComponents({ data }: Props) {
           </div>
         </div>
 
-        {/* Filter Tabs */}
+        {/* Filter Tabs - only show when there are invitations */}
+        {data.length > 0 && (
         <div className='flex gap-2 mb-6 overflow-x-auto'>
           {[
             { key: 'all', label: 'Semua' },
@@ -259,8 +261,9 @@ export default function InvitationComponents({ data }: Props) {
             </button>
           ))}
         </div>
+        )}
 
-        {filteredData.length === 0 ? (
+        {data.length === 0 ? (
           <div className='rounded-2xl py-5 pb-10  backdrop-blur-sm px-2 lg:px-4'>
             <div className='text-center pb-10'>
               <span className='relative inline-block text-pink-500'>
@@ -371,6 +374,14 @@ export default function InvitationComponents({ data }: Props) {
                 Mulai Buat Undangan
               </Link>
             </div>
+          </div>
+        ) : filteredData.length === 0 ? (
+          <div className='p-8 sm:p-12 text-center'>
+            <div className='bg-gray-900/50 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4'>
+              <Package className='w-6 h-6 sm:w-7 sm:h-7 text-gray-700' />
+            </div>
+            <p className='text-gray-400 font-medium text-sm sm:text-base'>Tidak ada undangan</p>
+            <p className='text-gray-600 text-[10px] sm:text-xs mt-1'>Tidak ada undangan dengan status ini.</p>
           </div>
         ) : (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>

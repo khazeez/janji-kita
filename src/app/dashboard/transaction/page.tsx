@@ -49,6 +49,31 @@ export default function TransactionPage() {
   const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [checkingId, setCheckingId] = useState<string | null>(null);
+
+  async function checkStatus(transactionId: string) {
+    setCheckingId(transactionId);
+    try {
+      const res = await fetch('/api/midtrans/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transactionId }),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Gagal cek status');
+      setTransactions(prev =>
+        prev.map(t =>
+          t.TRANSACTION_ID === transactionId
+            ? { ...t, PAYMENT_STATUS: result.currentStatus, PAYMENT_METHOD: result.paymentMethod || t.PAYMENT_METHOD }
+            : t
+        )
+      );
+    } catch (error) {
+      console.error('Check status error:', error);
+    } finally {
+      setCheckingId(null);
+    }
+  }
 
   async function loadTransactions() {
     if (!user?.id) return;
@@ -95,7 +120,7 @@ export default function TransactionPage() {
       case 'PENDING':
         return { label: 'Menunggu', color: 'text-yellow-500', bg: 'bg-yellow-500/10 border-yellow-500/20', icon: Clock };
       case 'INITIATED':
-        return { label: 'Dimulai', color: 'text-blue-500', bg: 'bg-blue-500/10 border-blue-500/20', icon: Clock };
+        return { label: 'Pending', color: 'text-blue-500', bg: 'bg-blue-500/10 border-blue-500/20', icon: Clock };
       case 'FAILED':
         return { label: 'Gagal', color: 'text-red-500', bg: 'bg-red-500/10 border-red-500/20', icon: XCircle };
       case 'EXPIRED':
@@ -237,7 +262,7 @@ export default function TransactionPage() {
               <option value="ALL">Semua Status</option>
               <option value="PAID">Berhasil</option>
               <option value="PENDING">Menunggu</option>
-              <option value="INITIATED">Dimulai</option>
+              <option value="INITIATED">Inisialisasi</option>
               <option value="FAILED">Gagal</option>
               <option value="EXPIRED">Kadaluarsa</option>
               <option value="CANCELLED">Dibatalkan</option>
@@ -299,10 +324,20 @@ export default function TransactionPage() {
                         </div>
 
                         {/* Status Badge */}
-                        <span className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase border flex-shrink-0 flex items-center gap-1 ${statusConfig.bg} ${statusConfig.color}`}>
-                          <StatusIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                          <span className="hidden sm:inline">{statusConfig.label}</span>
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase border flex-shrink-0 flex items-center gap-1 ${statusConfig.bg} ${statusConfig.color}`}>
+                            <StatusIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                            <span className="hidden sm:inline">{statusConfig.label}</span>
+                          </span>
+                          <button
+                            onClick={() => checkStatus(trx.TRANSACTION_ID)}
+                            disabled={checkingId === trx.TRANSACTION_ID}
+                            className="p-1 rounded-lg hover:bg-gray-700 transition-colors text-gray-500 hover:text-gray-300 disabled:opacity-50"
+                            title="Cek status terbaru dari Midtrans"
+                          >
+                            <RefreshCw className={`w-3 h-3 ${checkingId === trx.TRANSACTION_ID ? 'animate-spin' : ''}`} />
+                          </button>
+                        </div>
                       </div>
 
                       {/* Details Row */}
