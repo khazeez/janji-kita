@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Heart, Eye, Check, Loader2, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
+import { Product } from '@/types/interface';
 interface FavoriteProduct {
   PRODUCT_ID: string;
   PRODUCT_NAME: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, use } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
@@ -43,6 +43,12 @@ const formatPrice = (price: number) => {
 const cn = (...classes: (string | boolean | undefined | null)[]) => {
   return classes.filter(Boolean).join(' ');
 };
+
+interface PageProps {
+  params: Promise<{
+    productName: string;
+  }>;
+}
 
 export default function DashboardProductDetail({ params }: PageProps) {
   const { productName } = use(params);

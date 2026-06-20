@@ -60,6 +60,8 @@ export default function TransactionPage() {
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
   const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [transactions, setTransactions] = useState<TransactionData[]>([]);
 
   async function loadTransactions() {
     setLoading(true);

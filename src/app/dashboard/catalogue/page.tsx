@@ -1,14 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X, Heart, Star, Loader2 } from 'lucide-react';
-import { getProductInvitation } from '@/models/invitations';
-import { Product } from '@/types/interface';
-
-interface CatalogueItem {
-  data: Product;
-}
+import { useProducts, useCurrentUser, useFavorites, toggleFavoriteProduct } from '@/hooks/useData';
 
 const segments: string[] = ['All', 'Platinum', 'Gold', 'Silver', 'Bronze'];
 
@@ -20,75 +15,9 @@ export default function DashboardCatalogue() {
   const [selectedSegment, setSelectedSegment] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
-  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const data: Product[] = await getProductInvitation();
-        const wrappedData: CatalogueItem[] = data
-          .filter(Boolean)
-          .map((item) => ({ data: item }));
-
-        setCatalogues(wrappedData);
-      } catch (error) {
-        console.error(error);
-        setCatalogues([]);
-      }
-
-      try {
-        const res = await fetch('/api/favorites');
-        if (res.ok) {
-          const result = await res.json();
-          if (result.data) {
-            setFavoriteIds(new Set(result.data.map((f: any) => f.PRODUCT.PRODUCT_ID)));
-          }
-        }
-      } catch {
-      }
-
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  const toggleFavorite = useCallback(async (productId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (togglingId) return;
-
-    setTogglingId(productId);
-    const isFavorite = favoriteIds.has(productId);
-
-    try {
-      if (isFavorite) {
-        const res = await fetch('/api/favorites', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId }),
-        });
-        if (res.ok) {
-          setFavoriteIds((prev) => { const next = new Set(prev); next.delete(productId); return next; });
-          window.dispatchEvent(new CustomEvent('update-counts'));
-        }
-      } else {
-        const res = await fetch('/api/favorites', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId }),
-        });
-        if (res.ok) {
-          setFavoriteIds((prev) => { const next = new Set(prev); next.add(productId); return next; });
-          window.dispatchEvent(new CustomEvent('update-counts'));
-        }
-      }
-    } catch {
-    } finally {
-      setTogglingId(null);
-    }
-  }, [favoriteIds, togglingId]);
+  const favoriteIds = new Set(favorites.map((f: any) => f.PRODUCT?.PRODUCT_ID || f.productId).filter(Boolean));
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -113,23 +42,25 @@ export default function DashboardCatalogue() {
     }
     if (togglingId) return;
     setTogglingId(productId);
+    const isFavorite = favoriteIds.has(productId);
     try {
-      await toggleFavoriteProduct(user.id, productId);
+      await toggleFavoriteProduct(user.id, productId, isFavorite);
+      window.dispatchEvent(new CustomEvent('update-counts'));
     } finally {
       setTogglingId(null);
     }
   };
 
-  const filteredCatalogues = catalogues.filter((item) => {
-    if (!item?.data) return false;
+  const filteredCatalogues = (products || []).filter((item) => {
+    if (!item) return false;
 
     const matchesSegment =
-      selectedSegment === 'All' || item.data.segmentation === selectedSegment;
+      selectedSegment === 'All' || item.segmentation === selectedSegment;
 
     const matchesSearch =
-      item.data.productName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.data.segmentation?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.data.productType?.toLowerCase().includes(searchQuery.toLowerCase());
+      item.productName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.segmentation?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.productType?.toLowerCase().includes(searchQuery.toLowerCase());
 
     return matchesSegment && matchesSearch;
   });
@@ -230,41 +161,41 @@ export default function DashboardCatalogue() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredCatalogues.map((item) => (
             <div
-              key={item.data.productId}
-              onClick={() => handleNavigation(`/dashboard/catalogue/${item.data.productName}`, item.data.productId)}
+              key={item.productId}
+              onClick={() => handleNavigation(`/dashboard/catalogue/${item.productName}`, item.productId)}
               className="group relative bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden hover:border-pink-500/50 transition-all duration-500 cursor-pointer hover:shadow-2xl hover:shadow-pink-500/10"
             >
               {/* Image Container */}
               <div className="relative aspect-[4/5] overflow-hidden">
                 <img
-                  src={item.data.coverImage}
-                  alt={item.data.productName}
+                  src={item.coverImage}
+                  alt={item.productName}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
                 
                 {/* Segment Tag */}
                 <div className="absolute top-3 left-3">
-                  <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg uppercase tracking-wider ${getSegmentColor(item.data.segmentation)}`}>
-                    {item.data.segmentation}
+                  <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg uppercase tracking-wider ${getSegmentColor(item.segmentation)}`}>
+                    {item.segmentation}
                   </span>
                 </div>
 
                 {/* Favorite Button */}
                 <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300">
                   <button
-                    onClick={(e) => toggleFavorite(item.data.productId, e)}
-                    disabled={togglingId === item.data.productId}
+                    onClick={(e) => handleToggleFavorite(e, item.productId)}
+                    disabled={togglingId === item.productId}
                     className={`p-2 rounded-xl border transition-all ${
-                      favoriteIds.has(item.data.productId)
+                      favoriteIds.has(item.productId)
                         ? 'bg-pink-600 border-pink-500 text-white'
                         : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-pink-600 hover:border-pink-500 hover:text-white'
                     }`}
                   >
-                    {togglingId === item.data.productId ? (
+                    {togglingId === item.productId ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
-                      <Heart className={`w-4 h-4 ${favoriteIds.has(item.data.productId) ? 'fill-current' : ''}`} />
+                      <Heart className={`w-4 h-4 ${favoriteIds.has(item.productId) ? 'fill-current' : ''}`} />
                     )}
                   </button>
                 </div>
@@ -272,7 +203,7 @@ export default function DashboardCatalogue() {
                 {/* Type Badge */}
                 <div className="absolute bottom-3 left-3">
                    <span className="text-[10px] font-medium text-gray-300 bg-gray-800 px-2.5 py-1 rounded-lg border border-gray-700">
-                    {item.data.productType}
+                    {item.productType}
                   </span>
                 </div>
               </div>
@@ -281,7 +212,7 @@ export default function DashboardCatalogue() {
                 <div className="p-4 space-y-3">
                   <div className="flex justify-between items-start gap-2">
                     <h3 className="font-bold text-white group-hover:text-pink-400 transition-colors line-clamp-1">
-                      {item.data.productName}
+                      {item.productName}
                     </h3>
                     <div className="flex items-center gap-1 text-yellow-400">
                       <Star className="w-3.5 h-3.5 fill-current" />
@@ -292,20 +223,19 @@ export default function DashboardCatalogue() {
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-xs text-gray-400 italic">Mulai dari</span>
                     <span className="text-pink-500 font-bold group-hover:scale-105 transition-transform">
-                      {formatPrice(item.data.basePriceNoPhoto)}
+                      {formatPrice(item.basePriceNoPhoto)}
                     </span>
                   </div>
                 </div>
 
                 {/* Navigation Loading Overlay */}
-                {navigatingId === item.data.productId && (
+                {navigatingId === item.productId && (
                   <div className="absolute inset-0 z-20 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center">
                     <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
                   </div>
                 )}
               </div>
-            );
-          })}
+            ))}
         </div>
       )}
     </div>

@@ -93,16 +93,15 @@ export function useFavorites(userId: string | undefined) {
   );
 }
 
-export async function toggleFavoriteProduct(userId: string, productId: string): Promise<boolean> {
+export async function toggleFavoriteProduct(userId: string, productId: string, isFavorite: boolean): Promise<boolean> {
   const res = await fetch('/api/favorites', {
-    method: 'POST',
+    method: isFavorite ? 'DELETE' : 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, productId }),
+    body: JSON.stringify({ productId }),
   });
 
   if (!res.ok) throw new Error('Failed to toggle favorite');
 
-  const result = await res.json();
   mutate(['favorites', userId]);
-  return result.isFavorite;
+  return !isFavorite;
 }

@@ -14,5 +14,5 @@ export default function Invitations() {
     );
   }
 
-  return <Invitation data={data || []} />;
+  return <Invitation data={invitations || []} />;
 }
