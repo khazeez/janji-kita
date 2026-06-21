@@ -49,7 +49,13 @@ export async function POST(req: Request) {
       clientKey: process.env.MIDTRANS_CLIENT_KEY!,
     });
 
-    const statusResponse = await (coreApi as any).transaction.status(trx.TRANSACTION_ID);
+    // Try TRANSACTION_ID first (normal flow), fallback to GATEWAY_ORDER_ID (retry flow)
+    let statusResponse;
+    try {
+      statusResponse = await (coreApi as any).transaction.status(trx.TRANSACTION_ID);
+    } catch {
+      statusResponse = await (coreApi as any).transaction.status(trx.GATEWAY_ORDER_ID);
+    }
 
     const midtransStatus = statusResponse.transaction_status;
     const fraudStatus = statusResponse.fraud_status;

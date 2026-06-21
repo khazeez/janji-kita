@@ -50,6 +50,7 @@ export default function TransactionPage() {
   const [transactions, setTransactions] = useState<TransactionData[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [checkingId, setCheckingId] = useState<string | null>(null);
+  const [retryingId, setRetryingId] = useState<string | null>(null);
 
   async function checkStatus(transactionId: string) {
     setCheckingId(transactionId);
@@ -72,6 +73,39 @@ export default function TransactionPage() {
       console.error('Check status error:', error);
     } finally {
       setCheckingId(null);
+    }
+  }
+
+  async function retryPayment(trx: TransactionData) {
+    setRetryingId(trx.TRANSACTION_ID);
+    try {
+      const res = await fetch('/api/midtrans/retry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transactionId: trx.TRANSACTION_ID }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: 'Gagal memproses pembayaran' }));
+        throw new Error(err.message);
+      }
+      const { snapToken, invitationId } = await res.json();
+      // @ts-ignore
+      window.snap.pay(snapToken, {
+        onSuccess: async () => {
+          await fetch('/api/midtrans/success', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ invitationId }),
+          });
+          window.location.reload();
+        },
+        onPending: () => setRetryingId(null),
+        onError: () => setRetryingId(null),
+        onClose: () => setRetryingId(null),
+      });
+    } catch (error) {
+      console.error('Retry payment error:', error);
+      setRetryingId(null);
     }
   }
 
@@ -380,6 +414,24 @@ export default function TransactionPage() {
                           {statusConfig.label}
                         </span>
                       </div>
+
+                      {/* Retry button for INITIATED transactions */}
+                      {trx.PAYMENT_STATUS === 'INITIATED' && (
+                        <div className="mt-3">
+                          <button
+                            onClick={() => retryPayment(trx)}
+                            disabled={retryingId === trx.TRANSACTION_ID}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-lg text-[10px] sm:text-xs font-medium transition-all disabled:opacity-50"
+                          >
+                            {retryingId === trx.TRANSACTION_ID ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <CreditCard className="w-3 h-3" />
+                            )}
+                            {retryingId === trx.TRANSACTION_ID ? 'Memproses...' : 'Lanjutkan Pembayaran'}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

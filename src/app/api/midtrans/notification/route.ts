@@ -41,6 +41,19 @@ export async function POST(req: Request) {
     const transactionId = body.transaction_id;
 
     const supabase = getAdminClient();
+
+    // Find the transaction by TRANSACTION_ID (normal) or GATEWAY_ORDER_ID (retry)
+    const { data: trxRecord } = await supabase
+      .from('TRANSACTIONS')
+      .select('TRANSACTION_ID')
+      .or(`TRANSACTION_ID.eq.${orderId},GATEWAY_ORDER_ID.eq.${orderId}`)
+      .maybeSingle();
+
+    if (!trxRecord) {
+      console.error('Transaction not found for order_id:', orderId);
+      return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
+    }
+
     const updateData: Record<string, any> = {
       PAYMENT_STATUS: paymentStatus,
       PAYMENT_METHOD: paymentType?.toUpperCase() || null,
@@ -55,7 +68,7 @@ export async function POST(req: Request) {
     const { error } = await supabase
       .from('TRANSACTIONS')
       .update(updateData)
-      .eq('TRANSACTION_ID', orderId);
+      .eq('TRANSACTION_ID', trxRecord.TRANSACTION_ID);
 
     if (error) {
       console.error('Error updating transaction:', error);
@@ -67,7 +80,7 @@ export async function POST(req: Request) {
       const { data: trx } = await supabase
         .from('TRANSACTIONS')
         .select('INVITATION_ID')
-        .eq('TRANSACTION_ID', orderId)
+        .eq('TRANSACTION_ID', trxRecord.TRANSACTION_ID)
         .single();
 
       if (trx?.INVITATION_ID) {
