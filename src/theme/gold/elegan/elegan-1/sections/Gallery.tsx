@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { X } from 'lucide-react';
 
 interface GalleryProps {
@@ -7,7 +7,6 @@ interface GalleryProps {
 
 export default function Gallery({ photos }: GalleryProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  const [visibleImages, setVisibleImages] = useState<number[]>([]);
 
   const defaultImages = [
     { id: 1, src: '/images/imam105.webp', alt: 'Wedding Photo 1' },
@@ -39,34 +38,16 @@ export default function Gallery({ photos }: GalleryProps) {
     'col-span-1 row-span-1',
   ];
 
-  useEffect(() => {
-    images.forEach((_, index) => {
-      setTimeout(() => {
-        setVisibleImages((prev) => [...prev, index]);
-      }, index * 200);
-    });
-  }, []);
-
   return (
     <>
       <style>{`
         @keyframes fadeInScale {
-          from {
-            opacity: 0;
-            transform: scale(0.8);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
+          from { opacity: 0; transform: scale(0.8); }
+          to { opacity: 1; transform: scale(1); }
         }
-        
-        .photo-visible {
-          animation: fadeInScale 0.8s ease-out forwards;
-        }
-        
-        .photo-hidden {
+        .photo-stagger {
           opacity: 0;
+          animation: fadeInScale 0.6s ease-out forwards;
         }
       `}</style>
 
@@ -85,15 +66,14 @@ export default function Gallery({ photos }: GalleryProps) {
                 onClick={() => setSelectedImage(index)}
                 className={`relative cursor-pointer overflow-hidden border-3 border-white shadow-lg group ${
                   mosaicPattern[index % mosaicPattern.length]
-                } ${
-                  visibleImages.includes(index)
-                    ? 'photo-visible'
-                    : 'photo-hidden'
-                }`}
+                } photo-stagger`}
+                style={{ animationDelay: `${index * 120}ms` }}
               >
                 <img
                   src={image.src}
                   alt={image.alt}
+                  loading='lazy'
+                  decoding='async'
                   className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
                 />
 
@@ -113,13 +93,13 @@ export default function Gallery({ photos }: GalleryProps) {
             onClick={() => setSelectedImage(null)}
           >
             <button
-              className='absolute top-6 left-6 bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all z-50 w-10 h-10 rounded-full flex items-center justify-center border border-white/20'
+              className='absolute top-6 left-6 bg-white/10 text-white hover:bg-white/20 transition-all z-50 w-10 h-10 rounded-full flex items-center justify-center'
               onClick={() => setSelectedImage(null)}
             >
               <X size={20} />
             </button>
 
-            <div className='absolute top-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md text-white px-3 py-1.5 rounded-full border border-white/20 text-xs font-semibold z-50'>
+            <div className='absolute top-4 left-1/2 -translate-x-1/2 bg-white/10 text-white px-3 py-1.5 rounded-full border border-white/20 text-xs font-semibold z-50'>
               {selectedImage + 1} / {images.length}
             </div>
 
@@ -130,7 +110,7 @@ export default function Gallery({ photos }: GalleryProps) {
               <img
                 src={images[selectedImage].src}
                 alt={images[selectedImage].alt}
-                className='max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl fade-up delay-2'
+                className='max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl'
               />
             </div>
 
@@ -138,23 +118,18 @@ export default function Gallery({ photos }: GalleryProps) {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedImage(
-                    selectedImage > 0 ? selectedImage - 1 : images.length - 1
-                  );
+                  setSelectedImage(selectedImage > 0 ? selectedImage - 1 : images.length - 1);
                 }}
-                className='bg-white/10 backdrop-blur-md text-white px-5 py-2 rounded-full hover:bg-white/20 transition-all border border-white/20 text-sm font-medium'
+                className='bg-white/10 text-white px-5 py-2 rounded-full hover:bg-white/20 transition-all border border-white/20 text-sm font-medium'
               >
                 ← Prev
               </button>
-
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedImage(
-                    selectedImage < images.length - 1 ? selectedImage + 1 : 0
-                  );
+                  setSelectedImage(selectedImage < images.length - 1 ? selectedImage + 1 : 0);
                 }}
-                className='bg-white/10 backdrop-blur-md text-white px-5 py-2 rounded-full hover:bg-white/20 transition-all border border-white/20 text-sm font-medium'
+                className='bg-white/10 text-white px-5 py-2 rounded-full hover:bg-white/20 transition-all border border-white/20 text-sm font-medium'
               >
                 Next →
               </button>

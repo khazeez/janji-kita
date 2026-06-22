@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 import { FaMusic, FaVolumeMute } from 'react-icons/fa';
 
 import {
@@ -32,14 +32,21 @@ interface Props {
   isEditorMode?: boolean;
 }
 
+const MemoizedIntroduction = memo(Introduction);
+const MemoizedQuotes = memo(Quotes);
+const MemoizedCouple = memo(Couple);
+const MemoizedGallery = memo(Gallery);
+const MemoizedEvent = memo(Event);
+const MemoizedGift = memo(Gift);
+const MemoizedThanks = memo(Thanks);
+const MemoizedRSVP = memo(RSVP);
+
 export default function GlassesDesign({ data, isEditorMode = false }: Props) {
   const [phase, setPhase] = useState<Phase>('cover');
   const [isPlaying, setIsPlaying] = useState(false);
   const [guestName, setGuestName] = useState('');
   const [currentImage, setCurrentImage] = useState(0);
 
-  // Use user photos if available, otherwise default
-  // Filter out empty strings first
   const validUserPhotos = (data.invitationDataUser.galleryPhotos || []).filter(
     (p) => p && p.trim() !== ''
   );
@@ -47,7 +54,6 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
   const backgroundImages =
     validUserPhotos.length > 0 ? validUserPhotos : defaultBackgroundImages;
 
-  // Ref to keep track of images without triggering effect re-runs or HMR errors
   const backgroundImagesRef = useRef(backgroundImages);
   backgroundImagesRef.current = backgroundImages;
 
@@ -77,9 +83,8 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
     <div
       className={`min-h-screen ${isEditorMode ? '' : 'flex justify-center'}`}
     >
-      {/* ================= DEVICE FRAME ================= */}
       <div className='relative w-full max-w-[360px] h-screen overflow-hidden bg-black shadow-xl'>
-        {/* ================= BACKGROUND ================= */}
+        {/* Background — only render current and next image */}
         {phase === 'main' && (
           <div className='absolute inset-0 z-0'>
             {backgroundImages.map((img, i) => (
@@ -87,6 +92,8 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
                 key={`${img}-${i}`}
                 src={img}
                 alt=''
+                loading='lazy'
+                decoding='async'
                 className={`
                   absolute inset-0 w-full h-full object-cover
                   transition-opacity duration-[2000ms]
@@ -98,7 +105,6 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
           </div>
         )}
 
-        {/* ================= COVER ================= */}
         <Cover
           isOpen={phase !== 'cover'}
           guestName={guestName}
@@ -109,34 +115,30 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
           }}
         />
 
-        {/* ================= SPLASH ================= */}
         {phase === 'splash' && (
           <div className='absolute inset-0 z-40'>
             <SplashScreen onComplete={() => setPhase('main')} />
           </div>
         )}
 
-        {/* ================= SCROLL AREA ================= */}
         {phase === 'main' && (
           <div className='relative z-10 h-full overflow-x-hidden scrollbar-hide'>
-            <Introduction data={data} />
-            <Quotes />
-            <Couple data={data.invitationDataUser} />
-            <Gallery photos={data.invitationDataUser.galleryPhotos} />
-            <Event data={data.invitationEvent} />
-            <Gift data={data.invitationGift} />
-            <Thanks data={data.invitationDataUser} />
+            <MemoizedIntroduction data={data} />
+            <MemoizedQuotes />
+            <MemoizedCouple data={data.invitationDataUser} />
+            <MemoizedGallery photos={data.invitationDataUser.galleryPhotos} />
+            <MemoizedEvent data={data.invitationEvent} />
+            <MemoizedGift data={data.invitationGift} />
+            <MemoizedThanks data={data.invitationDataUser} />
           </div>
         )}
 
-        {/* ================= RSVP (FIXED) ================= */}
         {phase === 'main' && (
           <div className='absolute z-50'>
-            <RSVP invitationId={data.invitationId} />
+            <MemoizedRSVP invitationId={data.invitationId} />
           </div>
         )}
 
-        {/* ================= AUDIO (FIXED) ================= */}
         {phase === 'main' && (
           <button
             onClick={() => setIsPlaying((p) => !p)}

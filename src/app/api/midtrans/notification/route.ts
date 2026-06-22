@@ -60,6 +60,29 @@ export async function POST(req: Request) {
       GATEWAY_TRANSACTION_ID: transactionId || null,
       UPDATED_AT: new Date().toISOString(),
     };
+
+    // Store payment details (VA numbers, QR actions, etc.) from notification
+    const paymentDetailFields: Record<string, any> = {};
+    if (body.va_numbers?.length > 0) {
+      paymentDetailFields.type = 'bank_transfer';
+      paymentDetailFields.vaNumbers = body.va_numbers;
+    } else if (body.permata_va_number) {
+      paymentDetailFields.type = 'bank_transfer';
+      paymentDetailFields.vaNumbers = [{ bank: 'permata', va_number: body.permata_va_number }];
+    } else if (body.bill_key) {
+      paymentDetailFields.type = 'mandiri_bill';
+      paymentDetailFields.billKey = body.bill_key;
+      paymentDetailFields.billerCode = body.biller_code;
+    } else if (body.actions?.length > 0) {
+      const pt = (paymentType || '').toLowerCase();
+      if (pt === 'qris') paymentDetailFields.type = 'qris';
+      else if (pt === 'gopay') paymentDetailFields.type = 'gopay';
+      else paymentDetailFields.type = 'e_wallet';
+      paymentDetailFields.actions = body.actions;
+    }
+    if (Object.keys(paymentDetailFields).length > 0) {
+      updateData.PAYMENT_PROOF_URL = JSON.stringify(paymentDetailFields);
+    }
     if (paymentStatus === 'PAID') updateData.PAID_AT = new Date().toISOString();
     else if (paymentStatus === 'CANCELLED') updateData.CANCELLED_AT = new Date().toISOString();
     else if (paymentStatus === 'REFUNDED') updateData.REFUNDED_AT = new Date().toISOString();

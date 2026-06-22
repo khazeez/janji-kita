@@ -116,12 +116,15 @@ export async function signInWithEmail(email: string, password: string) {
   }
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(intent?: 'signin' | 'signup') {
   try {
+    let redirectTo = `${window.location.origin}/auth/callback`;
+    if (intent) redirectTo += `?intent=${intent}`;
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useCurrentUser } from '@/hooks/useData';
 import {
   CreditCard,
@@ -14,7 +14,13 @@ import {
   Package,
   ArrowUpDown,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  Copy,
+  Check,
+  Banknote,
+  QrCode,
+  Wallet,
+  ExternalLink,
 } from 'lucide-react';
 
 interface TransactionData {
@@ -39,6 +45,17 @@ interface TransactionData {
   UPDATED_AT: string;
 }
 
+interface PaymentDetailData {
+  type: string;
+  vaNumbers?: { bank: string; va_number: string }[];
+  billKey?: string;
+  billerCode?: string;
+  actions?: { name: string; url: string }[];
+  bank?: string;
+  maskedCard?: string;
+  rawType?: string;
+}
+
 type StatusFilter = 'ALL' | 'PAID' | 'PENDING' | 'INITIATED' | 'FAILED' | 'EXPIRED' | 'CANCELLED' | 'REFUNDED';
 
 export default function TransactionPage() {
@@ -51,6 +68,17 @@ export default function TransactionPage() {
   const [error, setError] = useState<string | null>(null);
   const [checkingId, setCheckingId] = useState<string | null>(null);
   const [retryingId, setRetryingId] = useState<string | null>(null);
+  const [detailTid, setDetailTid] = useState<string | null>(null);
+  const [detailData, setDetailData] = useState<{
+    transactionId: string;
+    paymentMethod: string | null;
+    paymentDetails: PaymentDetailData | null;
+    grossAmount: string | null;
+    transactionTime: string | null;
+    currentStatus: string;
+  } | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   async function checkStatus(transactionId: string) {
     setCheckingId(transactionId);
@@ -109,6 +137,42 @@ export default function TransactionPage() {
     }
   }
 
+  async function showPaymentDetail(trx: TransactionData) {
+    setDetailTid(trx.TRANSACTION_ID);
+    setDetailLoading(true);
+    try {
+      const res = await fetch('/api/midtrans/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transactionId: trx.TRANSACTION_ID }),
+      });
+      const result = await res.json();
+      console.log('[PAYMENT DETAIL] API response:', result);
+      if (res.ok) {
+        setDetailData({
+          transactionId: result.transactionId,
+          paymentMethod: result.paymentMethod,
+          paymentDetails: result.paymentDetails,
+          grossAmount: result.grossAmount,
+          transactionTime: result.transactionTime,
+          currentStatus: result.currentStatus,
+        });
+        // Also update the transaction status in the list
+        setTransactions(prev =>
+          prev.map(t =>
+            t.TRANSACTION_ID === trx.TRANSACTION_ID
+              ? { ...t, PAYMENT_STATUS: result.currentStatus, PAYMENT_METHOD: result.paymentMethod || t.PAYMENT_METHOD }
+              : t
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Fetch payment detail error:', error);
+    } finally {
+      setDetailLoading(false);
+    }
+  }
+
   async function loadTransactions() {
     if (!user?.id) return;
     setLoading(true);
@@ -138,6 +202,16 @@ export default function TransactionPage() {
   useEffect(() => {
     if (user) loadTransactions();
   }, [user]);
+
+  // Auto-check status for pending transactions on load
+  useEffect(() => {
+    if (transactions.length === 0) return;
+    const pending = transactions.filter(t => t.PAYMENT_STATUS === 'PENDING');
+    if (pending.length === 0) return;
+    pending.forEach(trx => {
+      checkStatus(trx.TRANSACTION_ID);
+    });
+  }, [transactions.length > 0]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -432,6 +506,24 @@ export default function TransactionPage() {
                           </button>
                         </div>
                       )}
+
+                      {/* Payment detail button for PENDING */}
+                      {(trx.PAYMENT_STATUS === 'PENDING') && (
+                        <div className="mt-3">
+                          <button
+                            onClick={() => showPaymentDetail(trx)}
+                            disabled={detailLoading && detailTid === trx.TRANSACTION_ID}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-lg text-[10px] sm:text-xs font-medium transition-all disabled:opacity-50"
+                          >
+                            {detailLoading && detailTid === trx.TRANSACTION_ID ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Receipt className="w-3 h-3" />
+                            )}
+                            {detailLoading && detailTid === trx.TRANSACTION_ID ? 'Memuat...' : 'Lihat Detail Pembayaran'}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -448,6 +540,300 @@ export default function TransactionPage() {
             </p>
           </div>
         )}
+      </div>
+
+      {/* Payment detail modal */}
+      {detailData && (
+        <PaymentDetailModal
+          data={detailData}
+          onClose={() => setDetailData(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function CopyButton({ text, label }: { text: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      onClick={async () => {
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }}
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg text-xs text-gray-300 transition-all"
+    >
+      {copied ? (
+        <Check className="w-3.5 h-3.5 text-green-400" />
+      ) : (
+        <Copy className="w-3.5 h-3.5" />
+      )}
+      {copied ? 'Tersalin' : label}
+    </button>
+  );
+}
+
+function PaymentDetailModal({
+  data,
+  onClose,
+}: {
+  data: {
+    paymentMethod: string | null;
+    paymentDetails: PaymentDetailData | null;
+    grossAmount: string | null;
+    transactionTime: string | null;
+  };
+  onClose: () => void;
+}) {
+  const { paymentDetails, paymentMethod, grossAmount, transactionTime } = data;
+
+  const formatCurrency = (amount: string) => {
+    const num = parseFloat(amount);
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(num);
+  };
+
+  const getMethodIcon = () => {
+    if (!paymentDetails) return <CreditCard className="w-5 h-5" />;
+    switch (paymentDetails.type) {
+      case 'bank_transfer':
+      case 'mandiri_bill':
+        return <Banknote className="w-5 h-5" />;
+      case 'qris':
+        return <QrCode className="w-5 h-5" />;
+      case 'gopay':
+      case 'e_wallet':
+        return <Wallet className="w-5 h-5" />;
+      default:
+        return <CreditCard className="w-5 h-5" />;
+    }
+  };
+
+  const getMethodLabel = () => {
+    if (!paymentDetails) return paymentMethod || '-';
+    switch (paymentDetails.type) {
+      case 'bank_transfer': {
+        const va = paymentDetails.vaNumbers?.[0];
+        if (va?.bank === 'permata') return 'Permata Virtual Account';
+        return `${va?.bank?.toUpperCase() || ''} Virtual Account`.trim();
+      }
+      case 'mandiri_bill': return 'Mandiri Bill Payment';
+      case 'qris': return 'QRIS';
+      case 'gopay': return 'GoPay';
+      case 'e_wallet': return 'E-Wallet';
+      case 'credit_card': return 'Kartu Kredit';
+      default: return paymentMethod || '-';
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div className="relative bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto animate-fadeIn">
+        {/* Header */}
+        <div className="sticky top-0 bg-gray-800 border-b border-gray-700 px-5 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-emerald-500/10 border border-emerald-500/30 rounded-lg flex items-center justify-center text-emerald-400">
+              {getMethodIcon()}
+            </div>
+            <div>
+              <h3 className="text-white font-semibold text-sm">Detail Pembayaran</h3>
+              <p className="text-gray-400 text-[11px]">{getMethodLabel()}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 hover:bg-gray-700 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+            <XCircle className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-5">
+          {/* Amount */}
+          {grossAmount && (
+            <div className="bg-gray-900/50 rounded-xl p-4 text-center">
+              <p className="text-gray-400 text-xs mb-1">Total Pembayaran</p>
+              <p className="text-2xl font-bold text-white">{formatCurrency(grossAmount)}</p>
+            </div>
+          )}
+
+          {/* Bank Transfer VA */}
+          {paymentDetails?.type === 'bank_transfer' && paymentDetails.vaNumbers && (
+            <div className="space-y-3">
+              {paymentDetails.vaNumbers.map((va, i) => (
+                <div key={i} className="bg-gray-900/50 rounded-xl p-4 space-y-2">
+                  <p className="text-gray-400 text-xs uppercase tracking-wider">
+                    {va.bank === 'permata' ? 'Permata Bank' : `Bank ${va.bank.toUpperCase()}`}
+                  </p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-lg font-bold font-mono text-white tracking-wider">{va.va_number}</p>
+                    <CopyButton text={va.va_number} label="Salin" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Mandiri Bill */}
+          {paymentDetails?.type === 'mandiri_bill' && (
+            <div className="space-y-3">
+              {paymentDetails.billerCode && (
+                <div className="bg-gray-900/50 rounded-xl p-4 space-y-1.5">
+                  <p className="text-gray-400 text-xs uppercase tracking-wider">Kode Biller</p>
+                  <p className="text-lg font-bold font-mono text-white tracking-wider">{paymentDetails.billerCode}</p>
+                </div>
+              )}
+              {paymentDetails.billKey && (
+                <div className="bg-gray-900/50 rounded-xl p-4 space-y-1.5">
+                  <p className="text-gray-400 text-xs uppercase tracking-wider">Kode Bayar</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-lg font-bold font-mono text-white tracking-wider">{paymentDetails.billKey}</p>
+                    <CopyButton text={paymentDetails.billKey} label="Salin" />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* QRIS */}
+          {paymentDetails?.type === 'qris' && paymentDetails.actions && (
+            <div className="space-y-3">
+              {paymentDetails.actions
+                .filter((a: { name: string }) => /qr[- ]?code/i.test(a.name) && /generate|image/i.test(a.name))
+                .map((action: { url: string }, i: number) => (
+                  <div key={i} className="bg-white rounded-xl p-4 flex flex-col items-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/api/midtrans/qr-proxy?url=${encodeURIComponent(action.url)}`}
+                      alt="QR Code"
+                      className="w-48 h-48"
+                    />
+                    <p className="text-gray-500 text-xs mt-2">Scan QR code di atas untuk membayar</p>
+                  </div>
+                ))}
+              {paymentDetails.actions
+                .filter((a: { name: string }) => /deeplink|deep[- ]link/i.test(a.name))
+                .map((action: { url: string }, i: number) => (
+                  <a
+                    key={i}
+                    href={action.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-xl text-sm font-medium transition-all"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Buka Aplikasi Pembayaran
+                  </a>
+                ))}
+              {/* If no QR image action found, show a fallback */}
+              {paymentDetails.actions.filter((a: { name: string }) => /qr[- ]?code/i.test(a.name) && /generate|image/i.test(a.name)).length === 0 && (
+                <div className="bg-gray-900/50 rounded-xl p-4 text-center">
+                  <QrCode className="w-12 h-12 text-gray-500 mx-auto mb-2" />
+                  <p className="text-gray-400 text-xs">Kode QR tidak tersedia. Gunakan tombol di bawah untuk membayar.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* E-Wallet (GoPay, ShopeePay, etc.) */}
+          {(paymentDetails?.type === 'gopay' || paymentDetails?.type === 'e_wallet') && paymentDetails.actions && (
+            <div className="space-y-2">
+              {paymentDetails.actions
+                .filter((a: { name: string }) => /deeplink|redirect|deep[- ]link/i.test(a.name))
+                .map((action: { url: string }, i: number) => (
+                  <a
+                    key={i}
+                    href={action.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-xl text-sm font-medium transition-all"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Buka {paymentDetails.type === 'gopay' ? 'GoPay' : 'E-Wallet'}
+                  </a>
+                ))}
+              {/* Fallback: show raw action URLs if no named action matched */}
+              {paymentDetails.actions.filter((a: { name: string }) => /deeplink|redirect|deep[- ]link/i.test(a.name)).length === 0 && paymentDetails.actions.length > 0 && (
+                <div className="space-y-2">
+                  {paymentDetails.actions.map((action: { name: string; url: string }, i: number) => (
+                    <a
+                      key={i}
+                      href={action.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-xl text-sm font-medium transition-all"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      {action.name || 'Bayar Sekarang'}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Credit Card */}
+          {paymentDetails?.type === 'credit_card' && (
+            <div className="space-y-2">
+              <div className="bg-gray-900/50 rounded-xl p-4 space-y-1.5">
+                {paymentDetails.bank && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400 text-xs">Bank</span>
+                    <span className="text-white text-xs font-medium">{paymentDetails.bank}</span>
+                  </div>
+                )}
+                {paymentDetails.maskedCard && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400 text-xs">Kartu</span>
+                    <span className="text-white text-xs font-medium font-mono">{paymentDetails.maskedCard}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Transaction time */}
+          {transactionTime && (
+            <div className="flex justify-between items-center pt-2 border-t border-gray-700/50">
+              <span className="text-gray-400 text-xs">Waktu Transaksi</span>
+              <span className="text-gray-300 text-xs">
+                {new Date(transactionTime).toLocaleDateString('id-ID', {
+                  day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
+                })}
+              </span>
+            </div>
+          )}
+
+          {/* Unknown payment type fallback */}
+          {paymentDetails?.type === 'other' && (
+            <div className="bg-gray-900/50 rounded-xl p-4 text-center">
+              <CreditCard className="w-10 h-10 text-gray-500 mx-auto mb-2" />
+              <p className="text-gray-400 text-sm">Metode pembayaran: {paymentDetails.rawType || paymentMethod || '-'}</p>
+              <p className="text-gray-500 text-xs mt-1">Detail pembayaran tidak tersedia saat ini</p>
+            </div>
+          )}
+
+          {/* No payment details at all — show fallback */}
+          {!paymentDetails && (
+            <div className="bg-gray-900/50 rounded-xl p-4 text-center">
+              <AlertCircle className="w-10 h-10 text-yellow-500 mx-auto mb-2" />
+              <p className="text-gray-400 text-sm">Detail pembayaran belum tersedia</p>
+              <p className="text-gray-500 text-xs mt-1">Silakan cek status pembayaran secara berkala</p>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="sticky bottom-0 bg-gray-800 border-t border-gray-700 px-5 py-3">
+          <button
+            onClick={onClose}
+            className="w-full py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl text-sm font-medium transition-all"
+          >
+            Tutup
+          </button>
+        </div>
       </div>
     </div>
   );

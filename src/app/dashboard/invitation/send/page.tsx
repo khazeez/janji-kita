@@ -357,7 +357,7 @@ export default function SendInvitationBulk() {
                   className={`p-2.5 sm:p-4 rounded-lg sm:rounded-xl border-2 transition-all ${inputMode === 'phone' ? 'border-pink-500 bg-pink-500/10' : 'border-gray-700 bg-gray-900/50 hover:border-gray-600'}`}
                 >
                   <Smartphone className={`w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 sm:mb-2 ${inputMode === 'phone' ? 'text-pink-500' : 'text-gray-500'}`} />
-                  <p className={`text-[10px] sm:text-xs font-bold ${inputMode === 'phone' ? 'text-pink-500' : 'text-gray-400'}`}>Dari HP</p>
+                  <p className={`text-[10px] sm:text-xs font-bold ${inputMode === 'phone' ? 'text-pink-500' : 'text-gray-400'}`}>Kontak Telephon</p>
                 </button>
 
                 <button

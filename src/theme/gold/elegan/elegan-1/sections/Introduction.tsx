@@ -2,19 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { AllInvitationData } from '@/types/interface';
-import { motion } from 'framer-motion';
 
 export interface Props {
   data: AllInvitationData;
 }
 
 export default function Introduction({ data }: Props) {
-  // ✅ Ambil event AKAD
   const akadEvent = data?.invitationEvent?.find(
     (event) => event.eventType === 'AKAD'
   );
 
-  // ✅ Format tanggal, jam, dan lokasi
   const akadDate = akadEvent
     ? new Date(akadEvent.startTime).toLocaleDateString('id-ID', {
         weekday: 'long',
@@ -33,7 +30,6 @@ export default function Introduction({ data }: Props) {
 
   const akadLocation = akadEvent?.location || '-';
 
-  // ✅ State countdown
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -42,7 +38,6 @@ export default function Introduction({ data }: Props) {
   });
 
   useEffect(() => {
-    // Pastikan ada waktu akad
     if (!akadEvent?.startTime) return;
 
     const target = new Date(akadEvent.startTime).getTime();
@@ -51,10 +46,7 @@ export default function Introduction({ data }: Props) {
       const now = Date.now();
       const diff = target - now;
 
-      if (isNaN(target)) {
-        console.warn('❌ startTime invalid:', akadEvent.startTime);
-        return;
-      }
+      if (isNaN(target)) return;
 
       if (diff <= 0) {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -68,12 +60,8 @@ export default function Introduction({ data }: Props) {
       }
     };
 
-    // Jalankan langsung sekali di awal
     updateCountdown();
-
-    // Lalu update tiap detik
     const timer = setInterval(updateCountdown, 1000);
-
     return () => clearInterval(timer);
   }, [akadEvent?.startTime]);
 
@@ -88,13 +76,8 @@ export default function Introduction({ data }: Props) {
 
       <p className='text-sm tracking-widest mb-20'>{akadDate}</p>
 
-    <p className='text-sm tracking-widest'>SAVE THE DATE</p>
-      <motion.div
-        className='flex justify-center gap-3 sm:gap-4 mt-2'
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.5 }}
-      >
+      <p className='text-sm tracking-widest'>SAVE THE DATE</p>
+      <div className='flex justify-center gap-3 sm:gap-4 mt-2 animate-fadeIn'>
         {[
           { label: 'Hari', value: timeLeft.days },
           { label: 'Jam', value: timeLeft.hours },
@@ -111,7 +94,7 @@ export default function Introduction({ data }: Props) {
             </p>
           </div>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }

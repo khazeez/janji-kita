@@ -1,4 +1,3 @@
-import Midtrans from 'midtrans-client';
 import { NextResponse } from 'next/server';
 import { getAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
@@ -15,6 +14,28 @@ function resolvePaymentStatus(transactionStatus: string, fraudStatus?: string): 
   if (transactionStatus === 'expire') return 'EXPIRED';
   if (transactionStatus === 'refund' || transactionStatus === 'partial_refund') return 'REFUNDED';
   return 'FAILED';
+}
+
+async function fetchMidtransStatus(orderId: string): Promise<any> {
+  const isProduction = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true';
+  const baseUrl = isProduction
+    ? 'https://api.midtrans.com/v2'
+    : 'https://api.sandbox.midtrans.com/v2';
+  const serverKey = process.env.MIDTRANS_SERVER_KEY!;
+  const auth = Buffer.from(serverKey + ':').toString('base64');
+
+  const res = await fetch(`${baseUrl}/${orderId}/status`, {
+    headers: {
+      Authorization: `Basic ${auth}`,
+      Accept: 'application/json',
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Midtrans API error: ${res.status}`);
+  }
+
+  return res.json();
 }
 
 export async function POST(req: Request) {
@@ -34,7 +55,7 @@ export async function POST(req: Request) {
     const admin = getAdminClient();
     const { data: trx, error: trxError } = await admin
       .from('TRANSACTIONS')
-      .select('TRANSACTION_ID, GATEWAY_ORDER_ID, PAYMENT_STATUS')
+      .select('TRANSACTION_ID, GATEWAY_ORDER_ID, PAYMENT_STATUS, PAYMENT_PROOF_URL')
       .eq('TRANSACTION_ID', transactionId)
       .eq('USER_ID', user.id)
       .single();
@@ -43,19 +64,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
     }
 
-    const coreApi = new Midtrans.CoreApi({
-      isProduction: process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true',
-      serverKey: process.env.MIDTRANS_SERVER_KEY!,
-      clientKey: process.env.MIDTRANS_CLIENT_KEY!,
-    });
-
     // Try TRANSACTION_ID first (normal flow), fallback to GATEWAY_ORDER_ID (retry flow)
-    let statusResponse;
+    let statusResponse: any;
     try {
-      statusResponse = await (coreApi as any).transaction.status(trx.TRANSACTION_ID);
+      statusResponse = await fetchMidtransStatus(trx.TRANSACTION_ID);
     } catch {
-      statusResponse = await (coreApi as any).transaction.status(trx.GATEWAY_ORDER_ID);
+      statusResponse = await fetchMidtransStatus(trx.GATEWAY_ORDER_ID);
     }
+
+    console.log('[MIDTRANS STATUS RAW]', JSON.stringify(statusResponse, null, 2));
 
     const midtransStatus = statusResponse.transaction_status;
     const fraudStatus = statusResponse.fraud_status;
@@ -96,14 +113,79 @@ export async function POST(req: Request) {
       }
     }
 
+    const paymentDetails: Record<string, any> = {};
+    const pt = statusResponse.payment_type;
+
+    // Log full response for debugging
+    console.log('[MIDTRANS STATUS] Full response:', JSON.stringify({
+      order_id: statusResponse.order_id,
+      transaction_status: statusResponse.transaction_status,
+      payment_type: pt,
+      has_va_numbers: !!statusResponse.va_numbers,
+      has_actions: !!statusResponse.actions,
+      actions: statusResponse.actions,
+      va_numbers: statusResponse.va_numbers,
+      permata_va_number: statusResponse.permata_va_number,
+      bill_key: statusResponse.bill_key,
+      biller_code: statusResponse.biller_code,
+      bank: statusResponse.bank,
+      masked_card: statusResponse.masked_card,
+    }));
+
+    if (statusResponse.va_numbers && statusResponse.va_numbers.length > 0) {
+      paymentDetails.type = 'bank_transfer';
+      paymentDetails.vaNumbers = statusResponse.va_numbers;
+    } else if (statusResponse.permata_va_number) {
+      paymentDetails.type = 'bank_transfer';
+      paymentDetails.vaNumbers = [{ bank: 'permata', va_number: statusResponse.permata_va_number }];
+    } else if (statusResponse.bill_key) {
+      paymentDetails.type = 'mandiri_bill';
+      paymentDetails.billKey = statusResponse.bill_key;
+      paymentDetails.billerCode = statusResponse.biller_code;
+    } else if (statusResponse.actions && statusResponse.actions.length > 0) {
+      if (pt === 'qris') paymentDetails.type = 'qris';
+      else if (pt === 'gopay') paymentDetails.type = 'gopay';
+      else paymentDetails.type = 'e_wallet';
+      paymentDetails.actions = statusResponse.actions;
+    } else if (pt === 'qris') {
+      // Status API doesn't return actions for QRIS — construct QR code URL manually
+      const isProduction = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true';
+      const baseUrl = isProduction ? 'https://api.midtrans.com/v2' : 'https://api.sandbox.midtrans.com/v2';
+      const qrCodeUrl = `${baseUrl}/qris/${trx.GATEWAY_ORDER_ID}/qr-code`;
+      paymentDetails.type = 'qris';
+      paymentDetails.actions = [
+        { name: 'generate-qr-code', url: qrCodeUrl, method: 'GET' },
+      ];
+    } else if (pt === 'credit_card') {
+      paymentDetails.type = 'credit_card';
+      paymentDetails.bank = statusResponse.bank;
+      paymentDetails.maskedCard = statusResponse.masked_card;
+    } else if (pt) {
+      paymentDetails.type = 'other';
+      paymentDetails.rawType = pt;
+    }
+
+    // Check stored payment details from notification
+    let storedPaymentDetails: Record<string, any> | null = null;
+    if (trx.PAYMENT_PROOF_URL) {
+      try {
+        storedPaymentDetails = JSON.parse(trx.PAYMENT_PROOF_URL);
+      } catch {
+        // Not valid JSON, ignore
+      }
+    }
+
     return NextResponse.json({
       transactionId: trx.TRANSACTION_ID,
       previousStatus: trx.PAYMENT_STATUS,
       currentStatus: paymentStatus,
-      paymentMethod: statusResponse.payment_type || null,
+      paymentMethod: pt || null,
       transactionTime: statusResponse.transaction_time || null,
       grossAmount: statusResponse.gross_amount || null,
       midtransStatus,
+      paymentDetails: storedPaymentDetails || (Object.keys(paymentDetails).length > 0 ? paymentDetails : null),
+      rawResponse: statusResponse,
+      storedProofUrl: trx.PAYMENT_PROOF_URL,
     });
   } catch (error: any) {
     console.error('Midtrans status error:', error);
