@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getDataInvitationUserById } from '@/models/invitations';
 import { createTransaction } from '@/models/transactions';
 import { createClient } from '@/lib/supabase/server';
+import { getAdminClient } from '@/lib/supabase/admin';
 
 let _snap: Midtrans.Snap | null = null;
 
@@ -53,6 +54,32 @@ export async function POST(req: Request) {
     let finalAmount = data?.product.basePriceNoPhoto;
 
     const gatewayOrderId = `INV-${Date.now()}`;
+
+    // Cek apakah masih ada transaksi aktif (INITIATED/PENDING) untuk undangan ini
+    const admin = getAdminClient();
+    const { data: activeList, error: activeErr } = await admin
+      .from('TRANSACTIONS')
+      .select('TRANSACTION_ID, PAYMENT_STATUS')
+      .eq('INVITATION_ID', invitationId)
+      .or('PAYMENT_STATUS.eq.INITIATED,PAYMENT_STATUS.eq.PENDING')
+      .limit(1);
+
+    if (activeErr) {
+      console.error('Error checking active transactions:', activeErr);
+    }
+
+    if (activeList && activeList.length > 0) {
+      const activeTx = activeList[0];
+      const label = activeTx.PAYMENT_STATUS === 'INITIATED' ? 'masih dalam proses' : 'menunggu pembayaran';
+      return NextResponse.json(
+        {
+          message: `Undangan ini sudah memiliki transaksi yang ${label}. Selesaikan pembayaran terlebih dahulu.`,
+          activeTransactionId: activeTx.TRANSACTION_ID,
+          activeStatus: activeTx.PAYMENT_STATUS,
+        },
+        { status: 409 }
+      );
+    }
 
     const trx = await createTransaction({
       trx: {

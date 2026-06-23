@@ -221,7 +221,7 @@ export default function DashboardLayout({
                 <Link
                   key={item.id}
                   href={item.href}
-                  prefetch={false}
+                  prefetch={true}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-colors text-sm font-medium ${
                     isActive
                       ? 'bg-pink-600 text-white'

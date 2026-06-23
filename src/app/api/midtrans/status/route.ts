@@ -151,7 +151,9 @@ export async function POST(req: Request) {
       // Status API doesn't return actions for QRIS — construct QR code URL manually
       const isProduction = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true';
       const baseUrl = isProduction ? 'https://api.midtrans.com/v2' : 'https://api.sandbox.midtrans.com/v2';
-      const qrCodeUrl = `${baseUrl}/qris/${trx.GATEWAY_ORDER_ID}/qr-code`;
+      // QR code URL uses transaction_id (Midtrans UUID), not order_id
+      const qrId = statusResponse.transaction_id || trx.GATEWAY_ORDER_ID;
+      const qrCodeUrl = `${baseUrl}/qris/${qrId}/qr-code`;
       paymentDetails.type = 'qris';
       paymentDetails.actions = [
         { name: 'generate-qr-code', url: qrCodeUrl, method: 'GET' },

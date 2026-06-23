@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import GlassesDesign from '@/theme/gold/elegan/elegan-1/main';
-import AdatDesign from '@/theme/gold/traditional/main';
+import dynamic from 'next/dynamic';
 import { AllInvitationData } from '@/types/interface';
 import {
   Save,
@@ -16,11 +15,11 @@ import {
   Quote,
   ArrowLeft,
   Sparkles,
+  Heart,
 } from 'lucide-react';
 import supabase from '@/lib/supabase/client';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { motion, AnimatePresence } from 'framer-motion';
 
 // Models
 import EditorModels from '@/models/editor';
@@ -31,6 +30,17 @@ import EditorEvent from '../editor-ui/EditorEvent';
 import EditorGallery from '../editor-ui/EditorGallery';
 import EditorGift from '../editor-ui/EditorGift';
 import EditorMusic from '../editor-ui/EditorMusic';
+import EditorLoveStory from '../editor-ui/EditorLoveStory';
+
+// Dynamic theme imports (code-split)
+const GlassesDesign = dynamic(
+  () => import('@/theme/gold/elegan/elegan-1/main'),
+  { ssr: false }
+);
+const AdatDesign = dynamic(
+  () => import('@/theme/gold/traditional/main'),
+  { ssr: false }
+);
 
 /* ======================================================
    TYPES
@@ -114,39 +124,18 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
   const [data, setData] = useState<AllInvitationData>(initialData);
 
   const [activeTab, setActiveTab] = useState<
-    'basic' | 'event' | 'gallery' | 'music' | 'gift' | 'greeting' | 'quotes'
+    'basic' | 'lovestory' | 'event' | 'gallery' | 'music' | 'gift' | 'greeting' | 'quotes'
   >('basic');
 
   const [previewMode, setPreviewMode] = useState<PreviewMode>('none');
   const [isSaving, setIsSaving] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string>('');
 
   useEffect(() => {
-    async function load() {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        setCurrentUserId(session?.user?.id || '');
-      } catch (err) {
-        console.error('Auth check error:', err);
-        setCurrentUserId('');
-      }
-    }
-
-    load();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUserId(session?.user?.id || '');
+    }).catch(() => setCurrentUserId(''));
   }, []);
-
-  if (currentUserId === null) {
-    return (
-      <div className='min-h-screen bg-gray-900 flex items-center justify-center p-4'>
-        <div className='flex flex-col items-center gap-3'>
-           <div className="w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full animate-spin" />
-           <p className="text-white/60 text-sm">Validasi Sesi...</p>
-        </div>
-      </div>
-    );
-  }
 
   const renderTheme = (themeData: AllInvitationData, isEditor: boolean) => {
     const productName = themeData.product?.productName || '';
@@ -162,14 +151,13 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // 1. Update Basic Info
+      // 1. Update Basic Info (includes love story)
       const updateBasic = await EditorModels.updateInvitationDataUser(
         data.invitationDataUser
       );
       if (!updateBasic.success) throw new Error('Gagal update data mempelai');
 
       // 2. Update Events
-      // Loop update setiap event
       const eventPromises = data.invitationEvent.map((evt) =>
         EditorModels.updateInvitationEvent(evt)
       );
@@ -181,6 +169,20 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
         data.invitationGift
       );
       if (!updateGift.success) throw new Error('Gagal update hadiah');
+
+      // 4. Update Gift Banks
+      const updateBanks = await EditorModels.updateInvitationGiftBank(
+        data.invitationGift.giftId,
+        data.invitationGift.invitationGiftBank || []
+      );
+      if (!updateBanks.success) throw new Error('Gagal update rekening bank');
+
+      // 5. Update Gift Wallets
+      const updateWallets = await EditorModels.updateInvitationGiftWallet(
+        data.invitationGift.giftId,
+        data.invitationGift.invitationGiftWallet || []
+      );
+      if (!updateWallets.success) throw new Error('Gagal update e-wallet');
 
       toast.success('Perubahan berhasil disimpan!');
     } catch (error) {
@@ -194,21 +196,23 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
   // Render content editor berdasarkan active tab
   const renderEditorContent = () => {
     return (
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, x: 10 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -10 }}
-          transition={{ duration: 0.2 }}
-        >
-          {(() => {
+      <div key={activeTab} className="animate-fadeIn">
+        {(() => {
             switch (activeTab) {
               case 'basic':
                 return (
                   <EditorBasic
                     data={data.invitationDataUser}
                     invitationId={data.invitationId}
+                    onChange={(newData) =>
+                      setData({ ...data, invitationDataUser: newData })
+                    }
+                  />
+                );
+              case 'lovestory':
+                return (
+                  <EditorLoveStory
+                    data={data.invitationDataUser}
                     onChange={(newData) =>
                       setData({ ...data, invitationDataUser: newData })
                     }
@@ -269,8 +273,7 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
                 return null;
             }
           })()}
-        </motion.div>
-      </AnimatePresence>
+      </div>
     );
   };
 
@@ -301,6 +304,7 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
         <div className='hidden md:flex w-24 border-r border-white/5 flex-col justify-center py-6 bg-gray-900/50 backdrop-blur-xl'>
           {[
             { id: 'basic', label: 'Mempelai', icon: Users },
+            { id: 'lovestory', label: 'Cerita', icon: Heart },
             { id: 'event', label: 'Acara', icon: Calendar },
             { id: 'gallery', label: 'Galeri', icon: ImageIcon },
             { id: 'gift', label: 'Hadiah', icon: Gift },
@@ -325,11 +329,7 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
                 `}
               >
                 {isActive && (
-                  <motion.div
-                    layoutId="activeTabSidebar"
-                    className="absolute right-0 top-1 bottom-1 w-[3px] bg-pink-500 rounded-l-full shadow-[0_0_12px_rgba(236,72,153,0.5)]"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
+                  <div className="absolute right-0 top-1 bottom-1 w-[3px] bg-pink-500 rounded-l-full shadow-[0_0_12px_rgba(236,72,153,0.5)] transition-all duration-300" />
                 )}
                 <div className={`
                   w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300
@@ -425,9 +425,11 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
           <div className="flex overflow-x-auto border-b border-white/10 bg-gray-800/50 scrollbar-hide">
              {[
               { id: 'basic', label: 'Basic', icon: Users },
+              { id: 'lovestory', label: 'Cerita', icon: Heart },
               { id: 'event', label: 'Event', icon: Calendar },
-              { id: 'gallery', label: 'Gallery', icon: ImageIcon },
-              { id: 'gift', label: 'Pub', icon: Gift }, // Shortened for mobile
+              { id: 'gallery', label: 'Galeri', icon: ImageIcon },
+              { id: 'gift', label: 'Hadiah', icon: Gift },
+              { id: 'music', label: 'Musik', icon: Music },
             ].map((tab) => (
                <button
                   key={tab.id}

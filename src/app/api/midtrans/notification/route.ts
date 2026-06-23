@@ -40,6 +40,18 @@ export async function POST(req: Request) {
     const paymentType = body.payment_type;
     const transactionId = body.transaction_id;
 
+    // Log full notification for debugging
+    console.log('[MIDTRANS NOTIFICATION]', JSON.stringify({
+      order_id: orderId,
+      transaction_status: body.transaction_status,
+      payment_type: paymentType,
+      transaction_id: transactionId,
+      has_actions: !!body.actions,
+      actions: body.actions,
+      has_va_numbers: !!body.va_numbers,
+      va_numbers: body.va_numbers,
+    }));
+
     const supabase = getAdminClient();
 
     // Find the transaction by TRANSACTION_ID (normal) or GATEWAY_ORDER_ID (retry)

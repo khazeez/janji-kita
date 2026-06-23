@@ -25,21 +25,21 @@ class EditorModels {
         UPDATED_AT: new Date().toISOString(),
       };
 
-      if (dataUser.groomFullName) updateData.GROOM_FULL_NAME = dataUser.groomFullName;
-      if (dataUser.groomNickName) updateData.GROOM_NICK_NAME = dataUser.groomNickName;
-      if (dataUser.groomParentName) updateData.GROOM_PARENT_NAME = dataUser.groomParentName;
-      if (dataUser.groomInstagram) updateData.GROOM_INSTAGRAM = dataUser.groomInstagram;
-      if (dataUser.groomPhotoUrl) updateData.GROOM_PHOTO_URL = dataUser.groomPhotoUrl;
+      if (dataUser.groomFullName !== undefined) updateData.GROOM_FULL_NAME = dataUser.groomFullName;
+      if (dataUser.groomNickName !== undefined) updateData.GROOM_NICK_NAME = dataUser.groomNickName;
+      if (dataUser.groomParentName !== undefined) updateData.GROOM_PARENT_NAME = dataUser.groomParentName;
+      if (dataUser.groomInstagram !== undefined) updateData.GROOM_INSTAGRAM = dataUser.groomInstagram;
+      if (dataUser.groomPhotoUrl !== undefined) updateData.GROOM_PHOTO_URL = dataUser.groomPhotoUrl;
       
-      if (dataUser.brideFullName) updateData.BRIDE_FULL_NAME = dataUser.brideFullName;
-      if (dataUser.brideNickName) updateData.BRIDE_NICK_NAME = dataUser.brideNickName;
-      if (dataUser.brideParentName) updateData.BRIDE_PARENT_NAME = dataUser.brideParentName;
-      if (dataUser.brideInstagram) updateData.BRIDE_INSTAGRAM = dataUser.brideInstagram;
-      if (dataUser.bridePhotoUrl) updateData.BRIDE_PHOTO_URL = dataUser.bridePhotoUrl;
+      if (dataUser.brideFullName !== undefined) updateData.BRIDE_FULL_NAME = dataUser.brideFullName;
+      if (dataUser.brideNickName !== undefined) updateData.BRIDE_NICK_NAME = dataUser.brideNickName;
+      if (dataUser.brideParentName !== undefined) updateData.BRIDE_PARENT_NAME = dataUser.brideParentName;
+      if (dataUser.brideInstagram !== undefined) updateData.BRIDE_INSTAGRAM = dataUser.brideInstagram;
+      if (dataUser.bridePhotoUrl !== undefined) updateData.BRIDE_PHOTO_URL = dataUser.bridePhotoUrl;
       
-      if (dataUser.galleryPhotos) updateData.GALLERY_PHOTOS = dataUser.galleryPhotos;
-      if (dataUser.loveStory) updateData.LOVE_STORY = dataUser.loveStory;
-      if (dataUser.audioUrl) updateData.AUDIO_URL = dataUser.audioUrl;
+      if (dataUser.galleryPhotos !== undefined) updateData.GALLERY_PHOTOS = dataUser.galleryPhotos;
+      if (dataUser.loveStory !== undefined) updateData.LOVE_STORY = dataUser.loveStory;
+      if (dataUser.audioUrl !== undefined) updateData.AUDIO_URL = dataUser.audioUrl;
 
       const { data, error } = await supabase
         .from('INVITATION_DATA_USER')
@@ -116,6 +116,88 @@ class EditorModels {
       };
     } catch (error) {
       console.error('Error updating gift:', error);
+      return { success: false, error };
+    }
+  }
+
+  // Update Gift Banks — delete all + re-insert
+  async updateInvitationGiftBank(giftId: string, banks: InvitationGiftBank[]) {
+    try {
+      // Delete existing banks for this gift
+      const { error: delError } = await supabase
+        .from('INVITATION_GIFT_BANK')
+        .delete()
+        .eq('GIFT_ID', giftId);
+
+      if (delError) throw delError;
+
+      // Insert current banks
+      if (banks.length > 0) {
+        const rows = banks.map((b) => ({
+          GIFT_ID: giftId,
+          ACCOUNT: convertKeysToSnakeCase(b.account),
+          OWNER: b.owner,
+          CREATED_AT: new Date().toISOString(),
+          UPDATED_AT: new Date().toISOString(),
+        }));
+
+        const { data, error: insError } = await supabase
+          .from('INVITATION_GIFT_BANK')
+          .insert(rows)
+          .select();
+
+        if (insError) throw insError;
+
+        return {
+          success: true,
+          data: data ? data.map(transformInvitationGiftBankResponse) : [],
+        };
+      }
+
+      return { success: true, data: [] };
+    } catch (error) {
+      console.error('Error updating gift banks:', error);
+      return { success: false, error };
+    }
+  }
+
+  // Update Gift Wallets — delete all + re-insert
+  async updateInvitationGiftWallet(giftId: string, wallets: InvitationGiftWallet[]) {
+    try {
+      // Delete existing wallets for this gift
+      const { error: delError } = await supabase
+        .from('INVITATION_GIFT_WALLET')
+        .delete()
+        .eq('GIFT_ID', giftId);
+
+      if (delError) throw delError;
+
+      // Insert current wallets
+      if (wallets.length > 0) {
+        const rows = wallets.map((w) => ({
+          GIFT_ID: giftId,
+          ADDRESS: convertKeysToSnakeCase(w.address),
+          OWNER: w.owner,
+          CREATED_AT: new Date().toISOString(),
+          UPDATED_AT: new Date().toISOString(),
+        }));
+
+        const { data, error: insError } = await supabase
+          .from('INVITATION_GIFT_WALLET')
+          .insert(rows)
+          .select();
+
+        if (insError) throw insError;
+
+        return {
+          success: true,
+          data: data ? data.map(transformInvitationGiftWalletResponse) : [],
+        };
+      }
+
+      return { success: true, data: [] };
+    } catch (error) {
+      console.error('Error updating gift wallets:', error);
       return { success: false, error };
     }
   }
