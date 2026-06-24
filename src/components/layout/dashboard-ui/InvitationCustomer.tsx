@@ -130,12 +130,34 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
   const [previewMode, setPreviewMode] = useState<PreviewMode>('none');
   const [isSaving, setIsSaving] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [slugValue, setSlugValue] = useState(initialData.invitationUrl || '');
+  const [slugChecking, setSlugChecking] = useState(false);
+  const [slugError, setSlugError] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUserId(session?.user?.id || '');
     }).catch(() => setCurrentUserId(''));
   }, []);
+
+  const handleSlugChange = (raw: string) => {
+    const formatted = raw.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    setSlugValue(formatted);
+    setSlugError(null);
+
+    if (formatted === initialData.invitationUrl || !formatted) {
+      setSlugError(null);
+      return;
+    }
+
+    setSlugChecking(true);
+    EditorModels.isSlugTaken(formatted, initialData.invitationId).then((taken) => {
+      setSlugChecking(false);
+      if (taken) {
+        setSlugError('Slug sudah digunakan undangan lain.');
+      }
+    });
+  };
 
   const renderTheme = (themeData: AllInvitationData, isEditor: boolean) => {
     const productName = themeData.product?.productName || '';
@@ -184,6 +206,23 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
       );
       if (!updateWallets.success) throw new Error('Gagal update e-wallet');
 
+      // 6. Update slug if changed
+      if (slugValue !== initialData.invitationUrl && slugValue && !slugError) {
+        const res = await fetch('/api/invitation/slug', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            invitationId: data.invitationId,
+            newUrl: slugValue,
+          }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: 'Gagal update slug' }));
+          throw new Error(err.error);
+        }
+        setData(prev => ({ ...prev, invitationUrl: slugValue }));
+      }
+
       toast.success('Perubahan berhasil disimpan!');
     } catch (error) {
       console.error(error);
@@ -204,6 +243,10 @@ export default function InvitationEditorLayout({ data: initialData }: Props) {
                   <EditorBasic
                     data={data.invitationDataUser}
                     invitationId={data.invitationId}
+                    invitationUrl={slugValue}
+                    onSlugChange={handleSlugChange}
+                    isSlugChecking={slugChecking}
+                    slugError={slugError}
                     onChange={(newData) =>
                       setData({ ...data, invitationDataUser: newData })
                     }

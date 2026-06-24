@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   X,
   BookOpen,
@@ -29,7 +29,6 @@ export default function Navbar() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
@@ -59,21 +58,6 @@ export default function Navbar() {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setProfileDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -180,7 +164,7 @@ export default function Navbar() {
                 </Link>
 
                 {/* Profile Dropdown */}
-                <div className='relative' ref={dropdownRef}>
+                <div className='relative'>
                   <button
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                     className='flex items-center gap-2 hover:bg-white/10 rounded-lg px-2 py-2 transition-colors'
@@ -196,34 +180,34 @@ export default function Navbar() {
                         <User className='text-gray-300' size={18} />
                       </div>
                     )}
-                    {/* <ChevronDown
-                      size={16}
-                      className={`text-gray-300 transition-transform ${
-                        profileDropdownOpen ? 'rotate-180' : ''
-                      }`}
-                    /> */}
                   </button>
 
                   {/* Dropdown Menu */}
                   {profileDropdownOpen && (
-                    <div className='absolute right-0 mt-2 w-56 bg-black border border-l-4 rounded-lg shadow-lg py-2'>
-                      <div className='px-4 py-3 border-b border-gray-700'>
-                        <p className='text-white font-medium text-sm truncate'>
-                          {user.user_metadata?.full_name || 'User'}
-                        </p>
-                        <p className='text-gray-400 text-xs truncate'>
-                          {user.email}
-                        </p>
+                    <>
+                      <div
+                        className='fixed inset-0 z-10'
+                        onClick={() => setProfileDropdownOpen(false)}
+                      />
+                      <div className='absolute right-0 mt-2 w-56 bg-black border border-l-4 z-20 rounded-lg shadow-lg py-2'>
+                        <div className='px-4 py-3 border-b border-gray-700'>
+                          <p className='text-white font-medium text-sm truncate'>
+                            {user.user_metadata?.full_name || 'User'}
+                          </p>
+                          <p className='text-gray-400 text-xs truncate'>
+                            {user.email}
+                          </p>
+                        </div>
+                      
+                        <button
+                          onClick={handleLogout}
+                          className='w-full flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors'
+                        >
+                          <LogOut size={18} />
+                          <span className='text-sm'>Logout</span>
+                        </button>
                       </div>
-                     
-                      <button
-                        onClick={handleLogout}
-                        className='w-full flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors'
-                      >
-                        <LogOut size={18} />
-                        <span className='text-sm'>Logout</span>
-                      </button>
-                    </div>
+                    </>
                   )}
                 </div>
               </>

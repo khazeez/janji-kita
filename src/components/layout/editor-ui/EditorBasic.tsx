@@ -1,18 +1,26 @@
 'use client';
+import { useState } from 'react';
 import { InvitationDataUser } from '@/types/interface';
-import { User, Instagram, Image as ImageIcon } from 'lucide-react';
+import { User, Instagram, Image as ImageIcon, Link2, AlertCircle, Check } from 'lucide-react';
 import ImageUploadField from './ImageUploadField';
 
 interface Props {
   data: InvitationDataUser;
   onChange: (data: InvitationDataUser) => void;
   invitationId: string;
+  invitationUrl?: string;
+  onSlugChange?: (slug: string) => void;
+  isSlugChecking?: boolean;
+  slugError?: string | null;
 }
 
-export default function EditorBasic({ data, onChange, invitationId }: Props) {
+export default function EditorBasic({ data, onChange, invitationId, invitationUrl, onSlugChange, isSlugChecking, slugError }: Props) {
   const handleChange = (field: keyof InvitationDataUser, value: string) => {
     onChange({ ...data, [field]: value });
   };
+
+  const formatSlug = (val: string) =>
+    val.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 
   return (
     <div className='space-y-10'>
@@ -151,6 +159,53 @@ export default function EditorBasic({ data, onChange, invitationId }: Props) {
             path="bride-groom"
             fileName="bride.webp"
           />
+        </div>
+      </div>
+
+      <div className='w-full h-px bg-white/5' />
+
+      {/* SLUG */}
+      <div className='space-y-4'>
+        <h3 className='text-white font-bold flex items-center gap-2 text-lg'>
+          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+            <Link2 size={18} />
+          </div>
+          Tautan Undangan
+        </h3>
+
+        <div className="space-y-1.5">
+          <label className='block text-xs font-medium text-white/50'>Link undangan (slug)</label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] text-white/30 font-mono whitespace-nowrap pointer-events-none">
+              janjikita.art/
+            </span>
+            <input
+              type='text'
+              value={invitationUrl || ''}
+              onChange={(e) => onSlugChange?.(formatSlug(e.target.value))}
+              className='w-full bg-white/[0.03] border border-white/5 rounded-xl pl-[120px] pr-10 py-3 text-sm text-white font-mono placeholder:text-white/20 focus:outline-none focus:border-pink-500/50 focus:bg-white/[0.05] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300'
+              placeholder='nama-undangan'
+            />
+            {isSlugChecking && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="w-4 h-4 border-2 border-pink-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+            {!isSlugChecking && slugError === null && invitationUrl && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500">
+                <Check size={16} />
+              </div>
+            )}
+          </div>
+          {slugError && (
+            <p className="text-red-400 text-xs flex items-center gap-1 mt-1">
+              <AlertCircle size={12} />
+              {slugError}
+            </p>
+          )}
+          <p className="text-[10px] text-white/30 mt-1">
+            Gunakan huruf kecil, angka, dan tanda strip (-). Slug akan muncul di URL undangan.
+          </p>
         </div>
       </div>
     </div>

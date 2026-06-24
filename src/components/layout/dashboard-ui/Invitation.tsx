@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AllInvitationData } from '@/types/interface';
@@ -19,6 +19,41 @@ import {
 type Props = {
   data: AllInvitationData[];
 };
+
+function CountdownTimer({ targetDate }: { targetDate: string }) {
+  const calcRemaining = () => {
+    const diff = new Date(targetDate).getTime() - Date.now();
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    return {
+      days: Math.floor(diff / 86400000),
+      hours: Math.floor((diff % 86400000) / 3600000),
+      minutes: Math.floor((diff % 3600000) / 60000),
+      seconds: Math.floor((diff % 60000) / 1000),
+    };
+  };
+
+  const [remaining, setRemaining] = useState(calcRemaining);
+
+  useEffect(() => {
+    const id = setInterval(() => setRemaining(calcRemaining), 1000);
+    return () => clearInterval(id);
+  }, [targetDate]);
+
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  if (remaining.days === 0 && remaining.hours === 0 && remaining.minutes === 0 && remaining.seconds === 0) {
+    const diff = new Date(targetDate).getTime() - Date.now();
+    if (diff <= 0) return <span className="text-gray-500 text-xs font-medium">Sudah Lewat</span>;
+    return <span className="text-green-400 text-xs font-semibold">Hari Ini</span>;
+  }
+
+  return (
+    <span className="text-white text-xs font-mono tracking-wider">
+      {remaining.days > 0 && <span className="text-pink-400 font-bold">{remaining.days} Hari </span>}
+      <span>{pad(remaining.hours)}:{pad(remaining.minutes)}:{pad(remaining.seconds)}</span>
+    </span>
+  );
+}
 
 export default function InvitationComponents({ data }: Props) {
   const router = useRouter();
@@ -453,6 +488,14 @@ export default function InvitationComponents({ data }: Props) {
                       {invitation.invitationDataUser.brideNickName}
                     </h3>
 
+                    {/* Countdown */}
+                    {invitation.invitationEvent && invitation.invitationEvent.length > 0 && invitation.invitationStatus !== 'draft' && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <Calendar size={14} className="text-pink-500" />
+                        <CountdownTimer targetDate={invitation.invitationEvent[0].startTime} />
+                      </div>
+                    )}
+
                     {/* Expiry Info with icon */}
                     {invitation.invitationStatus !== 'draft' && (
                     <div className='flex items-center gap-2 mb-5'>
@@ -521,7 +564,7 @@ export default function InvitationComponents({ data }: Props) {
                               disabled={
                                 activatingId === invitation.invitationId
                               }
-                              className='flex-1 bg-gradient-to-r from-yellow-700 to-yellow-500 hover:from-yellow-700 hover:to-amber-600 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-yellow-500/50 border border-yellow-500/20 disabled:opacity-50 disabled:cursor-not-allowed'
+                              className='flex-1 bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white text-sm font-semibold py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-lg hover:shadow-pink-500/50 border border-pink-400/20 disabled:opacity-50 disabled:cursor-not-allowed'
                             >
                               {activatingId === invitation.invitationId ? (
                                 <Loader2
@@ -536,7 +579,7 @@ export default function InvitationComponents({ data }: Props) {
                               )}
                               {activatingId === invitation.invitationId
                                 ? 'Memproses...'
-                                : 'Aktivasi'}
+                                : 'Buat Undangan'}
                             </button>
                           </div>
                         ) : (

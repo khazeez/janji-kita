@@ -201,6 +201,49 @@ class EditorModels {
       return { success: false, error };
     }
   }
+
+  // Check if slug is already used by another invitation
+  async isSlugTaken(slug: string, excludeInvitationId: string): Promise<boolean> {
+    try {
+      const { data, error } = await supabase
+        .from('INVITATION')
+        .select('INVITATION_ID')
+        .eq('INVITATION_URL', slug)
+        .neq('INVITATION_ID', excludeInvitationId)
+        .maybeSingle();
+
+      if (error) throw error;
+      return !!data;
+    } catch (error) {
+      console.error('Error checking slug uniqueness:', error);
+      return true; // fail safe: assume taken
+    }
+  }
+
+  // Update Invitation URL (slug)
+  async updateInvitationUrl(invitationId: string, newUrl: string) {
+    try {
+      const { data, error } = await supabase
+        .from('INVITATION')
+        .update({
+          INVITATION_URL: newUrl,
+          UPDATED_AT: new Date().toISOString(),
+        })
+        .eq('INVITATION_ID', invitationId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      console.error('Error updating invitation URL:', error);
+      return { success: false, error };
+    }
+  }
 }
 
 export default new EditorModels();
