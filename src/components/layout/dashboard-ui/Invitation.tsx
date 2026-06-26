@@ -14,11 +14,148 @@ import {
   Zap,
   Share2,
   Package,
+  Palette,
+  UserPlus,
+  CreditCard,
+  Send,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 type Props = {
   data: AllInvitationData[];
 };
+
+function InteractiveTutorial() {
+  const [step, setStep] = useState(0);
+
+  const steps = [
+    { icon: Palette, title: 'Pilih Tema' },
+    { icon: UserPlus, title: 'Masukkan Data' },
+    { icon: CreditCard, title: 'Aktivasi & Pembayaran' },
+    { icon: Send, title: 'Bagikan' },
+  ];
+
+  const current = steps[step];
+  const Icon = current.icon;
+
+  return (
+    <div className='py-6 sm:py-10 px-2 sm:px-6 max-w-full sm:max-w-md mx-auto'>
+      <style>{`
+        @keyframes breathe {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.08); opacity: 0.8; }
+        }
+        .animate-breathe {
+          animation: breathe 2s ease-in-out infinite;
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.3; transform: scale(0.8); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+        .animate-twinkle {
+          animation: twinkle 2s ease-in-out infinite;
+        }
+        @keyframes pulse-btn {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(219, 39, 119, 0.6); transform: scale(1); }
+          50% { box-shadow: 0 0 0 12px rgba(219, 39, 119, 0); transform: scale(1.05); }
+        }
+        .animate-pulse-btn {
+          animation: pulse-btn 2s ease-in-out infinite;
+        }
+      `}</style>
+
+      {/* Header */}
+      <h2 className='text-center text-white font-bold text-xl sm:text-2xl mb-5'>
+        Tutorial Bikin Undangan Kece😉
+      </h2>
+
+      {/* Big Card */}
+      <div className='relative bg-gray-800/60 border border-gray-700/50 rounded-2xl py-16 sm:py-20 px-8 sm:px-12 text-center overflow-hidden'>
+        {/* Decorative dots */}
+        <div className='absolute top-3 left-3 sm:top-4 sm:left-4 flex gap-1.5'>
+          <div className='w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-pink-500/40 animate-twinkle' style={{ animationDelay: '0s' }} />
+          <div className='w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-pink-500/40 animate-twinkle' style={{ animationDelay: '0.5s' }} />
+          <div className='w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-pink-500/40 animate-twinkle' style={{ animationDelay: '1s' }} />
+        </div>
+
+        {/* Icon */}
+        <div className='relative w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5 sm:mb-5'>
+          <div className='absolute inset-0 rounded-full bg-pink-500/20 animate-breathe' />
+          <div className='relative w-full h-full rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center'>
+            <Icon className='w-10 h-10 sm:w-11 sm:h-11 text-pink-400 animate-float' />
+          </div>
+        </div>
+
+        <h3 className='text-white font-bold text-2xl sm:text-3xl'>{current.title}</h3>
+
+        {/* Bottom decoration */}
+        <div className='absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1'>
+          {[0, 1, 2].map(i => (
+            <div
+              key={i}
+              className='w-1.5 h-1.5 rounded-full bg-pink-500/30 animate-twinkle'
+              style={{ animationDelay: `${i * 0.3}s` }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className='flex items-center justify-between mt-5 sm:mt-6 gap-2'>
+        <button
+          onClick={() => setStep(Math.max(0, step - 1))}
+          disabled={step === 0}
+          className='flex items-center gap-1 px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-lg hover:bg-gray-800'
+        >
+          <ChevronLeft size={14} className='sm:w-4 sm:h-4' />
+          <span className='sm:hidden'>Sebelum</span>
+          <span className='hidden sm:inline'>Sebelumnya</span>
+        </button>
+
+        <div className='flex gap-1.5 sm:gap-2'>
+          {steps.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setStep(i)}
+              className={`rounded-full transition-all duration-300 ${
+                i === step ? 'w-6 sm:w-8 h-1.5 sm:h-2 bg-pink-500' : 'w-1.5 sm:w-2 h-1.5 sm:h-2 bg-gray-600 hover:bg-gray-500'
+              }`}
+            />
+          ))}
+        </div>
+
+        {step < steps.length - 1 ? (
+          <button
+            onClick={() => setStep(Math.min(steps.length - 1, step + 1))}
+            className={`flex items-center gap-1 px-3 sm:px-4 py-2 text-xs sm:text-sm text-white rounded-lg transition-colors ${
+              step === 0 ? 'bg-pink-500 animate-pulse-btn' : 'bg-pink-600 hover:bg-pink-500'
+            }`}
+          >
+            <span className='sm:hidden'>Lanjut</span>
+            <span className='hidden sm:inline'>Selanjutnya</span>
+            <ChevronRight size={14} className='sm:w-4 sm:h-4' />
+          </button>
+        ) : (
+          <Link
+            href='/dashboard/catalogue'
+            className='flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm text-white bg-pink-600 hover:bg-pink-500 rounded-lg transition-colors font-semibold'
+          >
+            <Sparkles size={14} className='sm:w-4 sm:h-4' />
+            Mulai
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function CountdownTimer({ targetDate }: { targetDate: string }) {
   const calcRemaining = () => {
@@ -259,6 +396,7 @@ export default function InvitationComponents({ data }: Props) {
 
       {/* Invitation List Section */}
       <div className=' p-2 rounded-2xl'>
+        {data.length > 0 && (
         <div className='flex items-center justify-between mb-10 '>
           <div className=''>
             <h2 className='lg:text-2xl text-xl font-bold text-white'>
@@ -273,6 +411,7 @@ export default function InvitationComponents({ data }: Props) {
             </Link>
           </div>
         </div>
+        )}
 
         {/* Filter Tabs - only show when there are invitations */}
         {data.length > 0 && (
@@ -299,117 +438,7 @@ export default function InvitationComponents({ data }: Props) {
         )}
 
         {data.length === 0 ? (
-          <div className='rounded-2xl py-5 pb-10  backdrop-blur-sm px-2 lg:px-4'>
-            <div className='text-center pb-10'>
-              <span className='relative inline-block text-pink-500'>
-                <h2 className='lg:text-2xl text-xl font-bold text-white mb-2'>
-                  Cara Membuat Undangan Digital
-                </h2>
-                <svg
-                  className='absolute left-0 -bottom-1 w-full h-4 text-pink-200'
-                  viewBox='0 0 100 20'
-                  preserveAspectRatio='none'
-                >
-                  <path
-                    d='M 2 15 Q 50 2, 98 12'
-                    fill='none'
-                    stroke='currentColor'
-                    strokeWidth='2.5'
-                    strokeLinecap='round'
-                    opacity='0.8'
-                  />
-                </svg>
-              </span>
-            </div>
-
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative'>
-              {[
-                {
-                  number: 1,
-                  title: 'Pilih Tema',
-                  description:
-                    'Pilih desain undangan yang sesuai dengan tema pernikahan Anda',
-                },
-                {
-                  number: 2,
-                  title: 'Masukkan Data',
-                  description:
-                    'Isi data Anda dan pasangan untuk mempersonalisasi undangan',
-                },
-                {
-                  number: 3,
-                  title: 'Aktivasi',
-                  description:
-                    'Lakukan pembayaran untuk mengaktifkan undangan digital Anda',
-                },
-                {
-                  number: 4,
-                  title: 'Bagikan',
-                  description:
-                    'Sebarkan undangan kepada keluarga dan teman-teman Anda',
-                },
-              ].map((step, index) => {
-                return (
-                  <div
-                    key={step.number}
-                    className='relative group flex md:flex-col gap-3 items-center md:text-center'
-                  >
-                    {/* Circular Number with Arc */}
-                    <div className='relative mb-6'>
-                      {/* Arc Background */}
-                      <svg
-                        className='absolute -inset-4 lg:w-32 lg:h-32 w-20 h-23'
-                        viewBox='0 0 120 120'
-                      >
-                        <circle
-                          cx='60'
-                          cy='60'
-                          r='54'
-                          fill='none'
-                          stroke='#ec4899'
-                          strokeWidth='2'
-                          strokeDasharray='160 340'
-                          strokeDashoffset='-80'
-                          opacity='0.3'
-                          className='group-hover:opacity-60 transition-opacity'
-                        />
-                      </svg>
-
-                      {/* Number Circle */}
-                      <div className='relative lg:w-24 lg:h-24 w-15 h-15 border border-r-8 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300'>
-                        <span className='text-white font-bold lg:text-5xl text-3xl'>
-                          {step.number}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Title */}
-
-                    <div className='content '>
-                      <h3 className='text-white font-semibold text-lg mb-2 group-hover:text-pink-400 transition-colors'>
-                        {step.title}
-                      </h3>
-
-                      {/* Description */}
-                      <p className='text-gray-400 text-sm leading-relaxed max-w-xs'>
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className='mt-8 w-full text-center '>
-              <Link
-                href='dashboard/catalogue'
-                className='inline-flex items-center gap-2 hover:scale-110 text-white font-semibold px-8 border border-l-8 border-b-8 py-3 rounded-lg transition-all duration-300 shadow-lg'
-              >
-                <Sparkles size={20} className='text-pink-400' />
-                Mulai Buat Undangan
-              </Link>
-            </div>
-          </div>
+          <InteractiveTutorial />
         ) : filteredData.length === 0 ? (
           <div className='p-8 sm:p-12 text-center'>
             <div className='bg-gray-900/50 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4'>

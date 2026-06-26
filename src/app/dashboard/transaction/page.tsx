@@ -311,33 +311,33 @@ export default function TransactionPage() {
         <div className="bg-gray-800/50 border border-gray-700/50 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
           <div className="flex items-center justify-between">
             <p className="text-gray-500 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Total Transaksi</p>
-            <Receipt className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-gray-600" />
+            <Receipt className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
           </div>
           <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">{stats.total}</p>
         </div>
 
-        <div className="bg-green-500/5 border border-green-500/20 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
+        <div className="bg-gray-800/50 border border-gray-700/50 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-green-500/70 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Berhasil</p>
-            <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-green-500" />
+            <p className="text-gray-500 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Berhasil</p>
+            <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
           </div>
-          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-500">{stats.paid}</p>
+          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">{stats.paid}</p>
         </div>
 
-        <div className="bg-yellow-500/5 border border-yellow-500/20 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
+        <div className="bg-gray-800/50 border border-gray-700/50 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-yellow-500/70 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Pending</p>
-            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-yellow-500" />
+            <p className="text-gray-500 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Pending</p>
+            <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" />
           </div>
-          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-500">{stats.pending}</p>
+          <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">{stats.pending}</p>
         </div>
 
-        <div className="bg-pink-500/5 border border-pink-500/20 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
+        <div className="bg-gray-800/50 border border-gray-700/50 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-pink-500/70 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Total Belanja</p>
-            <CreditCard className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-pink-500" />
+            <p className="text-gray-500 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Total Belanja</p>
+            <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-pink-500" />
           </div>
-          <p className="text-sm sm:text-base lg:text-lg font-bold text-pink-500">{formatCurrency(stats.totalSpent)}</p>
+          <p className="text-sm sm:text-base lg:text-lg font-bold text-white">{formatCurrency(stats.totalSpent)}</p>
         </div>
       </div>
 
