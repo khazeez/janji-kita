@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Users, 
   UserCheck, 
@@ -9,6 +9,7 @@ import {
   Download, 
   Loader2,
   ChevronDown,
+  HelpCircle,
 } from 'lucide-react';
 import { useUserInvitations, useGuestBook } from '@/hooks/useData';
 import { GuestBook, AllInvitationData } from '@/types/interface';
@@ -22,6 +23,7 @@ export default function GuestManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'ATTENDING' | 'NOT_ATTENDING' | 'MAYBE'>('ALL');
   const [showInvitationDropdown, setShowInvitationDropdown] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
 
   const { data: guestBookResult, isLoading: fetchingGuests } = useGuestBook(selectedInvitation?.invitationId);
   const guests: GuestBook[] = guestBookResult?.data || [];
@@ -96,6 +98,12 @@ export default function GuestManagement() {
   const loading = loadingUser || loadingInvitations;
 
   const invList = (invitations || []) as AllInvitationData[];
+
+  useEffect(() => {
+    if (!selectedInvitation && invList.length > 0) {
+      setSelectedInvitation(invList[0]);
+    }
+  }, [invList, selectedInvitation]);
 
   if (loading) {
     return (
@@ -173,34 +181,34 @@ export default function GuestManagement() {
             <div className="bg-gray-800/50 border border-gray-700/50 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
               <div className="flex items-center justify-between">
                 <p className="text-gray-500 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Total RSVP</p>
-                <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-gray-600" />
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
               </div>
               <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">{stats.total}</p>
               <p className="text-[9px] sm:text-[10px] text-gray-500">Est. {stats.totalPax} orang</p>
             </div>
 
-            <div className="bg-green-500/5 border border-green-500/20 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
+            <div className="bg-gray-800/50 border border-gray-700/50 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-green-500/70 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Hadir</p>
-                <UserCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-green-500" />
+                <p className="text-gray-500 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Hadir</p>
+                <UserCheck className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
               </div>
-              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-500">{stats.attending}</p>
+              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">{stats.attending}</p>
             </div>
 
-            <div className="bg-red-500/5 border border-red-500/20 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
+            <div className="bg-gray-800/50 border border-gray-700/50 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-red-500/70 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Tidak Hadir</p>
-                <UserX className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-red-500" />
+                <p className="text-gray-500 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Tidak Hadir</p>
+                <UserX className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
               </div>
-              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-500">{stats.notAttending}</p>
+              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">{stats.notAttending}</p>
             </div>
 
-            <div className="bg-yellow-500/5 border border-yellow-500/20 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
+            <div className="bg-gray-800/50 border border-gray-700/50 p-3 sm:p-4 lg:p-5 rounded-xl sm:rounded-2xl space-y-1 sm:space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-yellow-500/70 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Ragu</p>
-                <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 border-2 border-yellow-500/40 rounded-full" />
+                <p className="text-gray-500 text-[9px] sm:text-[10px] lg:text-xs font-bold uppercase tracking-wider">Ragu</p>
+                <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" />
               </div>
-              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-500">{stats.maybe}</p>
+              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">{stats.maybe}</p>
             </div>
           </div>
 
@@ -220,20 +228,35 @@ export default function GuestManagement() {
               </div>
 
               <div className="flex items-center gap-2 sm:gap-3">
-                <select 
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as any)}
-                  className="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-900/50 border border-gray-700/50 rounded-lg sm:rounded-xl text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/50"
-                >
-                  <option value="ALL">Semua Status</option>
-                  <option value="ATTENDING">Hadir</option>
-                  <option value="NOT_ATTENDING">Tidak Hadir</option>
-                  <option value="MAYBE">Ragu-ragu</option>
-                </select>
+                <div className="relative flex-1 sm:flex-none">
+                  <button
+                    onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+                    className="w-full sm:w-auto flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-800 border border-gray-700 rounded-lg sm:rounded-xl text-white hover:bg-gray-750 transition-all sm:min-w-[140px] justify-between text-xs sm:text-sm"
+                  >
+                    <span>{statusFilter === 'ALL' ? 'Semua Status' : statusFilter === 'ATTENDING' ? 'Hadir' : statusFilter === 'NOT_ATTENDING' ? 'Tidak Hadir' : 'Ragu-ragu'}</span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-gray-500 transition-transform flex-shrink-0 ${showStatusDropdown ? 'rotate-180' : ''}`} />
+                  </button>
+                  {showStatusDropdown && (
+                    <div className="absolute top-full left-0 mt-1 w-full sm:min-w-[140px] bg-gray-800 border border-gray-700 rounded-lg sm:rounded-xl shadow-2xl z-50 overflow-hidden">
+                      {(['ALL', 'ATTENDING', 'NOT_ATTENDING', 'MAYBE'] as const).map((val) => (
+                        <button
+                          key={val}
+                          onClick={() => {
+                            setStatusFilter(val);
+                            setShowStatusDropdown(false);
+                          }}
+                          className={`w-full px-3 sm:px-4 py-2.5 text-left text-xs sm:text-sm hover:bg-gray-700 transition-colors ${statusFilter === val ? 'bg-pink-500/10 text-pink-500' : 'text-gray-300'}`}
+                        >
+                          {val === 'ALL' ? 'Semua Status' : val === 'ATTENDING' ? 'Hadir' : val === 'NOT_ATTENDING' ? 'Tidak Hadir' : 'Ragu-ragu'}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 <button 
                   onClick={exportToCSV}
-                  className="p-2 sm:p-2.5 bg-gray-900/50 border border-gray-700/50 rounded-lg sm:rounded-xl text-gray-400 hover:text-white hover:bg-gray-800 transition-colors flex-shrink-0"
+                  className="p-2 sm:p-2.5 bg-gray-800 border border-gray-700 rounded-lg sm:rounded-xl text-gray-400 hover:text-white hover:bg-gray-700 transition-colors flex-shrink-0"
                   title="Download CSV"
                 >
                   <Download className="w-4 h-4 sm:w-5 sm:h-5" />

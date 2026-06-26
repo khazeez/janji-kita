@@ -243,8 +243,8 @@ export default function GiftDataInput({ data, onChange }: GiftDataInputProps) {
     return (groomWallet?.address || []) as WalletAddress[];
   };
 
-  const inputClasses = "w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-pink-500/50 focus:bg-gray-700 focus:ring-4 focus:ring-pink-500/10 transition-all duration-300";
-  const selectClasses = "w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500/50 focus:bg-[#1a1f2e] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300 appearance-none cursor-pointer";
+  const inputClasses = "w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-pink-500/50 focus:bg-gray-800 focus:ring-4 focus:ring-pink-500/10 transition-all duration-300";
+  const selectClasses = "w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500/50 focus:bg-[#1a1f2e] focus:ring-4 focus:ring-pink-500/10 transition-all duration-300 appearance-none cursor-pointer";
 
   return (
     <div className='space-y-10'>

@@ -11,7 +11,7 @@ export default function BrideGroomDataInput({ data, onChange }: BrideGroomInputP
     onChange({ ...data, [field]: value });
   };
 
-  const inputClasses = "w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-pink-500/50 focus:bg-gray-800 focus:ring-4 focus:ring-pink-500/10 transition-all duration-300";
+  const inputClasses = "w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-pink-500/50 focus:bg-gray-900 focus:ring-4 focus:ring-pink-500/10 transition-all duration-300";
 
   return (
     <div className='space-y-10'>

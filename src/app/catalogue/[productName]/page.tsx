@@ -1,8 +1,7 @@
 'use client';
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  ArrowLeft,
+import { ArrowLeft,
   ExternalLink,
   Check,
   Heart,
@@ -12,10 +11,12 @@ import {
   ZoomIn,
   X,
   Loader2,
+  AlertTriangle,
 } from 'lucide-react';
 import { getProductByName } from '@/models/invitations';
 import { Product } from '@/types/interface';
 import supabase from '@/lib/supabase/client';
+import { toast } from 'sonner';
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('id-ID', {
@@ -112,9 +113,20 @@ export default function ProductDetail({ params }: PageProps) {
     if (!selectedItem) return;
 
     const { data: { session } } = await supabase.auth.getSession();
-    
+
     if (session) {
-      router.push(`/create/${selectedItem.productId}`);
+      const { count } = await supabase
+        .from('INVITATION')
+        .select('*', { count: 'exact', head: true })
+        .eq('USER_ID', session.user.id)
+        .eq('INVITATION_STATUS', 'draft');
+
+      if (count != null && count >= 3) {
+        toast.error(`Kamu sudah memiliki ${count} undangan dalam status draft. Selesaikan atau aktifkan terlebih dahulu sebelum membuat undangan baru.`);
+        return;
+      }
+
+      router.push(`/create/${selectedItem.productId}${withPhoto ? '' : '?variant=no-photo'}`);
     } else {
       router.push('/sign-in');
     }

@@ -2,6 +2,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { AllInvitationData } from '@/types/interface';
 import {
   CheckCircle,
@@ -346,7 +347,9 @@ export default function InvitationComponents({ data }: Props) {
       });
     } catch (error) {
       setActivatingId(null);
-      console.error('Activation error:', error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
     }
   };
 
@@ -608,7 +611,7 @@ export default function InvitationComponents({ data }: Props) {
                               )}
                               {activatingId === invitation.invitationId
                                 ? 'Memproses...'
-                                : 'Buat Undangan'}
+                                : 'Aktivasi'}
                             </button>
                           </div>
                         ) : (

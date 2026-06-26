@@ -12,6 +12,7 @@ import {
   ZoomIn,
   X,
   Loader2,
+  AlertTriangle,
   Info,
   Calendar,
   MousePointer2,
@@ -30,6 +31,8 @@ import GlassesDesign from '@/theme/gold/elegan/elegan-1/main';
 import AdatDesign from '@/theme/gold/traditional/main';
 import { getProductByName } from '@/models/invitations';
 import { Product, AllInvitationData } from '@/types/interface';
+import supabase from '@/lib/supabase/client';
+import { toast } from 'sonner';
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('id-ID', {
@@ -129,7 +132,23 @@ export default function DashboardProductDetail({ params }: PageProps) {
   const handleUseDesign = async () => {
     if (!selectedItem) return;
     setNavigatingToCreate(true);
-    router.push(`/create/${selectedItem.productId}`);
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      const { count } = await supabase
+        .from('INVITATION')
+        .select('*', { count: 'exact', head: true })
+        .eq('USER_ID', session.user.id)
+        .eq('INVITATION_STATUS', 'draft');
+
+      if (count != null && count >= 3) {
+        toast.error(`Kamu sudah memiliki ${count} undangan dalam status draft. Selesaikan atau aktifkan terlebih dahulu sebelum membuat undangan baru.`);
+        setNavigatingToCreate(false);
+        return;
+      }
+    }
+
+    router.push(`/create/${selectedItem.productId}${withPhoto ? '' : '?variant=no-photo'}`);
   };
 
   const toggleFavorite = async () => {

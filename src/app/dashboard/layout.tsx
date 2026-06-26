@@ -72,7 +72,12 @@ export default function DashboardLayout({
         }
         if (trxRes.ok) {
           const trx = await trxRes.json();
-          setTransactionCount(trx.data?.length ?? 0);
+          setTransactionCount(
+            (trx.data ?? []).filter(
+              (t: { PAYMENT_STATUS: string }) =>
+                t.PAYMENT_STATUS === 'INITIATED' || t.PAYMENT_STATUS === 'PENDING'
+            ).length
+          );
         }
       } catch {}
     };
