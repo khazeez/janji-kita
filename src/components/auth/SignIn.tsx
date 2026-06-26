@@ -41,28 +41,48 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 flex items-center justify-center p-4 relative overflow-hidden'>
-      <div className='w-full max-w-md bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-gray-800/50 relative z-10'>
-        <div className='p-6 md:p-12'>
-          <div className='mb-6 md:mb-8'>
-            <h1 className='text-2xl md:text-4xl text-center font-bold bg-gradient-to-r from-pink-600 via-pink-500 to-pink-400 bg-clip-text text-transparent mb-2'>
+    <div className='min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden'>
+      {/* Background decorative orbs */}
+      <div className='absolute top-0 -left-40 w-96 h-96 bg-pink-600/20 rounded-full blur-[128px] pointer-events-none' />
+      <div className='absolute bottom-0 -right-40 w-96 h-96 bg-rose-600/15 rounded-full blur-[128px] pointer-events-none' />
+      <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-pink-600/5 via-transparent to-rose-600/5 rounded-full blur-[100px] pointer-events-none' />
+
+      {/* Subtle grid pattern */}
+      <div className='absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none' />
+
+      <div className='w-full max-w-md bg-gradient-to-b from-gray-900/90 to-gray-900/80 backdrop-blur-2xl rounded-3xl shadow-[0_0_60px_rgba(0,0,0,0.5)] overflow-hidden border border-gray-800/60 relative z-10'>
+        {/* Top accent line */}
+        <div className='h-1 w-full bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600' />
+
+        <div className='p-8 md:p-10'>
+          {/* Logo */}
+          <div className='flex flex-col items-center mb-8'>
+            <div className='p-3 rounded-2xl bg-gray-800/50 border border-gray-700/30 mb-4'>
+              <img src='/janjiKitaPutih.png' alt='JanjiKita' className='h-8 md:h-9 w-auto' />
+            </div>
+            <h1 className='text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-400 via-pink-300 to-rose-300 bg-clip-text text-transparent'>
               Welcome Back!
             </h1>
-            <p className='text-sm md:text-base text-center text-gray-400'>
+            <p className='text-sm text-gray-500 mt-1.5'>
               Masuk untuk melanjutkan
             </p>
           </div>
 
+          {/* Divider */}
+          <div className='flex items-center gap-3 mb-6'>
+            <div className='flex-1 h-px bg-gradient-to-r from-transparent via-gray-700/50 to-transparent' />
+          </div>
+
           {error && (
-            <div className='mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl'>
-              <p className='text-red-400 text-sm text-center'>{error}</p>
+            <div className='mb-5 p-3.5 bg-red-500/10 border border-red-500/20 rounded-xl'>
+              <p className='text-red-400 text-xs text-center leading-relaxed'>{error}</p>
             </div>
           )}
 
           <button
             onClick={handleGoogleLogin}
             disabled={isLoading}
-            className='w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-900 font-medium py-3 md:py-3.5 px-4 rounded-xl transition-all duration-200 border border-gray-200 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base'
+            className='group relative w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-900 font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 border border-gray-200/80 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/15 active:scale-[0.98]'
           >
             {isLoading ? (
               <Loader2 className='w-5 h-5 animate-spin text-gray-500' />
@@ -77,15 +97,18 @@ export default function LoginPage() {
             {isLoading ? 'Memproses...' : 'Lanjutkan dengan Google'}
           </button>
 
-          <p className='text-center text-gray-400 text-xs md:text-sm mt-6 md:mt-8'>
-            Tidak punya akun?{' '}
-            <Link
-              href='/sign-up'
-              className='text-pink-500 hover:text-pink-400 font-semibold transition-colors'
-            >
-              Daftar di sini
-            </Link>
-          </p>
+          {/* Footer */}
+          <div className='mt-8 pt-6 border-t border-gray-800/50'>
+            <p className='text-center text-gray-500 text-xs'>
+              Tidak punya akun?{' '}
+              <Link
+                href='/sign-up'
+                className='text-pink-400 hover:text-pink-300 font-semibold transition-colors'
+              >
+                Daftar di sini
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
