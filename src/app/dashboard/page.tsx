@@ -1,5 +1,6 @@
 'use client';
 import Invitation from '@/components/layout/dashboard-ui/Invitation';
+import WhatsAppFloating from '@/components/WhatsAppFloating';
 import { useUserInvitations, useCurrentUser } from '@/hooks/useData';
 
 export default function Invitations() {
@@ -14,5 +15,10 @@ export default function Invitations() {
     );
   }
 
-  return <Invitation data={invitations || []} />;
+  return (
+    <>
+      <Invitation data={invitations || []} />
+      <WhatsAppFloating />
+    </>
+  );
 }

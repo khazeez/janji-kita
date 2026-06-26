@@ -6,6 +6,7 @@ import Product from "@/components/layout/product";
 import FAQ from "@/components/layout/faq";
 import Footer from "@/components/layout/footer";
 import Steps from "@/components/layout/Steps"
+import WhatsAppFloating from "@/components/WhatsAppFloating";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 
@@ -33,6 +34,7 @@ export default function Home() {
       <Product />
       <FAQ />
       <Footer />
+      <WhatsAppFloating />
     </>
   );
 }
