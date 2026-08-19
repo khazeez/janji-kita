@@ -1,9 +1,8 @@
 'use client';
 
-import GlassesDesign from '@/theme/gold/elegan/elegan-1/main';
-import NetflixDesign from '@/theme/gold/special/index';
+import GlassesDesign from '@/theme/gold/elegan/glasses/main';
 import AdatDesign from '@/theme/gold/traditional/main';
-import { AllInvitationData } from '@/types/all-invitation-data';
+import { AllInvitationData } from '@/types/interface';
 
 interface Props {
   data: AllInvitationData;
@@ -11,41 +10,45 @@ interface Props {
 
 function toSnakeCaseData(data: AllInvitationData) {
   const events = data.invitationEvent || [];
-  const akadEvent = events.find(e => e.eventType === 'AKAD');
-  const resepsiEvent = events.find(e => e.eventType === 'RESEPSI');
+  const akadEvent = events.find((e) => e.eventType === 'AKAD');
+  const resepsiEvent = events.find((e) => e.eventType === 'RESEPSI');
   const gift = data.invitationGift;
 
-  const groomBanks = gift?.invitationGiftBank
-    ?.filter(b => b.owner === 'GROOM')
-    ?.map(b => ({
-      bank_name: b.account?.[0]?.bank_name || '',
-      account_number: b.account?.[0]?.account_number || '',
-      account_holder: b.account?.[0]?.account_holder || '',
-    })) || [];
+  const groomBanks =
+    gift?.invitationGiftBank
+      ?.filter((b) => b.owner === 'GROOM')
+      ?.map((b) => ({
+        bank_name: b.account?.[0]?.bank_name || '',
+        account_number: b.account?.[0]?.account_number || '',
+        account_holder: b.account?.[0]?.account_holder || '',
+      })) || [];
 
-  const brideBanks = gift?.invitationGiftBank
-    ?.filter(b => b.owner === 'BRIDE')
-    ?.map(b => ({
-      bank_name: b.account?.[0]?.bank_name || '',
-      account_number: b.account?.[0]?.account_number || '',
-      account_holder: b.account?.[0]?.account_holder || '',
-    })) || [];
+  const brideBanks =
+    gift?.invitationGiftBank
+      ?.filter((b) => b.owner === 'BRIDE')
+      ?.map((b) => ({
+        bank_name: b.account?.[0]?.bank_name || '',
+        account_number: b.account?.[0]?.account_number || '',
+        account_holder: b.account?.[0]?.account_holder || '',
+      })) || [];
 
-  const groomWallets = gift?.invitationGiftWallet
-    ?.filter(w => w.owner === 'GROOM')
-    ?.map(w => ({
-      wallet_name: w.address?.[0]?.wallet_name || '',
-      wallet_number: w.address?.[0]?.wallet_number || '',
-      wallet_holder: w.address?.[0]?.wallet_holder || '',
-    })) || [];
+  const groomWallets =
+    gift?.invitationGiftWallet
+      ?.filter((w) => w.owner === 'GROOM')
+      ?.map((w) => ({
+        wallet_name: w.address?.[0]?.wallet_name || '',
+        wallet_number: w.address?.[0]?.wallet_number || '',
+        wallet_holder: w.address?.[0]?.wallet_holder || '',
+      })) || [];
 
-  const brideWallets = gift?.invitationGiftWallet
-    ?.filter(w => w.owner === 'BRIDE')
-    ?.map(w => ({
-      wallet_name: w.address?.[0]?.wallet_name || '',
-      wallet_number: w.address?.[0]?.wallet_number || '',
-      wallet_holder: w.address?.[0]?.wallet_holder || '',
-    })) || [];
+  const brideWallets =
+    gift?.invitationGiftWallet
+      ?.filter((w) => w.owner === 'BRIDE')
+      ?.map((w) => ({
+        wallet_name: w.address?.[0]?.wallet_name || '',
+        wallet_number: w.address?.[0]?.wallet_number || '',
+        wallet_holder: w.address?.[0]?.wallet_holder || '',
+      })) || [];
 
   return {
     data_id: data.invitationDataUser?.dataId || '',
@@ -75,7 +78,10 @@ function toSnakeCaseData(data: AllInvitationData) {
     bride_bank_accounts: brideBanks,
     groom_wallets: groomWallets,
     bride_wallets: brideWallets,
-    love_story: data.invitationDataUser?.loveStory?.map((s: any) => s.text || '').join('\n\n') || '',
+    love_story:
+      data.invitationDataUser?.loveStory
+        ?.map((s: any) => s.text || '')
+        .join('\n\n') || '',
     is_deleted: false,
     created_at: data.createdAt || '',
     updated_at: data.updatedAt || '',
@@ -105,9 +111,6 @@ export default function InvitationPublic({ data }: Props) {
   switch (product.productName) {
     case 'Glasses':
       return <GlassesDesign data={data} />;
-
-    case 'special':
-      return <NetflixDesign data={toSnakeCaseData(data)} />;
 
     case 'Adat':
     case 'Traditional':

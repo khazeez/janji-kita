@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { Heart, Eye, Check, Loader2, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/types/interface';
+import { useCurrentUser } from '@/hooks/useData';
+import { mutate } from 'swr';
 interface FavoriteProduct {
   PRODUCT_ID: string;
   PRODUCT_NAME: string;
@@ -23,6 +25,7 @@ interface FavoriteItem {
 
 export default function Saved() {
   const router = useRouter();
+  const { data: user } = useCurrentUser();
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [removingId, setRemovingId] = useState<string | null>(null);
@@ -61,9 +64,17 @@ export default function Saved() {
       if (res.ok) {
         setFavorites((prev) => prev.filter((f) => f.PRODUCT.PRODUCT_ID !== productId));
         window.dispatchEvent(new CustomEvent('update-counts'));
+        if (user) {
+          mutate(['favorites', user.id]);
+        }
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        console.error('Gagal hapus favorite:', errData.error || res.status);
+        alert('Gagal menghapus favorite: ' + (errData.error || res.status));
       }
     } catch (error) {
       console.error('Failed to remove favorite:', error);
+      alert('Gagal menghapus favorite: ' + (error instanceof Error ? error.message : String(error)));
     } finally {
       setRemovingId(null);
     }

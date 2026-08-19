@@ -13,7 +13,7 @@ import {
   Thanks,
   RSVP,
   Gallery,
-} from '@/theme/gold/elegan/elegan-1/sections';
+} from '@/theme/shared';
 
 import SplashScreen from '@/components/ui/SplashScreen';
 import { AllInvitationData } from '@/types/interface';
@@ -87,20 +87,27 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
         {/* Background — only render current and next image */}
         {phase === 'main' && (
           <div className='absolute inset-0 z-0'>
-            {backgroundImages.map((img, i) => (
-              <img
-                key={`${img}-${i}`}
-                src={img}
-                alt=''
-                loading='lazy'
-                decoding='async'
-                className={`
-                  absolute inset-0 w-full h-full object-cover
-                  transition-opacity duration-[2000ms]
-                  ${currentImage === i ? 'opacity-100' : 'opacity-0'}
-                `}
-              />
-            ))}
+            {(() => {
+              const len = backgroundImagesRef.current.length;
+              const imagesToShow = len <= 2 ? backgroundImagesRef.current : [
+                backgroundImagesRef.current[currentImage],
+                backgroundImagesRef.current[(currentImage + 1) % len],
+              ];
+              return imagesToShow.map((img, i) => (
+                <img
+                  key={`${img}-${i}`}
+                  src={img}
+                  alt=''
+                  loading='lazy'
+                  decoding='async'
+                  className={`
+                    absolute inset-0 w-full h-full object-cover
+                    transition-opacity duration-[2000ms]
+                    ${i === 0 ? 'opacity-100' : 'opacity-0'}
+                  `}
+                />
+              ));
+            })()}
             <div className='absolute inset-0 bg-black/40' />
           </div>
         )}
@@ -134,7 +141,7 @@ export default function GlassesDesign({ data, isEditorMode = false }: Props) {
         )}
 
         {phase === 'main' && (
-          <div className='absolute z-50'>
+          <div className='fixed top-6 right-6 z-50'>
             <MemoizedRSVP invitationId={data.invitationId} />
           </div>
         )}

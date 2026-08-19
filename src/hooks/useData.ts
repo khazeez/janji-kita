@@ -105,3 +105,8 @@ export async function toggleFavoriteProduct(userId: string, productId: string, i
   mutate(['favorites', userId]);
   return !isFavorite;
 }
+
+export function useFavoriteCount(userId: string | undefined) {
+  const { data: favorites } = useFavorites(userId);
+  return favorites ? favorites.length : 0;
+}

@@ -5,6 +5,90 @@ import {
   transformKeys,
 } from '@/lib/utils';
 
+/** Select string bersama untuk query invitation detail (digunakan oleh getDataInvitationUserBySlug dan getDataInvitationUserById) */
+const INVITATION_DETAIL_SELECT = `
+  INVITATION_ID,
+  USER_ID,
+  PRODUCT_ID,
+  INVITATION_URL,
+  INVITATION_STATUS,
+  PUBLISHED_AT,
+  EXPIRED_AT,
+  VIEW_COUNT,
+  IS_DELETED,
+  CREATED_AT,
+  UPDATED_AT,
+  DELETED_AT,
+  PRODUCT!INVITATION_PRODUCT_ID_fkey(
+    PRODUCT_ID,
+    PRODUCT_NAME,
+    COVER_IMAGE,
+    SEGMENTATION,
+    TIER,
+    BASE_PRICE_NO_PHOTO,
+    BASE_PRICE_WITH_PHOTO,
+    PROMO_PRICE_NO_PHOTO,
+    PROMO_PRICE_WITH_PHOTO,
+    FEATURES,
+    IS_PROMO,
+    IS_NEW,
+    IS_ACTIVE
+  ),
+  INVITATION_DATA_USER!INVITATION_DATA_USER_INVITATION_ID_fkey(
+    DATA_ID,
+    INVITATION_ID,
+    GROOM_FULL_NAME,
+    GROOM_NICK_NAME,
+    GROOM_PARENT_NAME,
+    GROOM_INSTAGRAM,
+    GROOM_PHOTO_URL,
+    BRIDE_FULL_NAME,
+    BRIDE_NICK_NAME,
+    BRIDE_PARENT_NAME,
+    BRIDE_INSTAGRAM,
+    BRIDE_PHOTO_URL,
+    GALLERY_PHOTOS,
+    LOVE_STORY
+  ),
+  INVITATION_EVENT!INVITATION_EVENT_INVITATION_ID_fkey(
+    EVENT_ID,
+    INVITATION_ID,
+    EVENT_TYPE,
+    LOCATION,
+    LOCATION_DETAIL,
+    MAPS_URL,
+    START_TIME,
+    END_TIME
+  ),
+  INVITATION_GIFT!INVITATION_GIFT_INVITATION_ID_fkey(
+    GIFT_ID,
+    INVITATION_ID,
+    ADDRESS,
+    INVITATION_GIFT_BANK!INVITATION_GIFT_BANK_GIFT_ID_fkey(
+      GIFT_BANK_ID,
+      GIFT_ID,
+      ACCOUNT,
+      OWNER
+    ),
+    INVITATION_GIFT_WALLET!INVITATION_GIFT_WALLET_GIFT_ID_fkey(
+      GIFT_WALLET_ID,
+      GIFT_ID,
+      ADDRESS,
+      OWNER
+    )
+  ),
+  GUEST_BOOK!GUEST_BOOK_INVITATION_ID_fkey(
+    GUEST_ID,
+    INVITATION_ID,
+    GUEST_NAME,
+    ATTENDANCE_STATUS,
+    GUEST_COUNT,
+    MESSAGE,
+    IP_ADDRESS,
+    CREATED_AT
+  )
+`;
+
 export async function getProductInvitation() {
   const { data, error } = await supabase.from('PRODUCT').select(`*`);
 
@@ -42,90 +126,7 @@ export async function getSlug() {
 export async function getDataInvitationUser(slug: string) {
   const { data, error } = await supabase
     .from('INVITATION')
-    .select(
-      `
-      INVITATION_ID,
-      USER_ID,
-      PRODUCT_ID,
-      INVITATION_URL,
-      INVITATION_STATUS,
-      PUBLISHED_AT,
-      EXPIRED_AT,
-      VIEW_COUNT,
-      IS_DELETED,
-      CREATED_AT,
-      UPDATED_AT,
-      DELETED_AT,
-      PRODUCT!INVITATION_PRODUCT_ID_fkey(
-        PRODUCT_ID,
-        PRODUCT_NAME,
-        COVER_IMAGE,
-        SEGMENTATION,
-        TIER,
-        BASE_PRICE_NO_PHOTO,
-        BASE_PRICE_WITH_PHOTO,
-        PROMO_PRICE_NO_PHOTO,
-        PROMO_PRICE_WITH_PHOTO,
-        FEATURES,
-        IS_PROMO,
-        IS_NEW,
-        IS_ACTIVE
-      ),
-      INVITATION_DATA_USER!INVITATION_DATA_USER_INVITATION_ID_fkey(
-        DATA_ID,
-        INVITATION_ID,
-        GROOM_FULL_NAME,
-        GROOM_NICK_NAME,
-        GROOM_PARENT_NAME,
-        GROOM_INSTAGRAM,
-        GROOM_PHOTO_URL,
-        BRIDE_FULL_NAME,
-        BRIDE_NICK_NAME,
-        BRIDE_PARENT_NAME,
-        BRIDE_INSTAGRAM,
-        BRIDE_PHOTO_URL,
-        GALLERY_PHOTOS,
-        LOVE_STORY
-      ),
-      INVITATION_EVENT!INVITATION_EVENT_INVITATION_ID_fkey(
-        EVENT_ID,
-        INVITATION_ID,
-        EVENT_TYPE,
-        LOCATION,
-        LOCATION_DETAIL,
-        MAPS_URL,
-        START_TIME,
-        END_TIME
-      ),
-      INVITATION_GIFT!INVITATION_GIFT_INVITATION_ID_fkey(
-        GIFT_ID,
-        INVITATION_ID,
-        ADDRESS,
-        INVITATION_GIFT_BANK!INVITATION_GIFT_BANK_GIFT_ID_fkey(
-          GIFT_BANK_ID,
-          GIFT_ID,
-          ACCOUNT,
-          OWNER
-        ),
-        INVITATION_GIFT_WALLET!INVITATION_GIFT_WALLET_GIFT_ID_fkey(
-          GIFT_WALLET_ID,
-          GIFT_ID,
-          ADDRESS,
-          OWNER
-        )
-      ),
-      GUEST_BOOK!GUEST_BOOK_INVITATION_ID_fkey(
-        GUEST_ID,
-        INVITATION_ID,
-        GUEST_NAME,
-        ATTENDANCE_STATUS,
-        GUEST_COUNT,
-        MESSAGE,
-        IP_ADDRESS,
-        CREATED_AT
-      )
-    `
-    )
+    .select(INVITATION_DETAIL_SELECT)
     .eq('INVITATION_URL', slug)
     .eq('IS_DELETED', false)
     .single();
@@ -137,97 +138,13 @@ export async function getDataInvitationUser(slug: string) {
 
   const dataCamelCase = transformDataInvitationResponse(data);
 
-
   return dataCamelCase;
 }
 
 export async function getDataInvitationUserById(id: string) {
   const { data, error } = await supabase
     .from('INVITATION')
-    .select(
-      `
-      INVITATION_ID,
-      USER_ID,
-      PRODUCT_ID,
-      INVITATION_URL,
-      INVITATION_STATUS,
-      PUBLISHED_AT,
-      EXPIRED_AT,
-      VIEW_COUNT,
-      IS_DELETED,
-      CREATED_AT,
-      UPDATED_AT,
-      DELETED_AT,
-      PRODUCT!INVITATION_PRODUCT_ID_fkey(
-        PRODUCT_ID,
-        PRODUCT_NAME,
-        COVER_IMAGE,
-        SEGMENTATION,
-        TIER,
-        BASE_PRICE_NO_PHOTO,
-        BASE_PRICE_WITH_PHOTO,
-        PROMO_PRICE_NO_PHOTO,
-        PROMO_PRICE_WITH_PHOTO,
-        FEATURES,
-        IS_PROMO,
-        IS_NEW,
-        IS_ACTIVE
-      ),
-      INVITATION_DATA_USER!INVITATION_DATA_USER_INVITATION_ID_fkey(
-        DATA_ID,
-        INVITATION_ID,
-        GROOM_FULL_NAME,
-        GROOM_NICK_NAME,
-        GROOM_PARENT_NAME,
-        GROOM_INSTAGRAM,
-        GROOM_PHOTO_URL,
-        BRIDE_FULL_NAME,
-        BRIDE_NICK_NAME,
-        BRIDE_PARENT_NAME,
-        BRIDE_INSTAGRAM,
-        BRIDE_PHOTO_URL,
-        GALLERY_PHOTOS,
-        LOVE_STORY
-      ),
-      INVITATION_EVENT!INVITATION_EVENT_INVITATION_ID_fkey(
-        EVENT_ID,
-        INVITATION_ID,
-        EVENT_TYPE,
-        LOCATION,
-        LOCATION_DETAIL,
-        MAPS_URL,
-        START_TIME,
-        END_TIME
-      ),
-      INVITATION_GIFT!INVITATION_GIFT_INVITATION_ID_fkey(
-        GIFT_ID,
-        INVITATION_ID,
-        ADDRESS,
-        INVITATION_GIFT_BANK!INVITATION_GIFT_BANK_GIFT_ID_fkey(
-          GIFT_BANK_ID,
-          GIFT_ID,
-          ACCOUNT,
-          OWNER
-        ),
-        INVITATION_GIFT_WALLET!INVITATION_GIFT_WALLET_GIFT_ID_fkey(
-          GIFT_WALLET_ID,
-          GIFT_ID,
-          ADDRESS,
-          OWNER
-        )
-      ),
-      GUEST_BOOK!GUEST_BOOK_INVITATION_ID_fkey(
-        GUEST_ID,
-        INVITATION_ID,
-        GUEST_NAME,
-        ATTENDANCE_STATUS,
-        GUEST_COUNT,
-        MESSAGE,
-        IP_ADDRESS,
-        CREATED_AT
-      )
-    `
-    )
+    .select(INVITATION_DETAIL_SELECT)
     .eq('INVITATION_ID', id)
     .eq('IS_DELETED', false)
     .single();
@@ -236,10 +153,8 @@ export async function getDataInvitationUserById(id: string) {
     console.error('Error fetching invitation:', error);
     return null;
   }
-  
 
   const dataCamelCase = transformDataInvitationResponse(data);
-
 
   return dataCamelCase;
 }
@@ -247,92 +162,9 @@ export async function getDataInvitationUserById(id: string) {
 export async function getDataInvitationUserByUserId(userId: string) {
   const { data, error } = await supabase
     .from('INVITATION')
-    .select(
-      `
-      INVITATION_ID,
-      USER_ID,
-      PRODUCT_ID,
-      INVITATION_URL,
-      INVITATION_STATUS,
-      PUBLISHED_AT,
-      EXPIRED_AT,
-      VIEW_COUNT,
-      IS_DELETED,
-      CREATED_AT,
-      UPDATED_AT,
-      DELETED_AT,
-      PRODUCT!INVITATION_PRODUCT_ID_fkey(
-        PRODUCT_ID,
-        PRODUCT_NAME,
-        COVER_IMAGE,
-        SEGMENTATION,
-        TIER,
-        BASE_PRICE_NO_PHOTO,
-        BASE_PRICE_WITH_PHOTO,
-        PROMO_PRICE_NO_PHOTO,
-        PROMO_PRICE_WITH_PHOTO,
-        FEATURES,
-        IS_PROMO,
-        IS_NEW,
-        IS_ACTIVE
-      ),
-      INVITATION_DATA_USER!INVITATION_DATA_USER_INVITATION_ID_fkey(
-        DATA_ID,
-        INVITATION_ID,
-        GROOM_FULL_NAME,
-        GROOM_NICK_NAME,
-        GROOM_PARENT_NAME,
-        GROOM_INSTAGRAM,
-        GROOM_PHOTO_URL,
-        BRIDE_FULL_NAME,
-        BRIDE_NICK_NAME,
-        BRIDE_PARENT_NAME,
-        BRIDE_INSTAGRAM,
-        BRIDE_PHOTO_URL,
-        GALLERY_PHOTOS,
-        LOVE_STORY
-      ),
-      INVITATION_EVENT!INVITATION_EVENT_INVITATION_ID_fkey(
-        EVENT_ID,
-        INVITATION_ID,
-        EVENT_TYPE,
-        LOCATION,
-        LOCATION_DETAIL,
-        MAPS_URL,
-        START_TIME,
-        END_TIME
-      ),
-      INVITATION_GIFT!INVITATION_GIFT_INVITATION_ID_fkey(
-        GIFT_ID,
-        INVITATION_ID,
-        ADDRESS,
-        INVITATION_GIFT_BANK!INVITATION_GIFT_BANK_GIFT_ID_fkey(
-          GIFT_BANK_ID,
-          GIFT_ID,
-          ACCOUNT,
-          OWNER
-        ),
-        INVITATION_GIFT_WALLET!INVITATION_GIFT_WALLET_GIFT_ID_fkey(
-          GIFT_WALLET_ID,
-          GIFT_ID,
-          ADDRESS,
-          OWNER
-        )
-      ),
-      GUEST_BOOK!GUEST_BOOK_INVITATION_ID_fkey(
-        GUEST_ID,
-        INVITATION_ID,
-        GUEST_NAME,
-        ATTENDANCE_STATUS,
-        GUEST_COUNT,
-        MESSAGE,
-        IP_ADDRESS,
-        CREATED_AT
-      )
-    `
-    )
+    .select(INVITATION_DETAIL_SELECT)
     .eq('USER_ID', userId)
-    .eq('IS_DELETED', false)
+    .eq('IS_DELETED', false);
 
   if (error) {
     console.error('Error fetching invitation:', error);
@@ -340,7 +172,6 @@ export async function getDataInvitationUserByUserId(userId: string) {
   }
 
   const dataCamelCase = transformDataInvitationResponse(data ?? []);
-
 
   return dataCamelCase;
 }

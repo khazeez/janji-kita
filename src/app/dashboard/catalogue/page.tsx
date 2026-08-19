@@ -1,23 +1,71 @@
+// app/dashboard/catalogue/page.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X, Heart, Star, Loader2 } from 'lucide-react';
-import { useProducts, useCurrentUser, useFavorites, toggleFavoriteProduct } from '@/hooks/useData';
+import { useCurrentUser, useFavorites, toggleFavoriteProduct } from '@/hooks/useData';
 
-const segments: string[] = ['All', 'Platinum', 'Gold', 'Silver', 'Bronze'];
+const SEGMENTS = ['All', 'Platinum', 'Gold', 'Silver', 'Bronze'];
+
+async function fetchProducts(segment?: string, search?: string) {
+  const params = new URLSearchParams();
+  if (segment && segment !== 'All') params.set('segment', segment);
+  if (search) params.set('search', search);
+  const res = await fetch(`/api/products?${params.toString()}`);
+  if (!res.ok) throw new Error('Gagal memuat produk');
+  const json = await res.json();
+  return json.data || [];
+}
 
 export default function DashboardCatalogue() {
   const router = useRouter();
-  const { data: products, isLoading } = useProducts();
   const { data: user } = useCurrentUser();
   const { data: favorites = [] } = useFavorites(user?.id);
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedSegment, setSelectedSegment] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [navigatingId, setNavigatingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const loadedRef = useRef(false);
+  const initialMountRef = useRef(true);
 
   const favoriteIds = new Set(favorites.map((f: any) => f.PRODUCT?.PRODUCT_ID || f.productId).filter(Boolean));
+
+  const loadProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await fetchProducts(
+        selectedSegment === 'All' ? undefined : selectedSegment,
+        searchQuery || undefined
+      );
+      setProducts(result || []);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedSegment, searchQuery]);
+
+  // Load on mount (guarded by ref to avoid double fetch in Strict Mode)
+  useEffect(() => {
+    if (loadedRef.current) return;
+    if (!user) return; // wait until user is available
+    loadedRef.current = true;
+    loadProducts();
+  }, [user]);
+
+  // Re-fetch when filters change (skip on initial mount to avoid double fetch)
+  useEffect(() => {
+    if (initialMountRef.current) {
+      initialMountRef.current = false;
+      return;
+    }
+    const debounce = setTimeout(() => loadProducts(), 300);
+    return () => clearTimeout(debounce);
+  }, [selectedSegment, searchQuery]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -50,20 +98,6 @@ export default function DashboardCatalogue() {
       setTogglingId(null);
     }
   };
-
-  const filteredCatalogues = (products || []).filter((item) => {
-    if (!item) return false;
-
-    const matchesSegment =
-      selectedSegment === 'All' || item.segmentation === selectedSegment;
-
-    const matchesSearch =
-      item.productName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.segmentation?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.productType?.toLowerCase().includes(searchQuery.toLowerCase());
-
-    return matchesSegment && matchesSearch;
-  });
 
   const clearSearch = () => setSearchQuery('');
 
@@ -118,7 +152,7 @@ export default function DashboardCatalogue() {
 
           {/* Segment Filter */}
           <div className="flex flex-wrap gap-2">
-            {segments.map((segment) => (
+            {SEGMENTS.map((segment) => (
               <button
                 key={segment}
                 onClick={() => setSelectedSegment(segment)}
@@ -136,12 +170,12 @@ export default function DashboardCatalogue() {
       </div>
 
       {/* Catalogue Grid */}
-      {isLoading ? (
+      {loading ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
           <Loader2 className="w-10 h-10 text-pink-500 animate-spin" />
           <p className="text-gray-400 animate-pulse">Memuat koleksi tema...</p>
         </div>
-      ) : filteredCatalogues.length === 0 ? (
+      ) : products.length === 0 ? (
         <div className="bg-gray-800 border border-dashed border-gray-700 rounded-3xl p-12 text-center">
           <div className="bg-gray-800 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Search className="w-8 h-8 text-gray-600" />
@@ -150,8 +184,8 @@ export default function DashboardCatalogue() {
             Tidak ada template ditemukan
           </h3>
           <p className="text-gray-500 text-sm mb-4">Coba gunakan kata kunci lain atau ubah filter.</p>
-          <button 
-            onClick={() => {setSelectedSegment('All'); clearSearch();}}
+          <button
+            onClick={() => { setSelectedSegment('All'); clearSearch(); }}
             className="text-pink-500 hover:text-pink-400 font-medium text-sm underline underline-offset-4"
           >
             Reset filter
@@ -159,7 +193,7 @@ export default function DashboardCatalogue() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredCatalogues.map((item) => (
+          {products.map((item) => (
             <div
               key={item.productId}
               onClick={() => handleNavigation(`/dashboard/catalogue/${item.productName}`, item.productId)}
@@ -173,7 +207,7 @@ export default function DashboardCatalogue() {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                
+
                 {/* Segment Tag */}
                 <div className="absolute top-3 left-3">
                   <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-lg uppercase tracking-wider ${getSegmentColor(item.segmentation)}`}>
@@ -202,40 +236,40 @@ export default function DashboardCatalogue() {
 
                 {/* Type Badge */}
                 <div className="absolute bottom-3 left-3">
-                   <span className="text-[10px] font-medium text-gray-300 bg-gray-800 px-2.5 py-1 rounded-lg border border-gray-700">
+                  <span className="text-[10px] font-medium text-gray-300 bg-gray-800 px-2.5 py-1 rounded-lg border border-gray-700">
                     {item.productType}
                   </span>
                 </div>
               </div>
 
-                {/* Info Container */}
-                <div className="p-4 space-y-3">
-                  <div className="flex justify-between items-start gap-2">
-                    <h3 className="font-bold text-white group-hover:text-pink-400 transition-colors line-clamp-1">
-                      {item.productName}
-                    </h3>
-                    <div className="flex items-center gap-1 text-yellow-400">
-                      <Star className="w-3.5 h-3.5 fill-current" />
-                      <span className="text-xs font-bold">4.9</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="text-xs text-gray-400 italic">Mulai dari</span>
-                    <span className="text-pink-500 font-bold group-hover:scale-105 transition-transform">
-                      {formatPrice(item.basePriceNoPhoto)}
-                    </span>
+              {/* Info Container */}
+              <div className="p-4 space-y-3">
+                <div className="flex justify-between items-start gap-2">
+                  <h3 className="font-bold text-white group-hover:text-pink-400 transition-colors line-clamp-1">
+                    {item.productName}
+                  </h3>
+                  <div className="flex items-center gap-1 text-yellow-400">
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                    <span className="text-xs font-bold">4.9</span>
                   </div>
                 </div>
 
-                {/* Navigation Loading Overlay */}
-                {navigatingId === item.productId && (
-                  <div className="absolute inset-0 z-20 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center">
-                    <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
-                  </div>
-                )}
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-xs text-gray-400 italic">Mulai dari</span>
+                  <span className="text-pink-500 font-bold group-hover:scale-105 transition-transform">
+                    {formatPrice(item.basePriceNoPhoto)}
+                  </span>
+                </div>
               </div>
-            ))}
+
+              {/* Navigation Loading Overlay */}
+              {navigatingId === item.productId && (
+                <div className="absolute inset-0 z-20 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 text-pink-500 animate-spin" />
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </div>

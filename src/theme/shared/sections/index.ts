@@ -1,0 +1,21 @@
+export { default as Cover } from './Cover';
+export { default as Couple } from './Couple';
+export { default as Event } from './Event';
+export { default as Gallery } from './Gallery';
+export { default as Gift } from './Gift';
+export { default as Introduction } from './Introduction';
+export { default as LoveStrory } from './LoveStrory';
+export { default as Quotes } from './Quotes';
+export { default as RSVP } from './RSVP';
+export { default as Thanks } from './Thanks';
+
+export type { CoverProps } from './Cover';
+export type { CoupleProps } from './Couple';
+export type { EventProps } from './Event';
+export type { GalleryProps } from './Gallery';
+export type { GiftProps } from './Gift';
+export type { IntroductionProps } from './Introduction';
+export type { LoveStoryProps } from './LoveStrory';
+export type { QuotesProps } from './Quotes';
+export type { RSVPProps } from './RSVP';
+export type { ThanksProps } from './Thanks';

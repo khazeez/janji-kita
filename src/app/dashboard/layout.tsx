@@ -21,7 +21,10 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import supabase from '@/lib/supabase/client';
+import { useFavorites } from '@/hooks/useData';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+
+import { useFavoriteCount } from '@/hooks/useData';
 
 export default function DashboardLayout({
   children,
@@ -33,7 +36,7 @@ export default function DashboardLayout({
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [favoriteCount, setFavoriteCount] = useState(0);
+  const { data: favorites = [] } = useFavorites(user?.id);
   const [transactionCount, setTransactionCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -57,39 +60,6 @@ export default function DashboardLayout({
 
     getUserData();
   }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    const fetchCounts = async () => {
-      try {
-        const [favRes, trxRes] = await Promise.all([
-          fetch('/api/favorites'),
-          fetch('/api/transactions'),
-        ]);
-        if (favRes.ok) {
-          const fav = await favRes.json();
-          setFavoriteCount(fav.data?.length ?? 0);
-        }
-        if (trxRes.ok) {
-          const trx = await trxRes.json();
-          setTransactionCount(
-            (trx.data ?? []).filter(
-              (t: { PAYMENT_STATUS: string }) =>
-                t.PAYMENT_STATUS === 'INITIATED' || t.PAYMENT_STATUS === 'PENDING'
-            ).length
-          );
-        }
-      } catch {}
-    };
-    fetchCounts();
-    const interval = setInterval(fetchCounts, 30000);
-    const handleUpdate = () => fetchCounts();
-    window.addEventListener('update-counts', handleUpdate);
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('update-counts', handleUpdate);
-    };
-  }, [user]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -153,7 +123,7 @@ export default function DashboardLayout({
       label: 'Favorite',
       icon: Star,
       href: '/dashboard/favorite',
-      badge: favoriteCount,
+      badge: favorites.length,
     },
     {
       id: 'payment',
